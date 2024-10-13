@@ -91,15 +91,15 @@ void AWallGenerator::SpawnFullWall(TArray<int> Key, float Scale, FVector StartPo
 		if (Key[i] == 0)
 		{
 			if (bPrevIsLand){
-				SpawnMesh(Tower, CurrentStartLocation + TowerOffset, FRotator(0.0), FVector(1.0));
-				SpawnMesh(Tower, CurrentEndLocation + TowerOffset, FRotator(0.0), FVector(1.0));
+				SpawnMesh(TEXT("Tower"), Tower, CurrentStartLocation + TowerOffset, FRotator(0.0), FVector(1.0));
+				SpawnMesh(TEXT("Tower"), Tower, CurrentEndLocation + TowerOffset, FRotator(0.0), FVector(1.0));
 				SpawnWalls(CurrentStartLocation - WallOffset, CurrentEndLocation + WallOffset, RandWallSelection);
 			}
 			CurrentStartLocation = CurrentEndLocation + DirectionNormal * Scale;
 		}
 		CurrentEndLocation += DirectionNormal * Scale;
 	}
-	SpawnMesh(Tower, CurrentStartLocation + TowerOffset, FRotator(0.0), FVector(1.0));
+	SpawnMesh(TEXT("Tower"), Tower, CurrentStartLocation + TowerOffset, FRotator(0.0), FVector(1.0));
 	SpawnWalls(CurrentStartLocation - WallOffset, EndPosition + WallOffset, RandWallSelection);
 }
 
@@ -121,7 +121,7 @@ void AWallGenerator::SpawnWalls(FVector StartPosition, FVector EndPosition, int 
 	{
 		UE_LOG(LogTemp, Display, TEXT("Spawning Wall"))
 		FVector SpawnLocation = FVector(CurrentLocation.X, CurrentLocation.Y, GetActorLocation().Z);
-		SpawnMesh(Walls[Type], SpawnLocation, Rotation, FVector(1.0f));
+		SpawnMesh(TEXT("Wall"), Walls[Type], SpawnLocation, Rotation, FVector(1.0f));
 		CurrentLocation += DirectionNormal * WallDimensions.X;
 	}
 }

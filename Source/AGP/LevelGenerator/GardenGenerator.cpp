@@ -61,7 +61,7 @@ void AGardenGenerator::SpawnGarden()
 	FRotator Rotation = FRotator(0, 0, 0);
 	FVector Scale = FVector(1.0, 1.0, 1.0);
 	FVector GrassScale = FVector(float(Width) / 2, float(Height) / 2, 1.0);
-	SpawnMesh(Grass[GrassType], Location, Rotation, GrassScale);
+	SpawnMesh(TEXT("Grass"), Grass[GrassType], Location, Rotation, GrassScale);
 	if (FenceType < 2) {
 		FVector FenceDimensions = GetMeshDimensions(Fences[FenceType]);
 		int NumFencesWidth = MaxWidth / FenceDimensions.X;
@@ -79,7 +79,7 @@ void AGardenGenerator::SpawnGarden()
 				FRotator FenceRotation = FRotator(0, RotY, 0);
 				if (j != Max / 2 || bSpawnEntrance || Width < 2 || Height < 2)
 				{
-					SpawnMesh(Fences[FenceType], FencePosition, FenceRotation, Scale);
+					SpawnMesh(TEXT("Fence"), Fences[FenceType], FencePosition, FenceRotation, Scale);
 				}
 				if (i % 2 == 0)
 				{
@@ -108,7 +108,7 @@ void AGardenGenerator::SpawnGarden()
 				float TreeX = SpacerX + Location.X - (MaxWidth / 2) + ((TreeDimension.X) / 2) + FactorX * x;
 				float TreeY = SpacerY + Location.Y - (MaxHeight / 2) + ((TreeDimension.X) / 2) + FactorY * y;
 				FVector TreeLocation = FVector(TreeX, TreeY, Location.Z);
-				SpawnMesh(Trees[TreeType], TreeLocation, TreeRotation, Scale);
+				SpawnMesh(TEXT("Tree"), Trees[TreeType], TreeLocation, TreeRotation, Scale);
 			}
 		}
 	}
@@ -170,7 +170,7 @@ void AGardenGenerator::SpawnLGarden(int Quadrant)
 		{
 			continue;
 		}
-		SpawnMesh(FencePosts[FenceType], FenceType == 0 ? BoundingPoints[i] : BoundingPoints[i] + OffsetPost, FRotator(0), FenceType == 1 ? FVector(2.5, 2.0, 1.5) : FVector(1.5, 1.5, 1.0));
+		SpawnMesh(TEXT("FencePost"), FencePosts[FenceType], FenceType == 0 ? BoundingPoints[i] : BoundingPoints[i] + OffsetPost, FRotator(0), FenceType == 1 ? FVector(2.5, 2.0, 1.5) : FVector(1.5, 1.5, 1.0));
 	}
 
 	if (Quadrant == 1)
@@ -233,19 +233,19 @@ void AGardenGenerator::SpawnLGarden(int Quadrant)
 				FVector TreeLocation = FVector(TreeX, TreeY, ActorLocation.Z);
 				if (Quadrant != 1 && TreeX > BoundingPoints[4].X && TreeY > BoundingPoints[4].Y)
 				{
-					SpawnMesh(Trees[TreeType], TreeLocation, TreeRotation, Scale);
+					SpawnMesh(TEXT("Tree"), Trees[TreeType], TreeLocation, TreeRotation, Scale);
 				}
 				if (Quadrant != 2 && TreeX < BoundingPoints[4].X && TreeY > BoundingPoints[4].Y)
 				{
-					SpawnMesh(Trees[TreeType], TreeLocation, TreeRotation, Scale);
+					SpawnMesh(TEXT("Tree"), Trees[TreeType], TreeLocation, TreeRotation, Scale);
 				}
 				if (Quadrant != 3 && TreeX < BoundingPoints[4].X && TreeY < BoundingPoints[4].Y)
 				{
-					SpawnMesh(Trees[TreeType], TreeLocation, TreeRotation, Scale);
+					SpawnMesh(TEXT("Tree"), Trees[TreeType], TreeLocation, TreeRotation, Scale);
 				}
 				if (Quadrant != 4 && TreeX > BoundingPoints[4].X && TreeY < BoundingPoints[4].Y)
 				{
-					SpawnMesh(Trees[TreeType], TreeLocation, TreeRotation, Scale);
+					SpawnMesh(TEXT("Tree"), Trees[TreeType], TreeLocation, TreeRotation, Scale);
 				}
 			}
 		}
@@ -272,7 +272,7 @@ void AGardenGenerator::SpawnFences(FVector Start, FVector End, bool AddEntry, in
 	{
 		if (!AddEntry || i != NumOfFences / 2) {
 			FVector SpawnLocation = FVector(CurrentLocation.X, CurrentLocation.Y, GetActorLocation().Z);
-			SpawnMesh(Fences[FenceType], SpawnLocation, Rotation, FVector(1.0f));
+			SpawnMesh(TEXT("Fence"), Fences[FenceType], SpawnLocation, Rotation, FVector(1.0f));
 			CurrentLocation += DirectionNormal * FenceDimensions.X;
 		}
 	}
