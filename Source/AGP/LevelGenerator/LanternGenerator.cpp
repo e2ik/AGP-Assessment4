@@ -39,7 +39,7 @@ void ALanternGenerator::SpawnLanterns(FVector Start, FVector End)
 	for (float D = 100.0; D < SplineLength - 100.0; D += DistanceBetweenLanterns)
 	{
 		FVector Location = Spline->GetLocationAtDistanceAlongSpline(D, ESplineCoordinateSpace::World);
-		SpawnMesh(Lantern, Location, FRotator(0.0), FVector(1.0));
+		SpawnMesh(TEXT("Lantern"), Lantern, Location, FRotator(0.0), FVector(1.0));
 	}
 	
 	SpawnedSplines.Add(Spline);

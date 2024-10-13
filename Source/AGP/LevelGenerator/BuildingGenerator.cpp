@@ -73,17 +73,17 @@ void ABuildingGenerator::BuildBuilding()
 				FRotator Rotation = FRotator(0, RotY, 0);
 				if (j == Max / 2)
 				{
-					SpawnMesh(Door, Position, Rotation, Scale);
+					SpawnMesh(TEXT("Door"), Door, Position, Rotation, Scale);
 				} else
 				{
-					SpawnMesh(Wall[WallIndex], Position, Rotation, Scale);
+					SpawnMesh(TEXT("Wall"), Wall[WallIndex], Position, Rotation, Scale);
 				}
 			}
 		}
 		float RoofPosX = ActorPosition.X;
 		float RoofPosY = ActorPosition.Y;
 		FVector RoofPos = FVector(RoofPosX, RoofPosY, WallDimensions.Z + PosZ + RoofOffset);
-		SpawnMesh(Roofs[RoofIndex], RoofPos, RoofRotation, Scale);
+		SpawnMesh(TEXT("Roof"), Roofs[RoofIndex], RoofPos, RoofRotation, Scale);
 		SpawnLanternNodes(RoofPos, RoofDimensions, Depth > Width);
 	}
 
@@ -95,7 +95,7 @@ void ABuildingGenerator::BuildBuilding()
 	{
 		Scale = Scale * 0.5;
 		float e = FMath::Pow(2.0, float(r));
-		SpawnMesh(Roofs[RoofIndex], FVector(PosX, PosY, PosZ), RoofRotation, Scale);
+		SpawnMesh(TEXT("Roof"), Roofs[RoofIndex], FVector(PosX, PosY, PosZ), RoofRotation, Scale);
 		PosZ = PosZ + RoofDimensions.Z / FMath::Pow(2.0, float(r));
 	}
 	if (0 == FMath::RandRange(0, 3))

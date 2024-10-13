@@ -26,7 +26,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	USceneComponent* LocationComponent;
 	
-	void SpawnMesh(UStaticMesh* Mesh, FVector Location, FRotator Rotation, FVector Scale);
+	void SpawnMesh(FString MeshName, UStaticMesh* Mesh, FVector Location, FRotator Rotation, FVector Scale);
 
 	FVector GetMeshDimensions(UStaticMesh* Mesh);
 

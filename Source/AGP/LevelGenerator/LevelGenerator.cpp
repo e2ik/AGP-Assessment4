@@ -33,7 +33,7 @@ bool ALevelGenerator::ShouldTickIfViewportsOnly() const
 	return true;
 }
 
-void ALevelGenerator::SpawnMesh(UStaticMesh* Mesh, FVector Location, FRotator Rotation, FVector Scale)
+void ALevelGenerator::SpawnMesh(FString MeshName, UStaticMesh* Mesh, FVector Location, FRotator Rotation, FVector Scale)
 {
 	if (!Mesh)
 	{
@@ -48,6 +48,7 @@ void ALevelGenerator::SpawnMesh(UStaticMesh* Mesh, FVector Location, FRotator Ro
 		MeshActor->SetActorLocation(Location);
 		MeshActor->SetActorRotation(Rotation);
 		MeshActor->SetActorScale3D(Scale);
+		MeshActor->SetActorLabel(MeshName);
 		SpawnedMeshes.Add(MeshActor);
 	}
 }
