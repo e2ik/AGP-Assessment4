@@ -3,6 +3,10 @@
 .vscode/
 .idea/
 
+# vscode specific
+.ignore
+*.code-workspace
+
 # Compiled Object files
 *.slo
 *.lo
