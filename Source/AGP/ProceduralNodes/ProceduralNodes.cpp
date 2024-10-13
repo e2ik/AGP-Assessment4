@@ -29,7 +29,11 @@ void UProceduralNodes::FindAllGroundMeshes()
         AStaticMeshActor* Actor = *ActorItr;
 
         // TODO: Split this, different locations for different mesh types
-        // TODO: Think about how to divide the Bounding Box area can we line trace?
+        // TODO: narrow pieces should just have a node in the center of the 'narrower' side
+        // TODO: Square pieces ray cast up do not add locations that's under another mesh
+        // TODO: Buildings raycast down from centre, if there's ground piece under, then add node in center
+        // TODO: Door mesh racast down, if there's ground piece under, then add node in center
+        
         if (Actor && Actor->GetActorLabel().Contains("Ground")) {
             UStaticMeshComponent* MeshComponent = Actor->GetStaticMeshComponent();
             if (MeshComponent) {
