@@ -22,6 +22,8 @@ void ATerrainGenerator::BeginPlay()
 {
 	Super::BeginPlay();
 	BoatNavigator = GetWorld()->GetSubsystem<UBoatNavigation>();
+	ProceduralNodes = GetWorld()->GetSubsystem<UProceduralNodes>();
+	if (ProceduralNodes) { ProceduralNodes->GenerateNodes(); }
 }
 
 // Called every frame

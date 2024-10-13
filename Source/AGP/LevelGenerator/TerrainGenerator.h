@@ -10,6 +10,7 @@
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/Actor.h"
 #include "Util/IteratorUtil.h"
+#include "../ProceduralNodes/ProceduralNodes.h"
 #include "TerrainGenerator.generated.h"
 
 class AWallGenerator;
@@ -77,6 +78,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	UBoatNavigation* BoatNavigator;
+
+	UPROPERTY(EditAnywhere)
+	UProceduralNodes* ProceduralNodes;
 	
 	void GenerateTerrain();
 	void CreateMap();
