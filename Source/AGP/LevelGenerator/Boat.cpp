@@ -43,30 +43,42 @@ void ABoat::MoveAlongPath()
 		return;
 	}
 
-	float DistanceToCurrentTarget = FVector::Distance(CurrentBoatNode->GetActorLocation(), LastBoatNode->GetActorLocation());
-	float DistanceToNextTarget = FVector::Distance(LastBoatNode->GetActorLocation(), TargetBoatNode->GetActorLocation());
-	if (1.75 * DistanceToCurrentTarget <= DistanceToNextTarget) {
-		FVector MovementDirection = CurrentBoatNode->GetActorLocation() - GetActorLocation();
-		MovementDirection.Normalize();
-		AddMovementInput(MovementDirection * 1/10 * BoatSpeed);
-	} else
+	FVector Direction;
+	FVector StartMovementDirection = (CurrentBoatNode->GetActorLocation() - LastBoatNode->GetActorLocation()).GetSafeNormal();
+	FVector EndMovementDirection = (TargetBoatNode->GetActorLocation() - CurrentBoatNode->GetActorLocation()).GetSafeNormal();
+	float DotProduct = FVector::DotProduct(StartMovementDirection, EndMovementDirection);
+	bool bIsStraight = FMath::Abs(DotProduct - 1.0f) < KINDA_SMALL_NUMBER;
+	if (bIsStraight)
 	{
-		FVector StartMovementDirection = LastBoatNode->GetActorLocation() - CurrentBoatNode->GetActorLocation();
-		FVector EndMovementDirection = TargetBoatNode->GetActorLocation() - CurrentBoatNode->GetActorLocation();
-		StartMovementDirection.Normalize();
-		EndMovementDirection.Normalize();
-		float DistanceOfCurve = FVector::Distance(LastBoatNode->GetActorLocation(), TargetBoatNode->GetActorLocation());
-		float DistanceToCurrentTargetNode = FVector::Distance(TargetBoatNode->GetActorLocation(), GetActorLocation());
-		float Alpha = DistanceToCurrentTargetNode/DistanceOfCurve;
-		UE_LOG(LogTemp, Display, TEXT("CurrentAlpha: %f"), Alpha);
-		FVector MovementDirection = FMath::Lerp(StartMovementDirection, EndMovementDirection, Alpha);
-		AddMovementInput(MovementDirection * 1/10 * BoatSpeed);
+		Direction = (CurrentBoatNode->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		UE_LOG(LogTemp, Warning, TEXT("SDirection: %f, %f, %f"), Direction.X, Direction.Y, Direction.Z);
+		if (FVector::Distance(GetActorLocation(), CurrentBoatNode->GetActorLocation()) < PathfindingError)
+		{
+			GetNextBoatTarget();
+		}
 	}
-	
-	if (FVector::Distance(GetActorLocation(), CurrentBoatNode->GetActorLocation()) < PathfindingError)
+	else
 	{
-		GetNextBoatTarget();
+		FVector Direction1 = (CurrentBoatNode->GetActorLocation() - LastBoatNode->GetActorLocation()).GetSafeNormal();
+		FVector Direction2 = (TargetBoatNode->GetActorLocation() - CurrentBoatNode->GetActorLocation()).GetSafeNormal();
+		float DistanceToTarget = FVector::Distance(GetActorLocation(), TargetBoatNode->GetActorLocation());
+		float TotalDistance = FVector::Distance(LastBoatNode->GetActorLocation(), TargetBoatNode->GetActorLocation());
+		float Radius = TotalDistance / FMath::Sqrt(2.0f);
+		float CosTheta = (2 * FMath::Square(Radius) - FMath::Square(DistanceToTarget)) / (2 * FMath::Square(Radius));
+		float AngleRadians = FMath::Acos(CosTheta);
+		float ArcLength = Radius * AngleRadians;
+		float TotalAngleRadians = FMath::DegreesToRadians(90.0f);
+		float TotalArcLength = TotalAngleRadians * Radius;
+		float Alpha = 1 - (ArcLength/TotalArcLength);
+		Alpha = Alpha > 0 ? Alpha : 0;
+		Direction = FMath::Lerp(Direction1, Direction2, Alpha).GetSafeNormal();
+		UE_LOG(LogTemp, Warning, TEXT("CDirection: %f, %f, %f"), Direction.X, Direction.Y, Direction.Z);
+		if (FVector::Distance(GetActorLocation(), TargetBoatNode->GetActorLocation()) < PathfindingError * 1.9)
+		{
+			GetNextBoatTarget();
+		}
 	}
+	AddMovementInput(Direction * 1/10 * BoatSpeed);
 }
 
 void ABoat::SetCurrentBoatTarget(ABoatNode* NewTarget)
@@ -74,6 +86,7 @@ void ABoat::SetCurrentBoatTarget(ABoatNode* NewTarget)
 	SetActorLocation(NewTarget->GetActorLocation());
 	LastBoatNode = NewTarget;
 	TArray<ABoatNode*> PossibleNodes = NewTarget->GetConnectedNodes();
+	PossibleNodes.Remove(LastBoatNode);
 	if (PossibleNodes.Num() == 1)
 	{
 		CurrentBoatNode = PossibleNodes[0];
@@ -82,6 +95,8 @@ void ABoat::SetCurrentBoatTarget(ABoatNode* NewTarget)
 		CurrentBoatNode = PossibleNodes[FMath::RandRange(0, PossibleNodes.Num() - 1)];
 	}
 	PossibleNodes = CurrentBoatNode->GetConnectedNodes();
+	PossibleNodes.Remove(LastBoatNode);
+	PossibleNodes.Remove(CurrentBoatNode);
 	if (PossibleNodes.Num() == 1)
 	{
 		TargetBoatNode = PossibleNodes[0];
