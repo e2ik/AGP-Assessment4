@@ -10,6 +10,8 @@ UCLASS()
 class AGP_API ANavigationNode : public AActor
 {
 	GENERATED_BODY()
+
+	friend class UPathfindingSubsystem;
 	
 public:	
 	// Sets default values for this actor's properties

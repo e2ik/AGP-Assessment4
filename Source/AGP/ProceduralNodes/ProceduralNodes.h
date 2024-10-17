@@ -23,6 +23,8 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnNodesGenerated OnNodesGenerated;
 
+	TArray<ANavigationNode*> GetMapNodes() const { return MapNodes; }
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TArray<FVector> PossibleNodeLocations;
@@ -34,14 +36,26 @@ protected:
 	float NodeSpacing = 500.0f;
 
 	UPROPERTY(EditAnywhere)
-	int32 MaxNodes = 20;
+	int32 MaxNodes = 50;
 
 	UPROPERTY(EditAnywhere)
 	float BoundsPadding = 200.0f;
 
+	UPROPERTY(VisibleAnywhere)
+	TArray<ANavigationNode*> MapNodes;
+
 private:
 
 	void FindAllGroundMeshes();
-	bool CheckMeshAbove(AStaticMeshActor* MeshActor, FVector Start, FVector End);
+	void GetMeshBounds(const UMeshComponent* MeshComponent, FVector& OutMinBounds, FVector& OutMaxBounds, FVector& OutMeshCenter);
+	bool CheckMesh(AStaticMeshActor* MeshActor, FVector Start, FVector End);
+	void NodeGenGroundBig(AStaticMeshActor* Actor, UStaticMeshComponent* MeshComponent);
+	void NodeGenGroundNarrow(AStaticMeshActor* Actor, UStaticMeshComponent* MeshComponent);
+	void NodeGenBridge(AStaticMeshActor* Actor, UStaticMeshComponent* MeshComponent);
+	void NodeGenBuilding(AStaticMeshActor* Actor, UStaticMeshComponent* MeshComponent);
+	void NodeGenDoor(AStaticMeshActor* Actor, UStaticMeshComponent* MeshComponent);
+	void NodeGenGazebo(AStaticMeshActor* Actor, UStaticMeshComponent* MeshComponent);
+	void AddNodesToLocations();
+	void ConnectNodes();
 
 };
