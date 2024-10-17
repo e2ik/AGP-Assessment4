@@ -60,5 +60,19 @@ void ABoatNode::ConnectNodes(ABoatNode* Node)
 	}
 }
 
+ABoatNode* ABoatNode::InsertMidpointBoatNode(ABoatNode* Node)
+{
+	ConnectedNodes.Remove(Node);
+	Node->RemoveNode(this);
+	ABoatNode* NewNode = GetWorld()->SpawnActor<ABoatNode>();
+	NewNode->SetActorLocation(FMath::Lerp(GetActorLocation(), Node->GetActorLocation(), 0.5f));
+	ConnectNodes(NewNode);
+	Node->ConnectNodes(NewNode);
+	return NewNode;
+}
 
+void ABoatNode::RemoveNode(ABoatNode* Node)
+{
+	ConnectedNodes.Remove(Node);
+}
 
