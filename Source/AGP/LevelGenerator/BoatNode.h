@@ -31,4 +31,6 @@ public:
 	virtual bool ShouldTickIfViewportsOnly() const override;
 	void ConnectNodes(ABoatNode* Node);
 	TArray<ABoatNode*> GetConnectedNodes();
+	ABoatNode* InsertMidpointBoatNode(ABoatNode* Node);
+	void RemoveNode(ABoatNode* Node);
 };

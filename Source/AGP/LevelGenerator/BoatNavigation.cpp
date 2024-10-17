@@ -30,7 +30,7 @@ void UBoatNavigation::PopulateNodes(TArray<int> Map, int Height, int Width, FVec
 				float PosX = (Location.X + (Dimensions.X * X)) - (Dimensions.X * (Width / 2)) + Dimensions.X / 2;
 				float PosY = (Location.Y + (Dimensions.Y * Y)) - (Dimensions.Y * (Height / 2)) + Dimensions.Y / 2;
 				ABoatNode* BoatNode = GetWorld()->SpawnActor<ABoatNode>();
-				BoatNode->SetActorLocation(FVector(PosX, PosY, 50.0));
+				BoatNode->SetActorLocation(FVector(PosX, PosY, -50.0));
 				if (Y > 0 && Map[(Y - 1) * Width + X] == 0)
 				{
 					BoatNode->ConnectNodes(Nodes[(Y - 1) * Width + X]);
@@ -54,6 +54,26 @@ void UBoatNavigation::PopulateNodes(TArray<int> Map, int Height, int Width, FVec
 			Nodes.Remove(Node);
 		}
 	}
+
+	TArray<ABoatNode*> VisitedNodes;
+
+	for (auto Node : Nodes)
+	{
+		if (VisitedNodes.Contains(Node))
+		{
+			continue;
+		}
+		for (auto N : Node->GetConnectedNodes())
+		{
+			if (VisitedNodes.Contains(N))
+			{
+				continue;
+			}
+			ABoatNode* NewNode = Node->InsertMidpointBoatNode(N);
+			VisitedNodes.Add(NewNode);
+		}
+	}
+	
 	UE_LOG(LogTemp, Warning, TEXT("Populated Nodes = %d"), Nodes.Num());
 }
 
