@@ -5,6 +5,7 @@
 
 # vscode specific
 .ignore
+.vsconfig
 *.code-workspace
 
 # Compiled Object files
