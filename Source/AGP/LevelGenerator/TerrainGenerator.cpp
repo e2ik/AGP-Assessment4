@@ -134,7 +134,7 @@ void ATerrainGenerator::PlaceGround(int x, int y, FVector Dimensions, FVector Ac
 	FVector Location = FVector(PosX, PosY, 50.0);
 	FRotator Rotation = FRotator(0.0, 0.0, 0.0);
 	FVector Scale = FVector(1.0, 1.0, 1.0);
-	SpawnMesh(TEXT("Ground"), FloorBlock, Location, Rotation, Scale);
+	SpawnMesh(TEXT("Ground_Big"), FloorBlock, Location, Rotation, Scale);
 	int32 RandBuildingSelection = FMath::RandRange(0, 12);
 	BuildingGenerator->SpawnBuildingByPreset(RandBuildingSelection, Location, Dimensions, GardenGenerator);
 	SpawnedMeshes.Append(BuildingGenerator->SpawnedMeshes);
@@ -147,7 +147,7 @@ void ATerrainGenerator::PlaceWater(int x, int y, FVector Dimensions, FVector Act
 	WaterFloorLocation.X = (ActorLocation.X + (Dimensions.X * x)) - (Dimensions.X * (Width / 2));;
 	WaterFloorLocation.Y = (ActorLocation.Y + (Dimensions.Y * y)) - (Dimensions.Y * (Height / 2));
 	WaterFloorLocation.Z = -250;
-	SpawnMesh(TEXT("Ground"), FloorBlock, WaterFloorLocation, FRotator(0), FVector(1.0));
+	SpawnMesh(TEXT("Ground_Big"), FloorBlock, WaterFloorLocation, FRotator(0), FVector(1.0));
 	float PosX = (ActorLocation.X + (Dimensions.X * x)) - (Dimensions.X * (Width / 2));
 	float PosY = (ActorLocation.Y + (Dimensions.Y * y)) - (Dimensions.Y * (Height / 2));
 	FVector Location = FVector(PosX, PosY, 50.0);
@@ -162,24 +162,24 @@ void ATerrainGenerator::PlaceWater(int x, int y, FVector Dimensions, FVector Act
 	if(bLeft) //Left
 	{
 		Location = FVector(PosX + 700.0, PosY, Location.Z);
-		SpawnMesh(TEXT("Ground"), FloorBlock2, Location, Rotation, Scale);
+		SpawnMesh(TEXT("Ground_Narrow"), FloorBlock2, Location, Rotation, Scale);
 	}
 	if(bRight) //Right
 	{
 		Location = FVector(PosX + 3000.0, PosY, Location.Z);
-		SpawnMesh(TEXT("Ground"), FloorBlock2, Location, Rotation, Scale);
+		SpawnMesh(TEXT("Ground_Narrow"), FloorBlock2, Location, Rotation, Scale);
 	}
 	if(bDown) //Down
 	{
 		Location = FVector(PosX, PosY, Location.Z);
 		Rotation = FRotator(0.0, 0.0, 0.0);
-		SpawnMesh(TEXT("Ground"), FloorBlock2, Location, Rotation, Scale);
+		SpawnMesh(TEXT("Ground_Narrow"), FloorBlock2, Location, Rotation, Scale);
 	}
 	if(bUp) //Up
 	{
 		Location = FVector(PosX, PosY + 2300.0, Location.Z);
 		Rotation = FRotator(0.0, 0.0, 0.0);
-		SpawnMesh(TEXT("Ground"), FloorBlock2, Location, Rotation, Scale);
+		SpawnMesh(TEXT("Ground_Narrow"), FloorBlock2, Location, Rotation, Scale);
 	}
 	//bridges should only spawn in a checkerboard pattern
 	if (x % 2 == 0 && y % 2 == 0 || x % 2 == 1 && y % 2 == 1)
@@ -318,7 +318,7 @@ void ATerrainGenerator::SpawnLanternPost()
 				if (!bUR && bUp && bRight) {
 					FVector GazeboLocation = FVector(PosX - Dimensions.X / 3, PosY + Dimensions.Y / 3, 50.0);
 					SpawnMesh(TEXT("Gazebo"), Gazebo, GazeboLocation, FRotator(0.0, 45.0, 0.0), FVector(1.0));
-					SpawnMesh(TEXT("Ground"), FloorBlock2, FVector(PosX - 1500.0, PosY + 800.0, 50.0), FRotator(0.0), FVector(700.0f/3000.0f, 1.0, 1.0));
+					SpawnMesh(TEXT("Ground_Narrow"), FloorBlock2, FVector(PosX - 1500.0, PosY + 800.0, 50.0), FRotator(0.0), FVector(700.0f/3000.0f, 1.0, 1.0));
 					GazeboLocations.Add(FVector(PosX - Dimensions.X / 4 - Offset, PosY + Dimensions.Y / 4 + Offset + 700.0, 50.0));
 					GazeboLocations.Add(FVector(PosX - Dimensions.X / 4 - Offset - 700.0, PosY + Dimensions.Y / 4 + Offset, 50.0));
 				}
@@ -327,7 +327,7 @@ void ATerrainGenerator::SpawnLanternPost()
 				{
 					FVector GazeboLocation = FVector(PosX + Dimensions.X / 3, PosY + Dimensions.Y / 3, 50.0);
 					SpawnMesh(TEXT("Gazebo"), Gazebo, GazeboLocation, FRotator(0.0, 315.0, 0.0), FVector(1.0));
-					SpawnMesh(TEXT("Ground"), FloorBlock2, FVector(PosX + 800.0, PosY + 800.0, 50.0), FRotator(0.0), FVector(700.0f/3000.0f, 1.0, 1.0));
+					SpawnMesh(TEXT("Ground_Narrow"), FloorBlock2, FVector(PosX + 800.0, PosY + 800.0, 50.0), FRotator(0.0), FVector(700.0f/3000.0f, 1.0, 1.0));
 					GazeboLocations.Add(FVector(PosX + Dimensions.X / 4 + Offset, PosY + Dimensions.Y / 4 + Offset + 700.0, 50.0));
 					GazeboLocations.Add(FVector(PosX + Dimensions.X / 4 + Offset + 700.0, PosY + Dimensions.Y / 4 + Offset, 50.0));
 				}
@@ -335,7 +335,7 @@ void ATerrainGenerator::SpawnLanternPost()
 				if (!bDR && bDown && bRight) {
 					FVector GazeboLocation = FVector(PosX - Dimensions.X / 3, PosY - Dimensions.Y / 3, 50.0);
 					SpawnMesh(TEXT("Gazebo"), Gazebo, GazeboLocation, FRotator(0.0, 135.0, 0.0), FVector(1.0));
-					SpawnMesh(TEXT("Ground"), FloorBlock2, FVector(PosX - 1500.0, PosY - 1500.0, 50.0), FRotator(0.0), FVector(700.0f/3000.0f, 1.0, 1.0));
+					SpawnMesh(TEXT("Ground_Narrow"), FloorBlock2, FVector(PosX - 1500.0, PosY - 1500.0, 50.0), FRotator(0.0), FVector(700.0f/3000.0f, 1.0, 1.0));
 					GazeboLocations.Add(FVector(PosX - Dimensions.X / 4 - Offset - 700.0, PosY - Dimensions.Y / 4 - Offset, 50.0));
 					GazeboLocations.Add(FVector(PosX - Dimensions.X / 4 - Offset, PosY - Dimensions.Y / 4 - Offset - 700.0, 50.0));
 				}
@@ -344,7 +344,7 @@ void ATerrainGenerator::SpawnLanternPost()
 				{
 					FVector GazeboLocation = FVector(PosX + Dimensions.X / 3, PosY - Dimensions.Y / 3, 50.0);
 					SpawnMesh(TEXT("Gazebo"), Gazebo, GazeboLocation, FRotator(0.0, 225.0, 0.0), FVector(1.0));
-					SpawnMesh(TEXT("Ground"), FloorBlock2, FVector(PosX + 800.0, PosY - 1500.0, 50.0), FRotator(0.0), FVector(700.0f/3000.0f, 1.0, 1.0));
+					SpawnMesh(TEXT("Ground_Narrow"), FloorBlock2, FVector(PosX + 800.0, PosY - 1500.0, 50.0), FRotator(0.0), FVector(700.0f/3000.0f, 1.0, 1.0));
 					GazeboLocations.Add(FVector(PosX + Dimensions.X / 4 + Offset + 700.0, PosY - Dimensions.Y / 4 - Offset, 50.0));
 					GazeboLocations.Add(FVector(PosX + Dimensions.X / 4 + Offset, PosY - Dimensions.Y / 4 - Offset - 700.0, 50.0));
 				}

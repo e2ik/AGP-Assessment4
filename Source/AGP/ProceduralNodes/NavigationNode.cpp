@@ -1,6 +1,7 @@
 #include "EngineUtils.h"
 #include "NavigationNode.h"
 
+// TODO: Check Multiplayer make sure it only runs on server
 // Sets default values
 ANavigationNode::ANavigationNode()
 {
@@ -24,14 +25,14 @@ void ANavigationNode::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// Debug Draw Sphere
-	DrawDebugSphere(GetWorld(), GetActorLocation(), 50.0f, 4, FColor::Blue, false, -1, 0, 5);
+	// DrawDebugSphere(GetWorld(), GetActorLocation(), 50.0f, 4, FColor::Blue, false, -1, 0, 5);
 
 	for (ANavigationNode* Node : ConnectedNodes) {
 		if (Node) {
 			// check reciprocal connection
 			bool bIsReciprocalNode = Node->ConnectedNodes.Contains(this);
 			FColor LineColor = bIsReciprocalNode ? FColor::Green : FColor::Red; 
-			DrawDebugLine(GetWorld(), GetActorLocation(), Node->GetActorLocation(), LineColor, false, -1, 0, 2.0f);
+			// DrawDebugLine(GetWorld(), GetActorLocation(), Node->GetActorLocation(), LineColor, false, -1, 0, 2.0f);
 		}
 	}
 
