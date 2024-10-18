@@ -72,14 +72,18 @@ public:
 	void ClearPatrolPath();
 	bool HasValidFlankPath();
 	void GeneratePathing();
+	bool IsMagazineEmpty();
 
 	UPROPERTY()
 	bool bIsFiringWeapon = false;
+	bool bIsReloadingWeapon = false;
 	bool IsHealthBelowThreshold();
 	bool IsDead();
 
 	UFUNCTION()
 	void FireWeapon();
+	UFUNCTION()
+	void ReloadWeapon();
 	UFUNCTION()
 	void PlayDeathAnimation();
 	UFUNCTION()

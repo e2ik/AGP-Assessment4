@@ -12,6 +12,10 @@ void UCDecorator::InitializeCondition(ConditionFunction InCondition) {
     Condition = InCondition;
 }
 
+void UCDecorator::SetOwner(AActor* InOwner) {
+    Owner = InOwner;
+}
+
 EStatus UCDecorator::Process() {
 
     if (Children.Num() != 1) {

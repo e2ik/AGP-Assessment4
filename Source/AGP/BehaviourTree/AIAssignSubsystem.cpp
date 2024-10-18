@@ -93,10 +93,9 @@ void UAIAssignSubsystem::NotifyPlayerSensed(bool Sensed, AEnemyCharacter* Enemy)
 
     if (EnemyType == EEnemyType::PATHING) {
         bCanSeePlayer = Sensed;
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player Sensed: %s"), Sensed ? TEXT("true") : TEXT("false")));
         if (Sensed) {
             Enemy->bIsRepeatPath = false;
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Attaching Roaming BT"));
+            // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Attaching Roaming BT"));
             Enemy->BTComponent->AttachRoaming();
         } else {
             FTimerHandle TimerHandle;
@@ -121,7 +120,7 @@ void UAIAssignSubsystem::NotifyPlayerIsClose(bool Close, AEnemyCharacter* Enemy)
 
 void UAIAssignSubsystem::WaitBeforeSwap(AEnemyCharacter* Enemy)
 {
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Attaching Static BT"));
+    // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Attaching Static BT"));
     if (!bCanSeePlayer && Enemy->BTComponent) {
         Enemy->BTComponent->AttachStatic();
         Enemy->ClearPatrolPath();

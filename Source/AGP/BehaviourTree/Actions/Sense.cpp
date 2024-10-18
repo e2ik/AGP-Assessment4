@@ -18,7 +18,6 @@ EStatus USense::Process() {
         if (Type == ESenseObject::PLAYER) {
             if (EnemyCharacter) {
                 if (EnemyCharacter->CanSeePlayer()) {
-                    UE_LOG(LogTemp, Warning, TEXT("Can see player"));
                     return EStatus::SUCCESS;
                 } else {
                     return EStatus::FAILURE;
