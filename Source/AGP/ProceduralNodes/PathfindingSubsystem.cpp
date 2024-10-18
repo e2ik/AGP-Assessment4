@@ -198,6 +198,12 @@ TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* StartNode, ANavi
 		return TArray<FVector>();
 	}
 
+	TimesPathfinding++;
+	if (TimesPathfinding % 100 == 0)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Pathfinding has been done %i times!!!"), TimesPathfinding)
+	}
+
 	// Setup the open set and add the start node.
 	TArray<ANavigationNode*> OpenSet;
 	OpenSet.Add(StartNode);
@@ -242,29 +248,34 @@ TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* StartNode, ANavi
 
 		for (ANavigationNode* ConnectedNode : CurrentNode->ConnectedNodes)
 		{
+			
 			if (!ConnectedNode) continue; // Failsafe if the ConnectedNode is a nullptr.
-			const float TentativeGScore = GScores[CurrentNode] + FVector::Distance(CurrentNode->GetActorLocation(), ConnectedNode->GetActorLocation());
-			// Because we didn't setup all the scores and came from at the start, we need to check if the connected node has a gscore
-			// already otherwise set it. If it doesn't have a gscore then it won't have all the other things either so initialise them as well.
-			if (!GScores.Contains(ConnectedNode))
+			if (IsSpanTraversable(ConnectedNode, EndNode))
 			{
-				GScores.Add(ConnectedNode, UE_MAX_FLT);
-				HScores.Add(ConnectedNode, FVector::Distance(ConnectedNode->GetActorLocation(), EndNode->GetActorLocation()));
-				CameFrom.Add(ConnectedNode, nullptr);
-			}
-
-			// Then update this nodes scores and came from if the tentative g score is lower than the current g score.
-			if (TentativeGScore < GScores[ConnectedNode])
-			{
-				CameFrom[ConnectedNode] = CurrentNode;
-				GScores[ConnectedNode] = TentativeGScore;
-				// HScore is already set when adding the node to the HScores map.
-				// Then add connected node to the open set if it isn't already in there.
-				if (!OpenSet.Contains(ConnectedNode))
+				const float TentativeGScore = GScores[CurrentNode] + FVector::Distance(CurrentNode->GetActorLocation(), ConnectedNode->GetActorLocation());
+				// Because we didn't setup all the scores and came from at the start, we need to check if the connected node has a gscore
+				// already otherwise set it. If it doesn't have a gscore then it won't have all the other things either so initialise them as well.
+				if (!GScores.Contains(ConnectedNode))
 				{
-					OpenSet.Add(ConnectedNode);
+					GScores.Add(ConnectedNode, UE_MAX_FLT);
+					HScores.Add(ConnectedNode, FVector::Distance(ConnectedNode->GetActorLocation(), EndNode->GetActorLocation()));
+					CameFrom.Add(ConnectedNode, nullptr);
+				}
+
+				// Then update this nodes scores and came from if the tentative g score is lower than the current g score.
+				if (TentativeGScore < GScores[ConnectedNode])
+				{
+					CameFrom[ConnectedNode] = CurrentNode;
+					GScores[ConnectedNode] = TentativeGScore;
+					// HScore is already set when adding the node to the HScores map.
+					// Then add connected node to the open set if it isn't already in there.
+					if (!OpenSet.Contains(ConnectedNode))
+					{
+						OpenSet.Add(ConnectedNode);
+					}
 				}
 			}
+			
 		}
 	}
 
@@ -291,4 +302,103 @@ TArray<FVector> UPathfindingSubsystem::ReconstructPath(const TMap<ANavigationNod
 void UPathfindingSubsystem::SetNodesArray()
 {
 	Nodes = ProceduralNodes->GetMapNodes();
+}
+
+ANavigationNode* UPathfindingSubsystem::FindNearestShortcutNode(const ANavigationNode* CurrentNode, const FVector& TargetLocation)
+{
+	
+	float MinDist = UE_MAX_FLT;
+	ANavigationNode* ShortcutNode = nullptr;
+	for (ANavigationNode* Node : ProcedurallyPlacedNodes)
+	{
+		// check to ensure that the function doesn't return the nearest node to be the current node
+		if (Node != CurrentNode) 
+		{
+			float Dist = FVector::Distance(TargetLocation, Node->GetActorLocation());
+			if (Dist < MinDist)
+			{
+				// if the current node and node are a valid path, then they will be accurately measured
+				if (IsSpanTraversable(CurrentNode, Node))
+				{
+					MinDist = Dist;
+					ShortcutNode = Node;
+				}
+			}
+		}
+	}	
+	return ShortcutNode;
+
+	// UE_LOG(LogTemp, Log, TEXT("Suitable shortcut node: %hs"), ShortcutNode ? "Found" : "Not found")
+	// if (ShortcutNode)
+	// {
+	// 	UE_LOG(LogTemp, Log, TEXT("Current node is: %s, shortcut is %s"), *CurrentNode->GetActorLocation().ToString(), *ShortcutNode->GetActorLocation().ToString())
+	// }
+	
+}
+
+bool UPathfindingSubsystem::IsSpanTraversable(const ANavigationNode* StartNode, const ANavigationNode* EndNode)
+{
+	// if the nodes already have a connection, they are traversable
+	if (StartNode->ConnectedNodes.Contains(EndNode))
+	{
+		UE_LOG(LogTemp, Log, TEXT("node was connected, returning"))
+		return true;
+	}
+
+	TimesSpanChecked++;
+	if (TimesSpanChecked % 100 == 0)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Span has been checked %i times!!!"), TimesSpanChecked)
+	}
+	
+
+	UE_LOG(LogTemp, Log, TEXT("Attempting cube sweep..."))
+
+	// creating a Cube shape to be swept between two nodes
+	FVector CubeStartLocation = StartNode->GetActorLocation();
+	FVector CubeEndLocation = EndNode->GetActorLocation();
+	FVector CubeMidPoint = (CubeStartLocation + CubeEndLocation) / 2;
+	float CubeLength = FVector::Distance(CubeStartLocation, CubeEndLocation);
+	
+	// cube length is the span of the nodes, cube width is the character's capsule collider radius,
+	// cube height is the capsule collider height
+	// * note that the cube shape uses half values, as the constructor takes a parameter of type HalfExtent
+	FCollisionShape CubeShape = FCollisionShape::MakeBox(FVector{CubeLength / 2, 34.0f, 88.0f});
+	TArray<FHitResult> HitResults;
+	FQuat CubeQuat = (CubeStartLocation - CubeEndLocation).ToOrientationQuat();
+
+	// performing a sweep with the cube in the static channel
+	if (GetWorld()->SweepMultiByChannel(HitResults, CubeMidPoint,
+		CubeMidPoint, CubeQuat, ECC_WorldStatic, CubeShape))
+	{
+		UE_LOG(LogTemp, Log, TEXT("cube sweep success, hit %d objects"), HitResults.Num())
+		// checking for any strange occurrences, has happened before with some objects.
+		if (HitResults.IsEmpty())
+		{
+			UE_LOG(LogTemp, Log, TEXT("no objects were hit during sweep"))
+			return true;
+		}
+		
+		for (FHitResult Hit : HitResults)
+		{
+			if (AActor* HitActor = Cast<AActor>(Hit.GetActor()))
+			{
+				if (HitActor->IsA(AStaticMeshActor::StaticClass()))
+				{
+					// note: this could probably just be a simple Cast<AStaticMeshActor> instead of this silliness.
+					FBox HitBox = HitActor->GetComponentsBoundingBox();
+					UE_LOG(LogTemp, Log, TEXT("Hit actor: name %s, height %f"), *HitActor->GetActorLabel(), HitBox.GetSize().Z)
+					// if the hit object is greater or equal to the character height, it can't be jumped
+					if (HitBox.GetSize().Z >= 176.0f)
+					{
+						UE_LOG(LogTemp, Log, TEXT("impassable object detected, returning"))
+						return false;
+					}
+					UE_LOG(LogTemp, Log, TEXT("passable object detected"))
+				}
+			}
+		}
+	}
+	UE_LOG(LogTemp, Log, TEXT("finished sweep, valid span"))
+	return true;
 }
