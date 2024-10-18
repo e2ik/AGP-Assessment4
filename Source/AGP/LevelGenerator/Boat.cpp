@@ -6,6 +6,7 @@
 #include "BoatNavigation.h"
 #include "VectorTypes.h"
 #include "WorldPartition/ContentBundle/ContentBundleLog.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ABoat::ABoat()
@@ -25,6 +26,7 @@ void ABoat::BeginPlay()
 void ABoat::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (!HasAuthority()) return;
 	MoveAlongPath();
 }
 

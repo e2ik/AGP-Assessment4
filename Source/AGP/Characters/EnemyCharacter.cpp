@@ -11,6 +11,7 @@
 #include "AGP/BehaviourTree/AIAssignSubsystem.h"
 #include "Perception/PawnSensingComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AEnemyCharacter::AEnemyCharacter()

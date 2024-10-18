@@ -1,5 +1,6 @@
 #include "BTComponent.h"
 #include "AGP/Characters//EnemyCharacter.h"
+#include "Net/UnrealNetwork.h"
 
 UBTComponent::UBTComponent()
 {
@@ -14,6 +15,8 @@ void UBTComponent::BeginPlay()
 // Walking Pathing BT
 void UBTComponent::AttachStatic()
 {
+	if (GetOwnerRole() != ROLE_Authority) return;
+
 	RootBT = NewObject<UCBTree>();
 	BTName = "Walk Path BT";
 	RootBT->Initialize(BTName);
@@ -45,6 +48,8 @@ void UBTComponent::AttachStatic()
 // Flanking BT
 void UBTComponent::AttachFlank()
 {
+	if (GetOwnerRole() != ROLE_Authority) return;
+
 	RootBT = NewObject<UCBTree>();
 	BTName = "Flanking BT";
 	RootBT->Initialize(BTName);
@@ -80,6 +85,8 @@ void UBTComponent::AttachFlank()
 // Roaming BT: Converted FSM from Labs
 void UBTComponent::AttachRoaming()
 {
+	if (GetOwnerRole() != ROLE_Authority) return;
+
 	RootBT = NewObject<UCBTree>();
 	BTName = "Roaming BT";
 	RootBT->Initialize(BTName);
@@ -292,6 +299,9 @@ void UBTComponent::AttachRoaming()
 void UBTComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (GetOwnerRole() != ROLE_Authority) return;
+
 	TimeAccumulator += DeltaTime;
 
 	CurrentStatus = RootBT->Process();
@@ -305,10 +315,12 @@ void UBTComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 void UBTComponent::UnInitialize()
 {
+	if (GetOwnerRole() != ROLE_Authority) return;
 	bIsInitiated = false;
 }
 
 void UBTComponent::TreeReset()
 {
+	if (GetOwnerRole() != ROLE_Authority) return;
 	RootBT->Reset();
 }

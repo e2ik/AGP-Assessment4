@@ -10,6 +10,7 @@ ABoatNode::ABoatNode()
 	PrimaryActorTick.bCanEverTick = true;
 	LocationComponent = CreateDefaultSubobject<USceneComponent>("Root Component");
 	SetRootComponent(LocationComponent);
+	bNetLoadOnClient = false;
 }
 
 // Called when the game starts or when spawned
