@@ -13,6 +13,7 @@ void UBoatNavigation::OnWorldBeginPlay(UWorld& InWorld)
 
 void UBoatNavigation::PopulateNodes(TArray<int> Map, int Height, int Width, FVector Location, FVector Dimensions)
 {
+	if (GetWorld() && GetWorld()->GetNetMode() == NM_Client) return;
 	if (!Nodes.IsEmpty())
 	{
 		for (int i = 0; i < Nodes.Num(); i++)

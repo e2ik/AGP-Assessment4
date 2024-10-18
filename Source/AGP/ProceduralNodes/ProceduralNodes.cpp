@@ -13,6 +13,7 @@ UProceduralNodes::UProceduralNodes()
 
 void UProceduralNodes::GenerateNodes()
 {
+    if (GetWorld() && GetWorld()->GetNetMode() == NM_Client) return;
     // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("GeneratedNodes reached"));
     PossibleNodeLocations.Empty();
     MapNodes.Empty();
@@ -24,6 +25,7 @@ void UProceduralNodes::GenerateNodes()
 
 void UProceduralNodes::FindAllGroundMeshes()
 {
+    if (GetWorld() && GetWorld()->GetNetMode() == NM_Client) return;
     UWorld* World = GetWorld();
     if (!World) return;
 
@@ -46,6 +48,7 @@ void UProceduralNodes::FindAllGroundMeshes()
 
 void UProceduralNodes::GetMeshBounds(const UMeshComponent* MeshComponent, FVector& OutMinBounds, FVector& OutMaxBounds, FVector& OutMeshCenter)
 {
+    if (GetWorld() && GetWorld()->GetNetMode() == NM_Client) return;
     if (!MeshComponent) return;
     FBoxSphereBounds Bounds = MeshComponent->Bounds;
     OutMeshCenter = Bounds.Origin;
@@ -56,6 +59,7 @@ void UProceduralNodes::GetMeshBounds(const UMeshComponent* MeshComponent, FVecto
 
 void UProceduralNodes::NodeGenGroundBig(AStaticMeshActor* Actor, UStaticMeshComponent* MeshComponent)
 {
+    if (GetWorld() && GetWorld()->GetNetMode() == NM_Client) return;
     UWorld* World = GetWorld();
     if (!World) return;
 
@@ -81,6 +85,7 @@ void UProceduralNodes::NodeGenGroundBig(AStaticMeshActor* Actor, UStaticMeshComp
 
 void UProceduralNodes::NodeGenGroundNarrow(AStaticMeshActor* Actor, UStaticMeshComponent* MeshComponent)
 {
+    if (GetWorld() && GetWorld()->GetNetMode() == NM_Client) return;
     UWorld* World = GetWorld();
     if (!World) return;
 
@@ -113,6 +118,7 @@ void UProceduralNodes::NodeGenGroundNarrow(AStaticMeshActor* Actor, UStaticMeshC
 
 void UProceduralNodes::NodeGenBridge(AStaticMeshActor* Actor, UStaticMeshComponent* MeshComponent)
 {
+    if (GetWorld() && GetWorld()->GetNetMode() == NM_Client) return;
     UWorld* World = GetWorld();
     if (!World) return;
 
@@ -147,6 +153,7 @@ void UProceduralNodes::NodeGenBridge(AStaticMeshActor* Actor, UStaticMeshCompone
 void UProceduralNodes::NodeGenBuilding(AStaticMeshActor* Actor, UStaticMeshComponent* MeshComponent)
 {
     // TODO: Add a few more nodes underneathe the roof along the perimeter
+    if (GetWorld() && GetWorld()->GetNetMode() == NM_Client) return;
     UWorld* World = GetWorld();
     if (!World) return;
 
@@ -160,6 +167,7 @@ void UProceduralNodes::NodeGenBuilding(AStaticMeshActor* Actor, UStaticMeshCompo
 
 void UProceduralNodes::NodeGenDoor(AStaticMeshActor* Actor, UStaticMeshComponent* MeshComponent)
 {
+    if (GetWorld() && GetWorld()->GetNetMode() == NM_Client) return;
     UWorld* World = GetWorld();
     if (!World) return;
 
@@ -173,6 +181,7 @@ void UProceduralNodes::NodeGenDoor(AStaticMeshActor* Actor, UStaticMeshComponent
 
 void UProceduralNodes::NodeGenGazebo(AStaticMeshActor* Actor, UStaticMeshComponent* MeshComponent)
 {
+    if (GetWorld() && GetWorld()->GetNetMode() == NM_Client) return;
     UWorld* World = GetWorld();
     if (!World) return;
 
@@ -214,6 +223,8 @@ bool UProceduralNodes::CheckMesh(AStaticMeshActor* MeshActor, FVector Start, FVe
 
 void UProceduralNodes::AddNodesToLocations()
 {
+    if (GetWorld() && GetWorld()->GetNetMode() == NM_Client) return;
+
     for (FVector Location : PossibleNodeLocations) {
         if (Location.Z > 0.0f && Location.Z < 500.0f) {
             ANavigationNode* Node = GetWorld()->SpawnActor<ANavigationNode>(Location, FRotator::ZeroRotator);
@@ -224,6 +235,7 @@ void UProceduralNodes::AddNodesToLocations()
 
 void UProceduralNodes::ConnectNodes()
 {
+    if (GetWorld() && GetWorld()->GetNetMode() == NM_Client) return;
     UWorld* World = GetWorld();
     if (!World) return;
 

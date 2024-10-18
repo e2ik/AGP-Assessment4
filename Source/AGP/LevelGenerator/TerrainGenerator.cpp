@@ -30,7 +30,7 @@ void ATerrainGenerator::BeginPlay()
 void ATerrainGenerator::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (GetWorld() && GetWorld()->GetNetMode() == NM_Client) return;
 	if (bShouldUpdate)
 	{
 		DeleteNodes();
