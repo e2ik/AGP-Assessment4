@@ -212,6 +212,7 @@ void UBTComponent::AttachRoaming()
 	FollowPathToPlayer->SetOwner(GetOwner());
 	FollowPathToPlayerLeaf->Initialize("FollowPathToPlayerLeaf", FollowPathToPlayer);
 
+
 	// Parallel: if Health is good, follow path to player and fire at player
 	UCParallel* RunAndShoot = NewObject<UCParallel>();
 	RunAndShoot->Initialize("RunAndShoot");

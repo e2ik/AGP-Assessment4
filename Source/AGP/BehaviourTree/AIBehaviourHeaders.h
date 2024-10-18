@@ -14,3 +14,4 @@
 #include "Actions/GeneratePathAway.h"
 #include "Actions/ClearPath.h"
 #include "Actions/FireWeapon.h"
+#include "Actions/ReloadWeapon.h"

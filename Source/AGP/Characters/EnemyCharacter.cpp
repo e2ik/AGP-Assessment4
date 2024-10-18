@@ -139,9 +139,9 @@ void AEnemyCharacter::OnSensedPawn(APawn* SensedActor)
 	if (APlayerCharacter* Player = Cast<APlayerCharacter>(SensedActor))
 	{
 		SensedCharacter = TWeakObjectPtr<APlayerCharacter>(Player); 
+		AIAssignSubsystem->NotifyPlayerSensed(true, this);
 		if (!bHasSensedPlayer) {
 			bHasSensedPlayer = true;
-			AIAssignSubsystem->NotifyPlayerSensed(true, this);
 			ClearPath();
 		}
 	}
@@ -149,7 +149,7 @@ void AEnemyCharacter::OnSensedPawn(APawn* SensedActor)
 
 void AEnemyCharacter::UpdateSight()
 {
-	if (!SensedCharacter.IsValid()) return;
+	// if (!SensedCharacter.IsValid()) return;
 	if (PawnSensingComponent)
 	{
 		if (!SensedCharacter.IsValid() || !PawnSensingComponent->HasLineOfSightTo(SensedCharacter.Get()))
@@ -157,7 +157,7 @@ void AEnemyCharacter::UpdateSight()
 			SensedCharacter = nullptr;
 			bHasSensedPlayer = false;
 			AIAssignSubsystem->NotifyPlayerSensed(false, this);
-			ClearPath();
+			// ClearPath();
 		}
 	}
 }
@@ -181,12 +181,16 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	if (bIsShotAt)
 	{
 		ShotAtTimer += DeltaTime;
-		if (ShotAtTimer >= 5.0f)
+		if (ShotAtTimer >= 1.0f)
 		{
 			bIsShotAt = false;
 			ShotAtTimer = 0.0f;
 		}
 		return;
+	}
+
+	if (HasWeapon()) {
+		if (WeaponComponent->IsMagazineEmpty()) { Reload(); }
 	}
 
 	// Death Check
@@ -196,6 +200,7 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	}
 
 	if (bIsFiringWeapon) FireWeapon();
+	if (bIsReloadingWeapon) ReloadWeapon();
 	if (!SensedCharacter.IsValid()) bIsFiringWeapon = false;
 	
 	UpdateSight();
@@ -434,16 +439,23 @@ void AEnemyCharacter::ClearPatrolPath()
 
 void AEnemyCharacter::FireWeapon()
 {
+	if (bIsReloadingWeapon) bIsReloadingWeapon = false;
 	bIsFiringWeapon = true;
 	if (!SensedCharacter.IsValid()) return;
 	FVector TargetLocation = SensedCharacter->GetActorLocation();
 	Fire(TargetLocation);
 
 	// ! Probably don't need this anymore
-	// FRotator TargetRotation = (TargetLocation - GetActorLocation()).ToOrientationRotator();
-	// FRotator ConstrainRotation = FRotator(GetActorRotation().Pitch, TargetRotation.Yaw, GetActorRotation().Roll);
-	// FRotator SmoothRotation = FMath::RInterpTo(GetActorRotation(), ConstrainRotation, GetWorld()->GetDeltaSeconds(), 5.0f);
-	// SetActorRotation(SmoothRotation);
+	FRotator TargetRotation = (TargetLocation - GetActorLocation()).ToOrientationRotator();
+	FRotator ConstrainRotation = FRotator(GetActorRotation().Pitch, TargetRotation.Yaw, GetActorRotation().Roll);
+	FRotator SmoothRotation = FMath::RInterpTo(GetActorRotation(), ConstrainRotation, GetWorld()->GetDeltaSeconds(), 5.0f);
+	SetActorRotation(SmoothRotation);
+}
+
+void AEnemyCharacter::ReloadWeapon()
+{
+	bIsReloadingWeapon = true;
+	Reload();
 }
 
 void AEnemyCharacter::GenerateFlankPath()
@@ -472,7 +484,6 @@ void AEnemyCharacter::PlayDeathAnimation() { bIsDead = true; }
 
 void AEnemyCharacter::OnHealthChanged()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Health Changed"));
 	if (IsHealthBelowThreshold()) { bIsShotAt = false; }
 	if (HealthComponent->GetCurrentHealth() < PreviousHealth && !SensedCharacter.IsValid() && !IsHealthBelowThreshold()) {
 		bIsShotAt = true;
@@ -483,4 +494,11 @@ void AEnemyCharacter::OnHealthChanged()
 	PreviousHealth = HealthComponent->GetCurrentHealth();
 }
 
+bool AEnemyCharacter::IsMagazineEmpty()
+{
+	if (WeaponComponent) {
+		return WeaponComponent->IsMagazineEmpty();
+	}
+	return false;
+}
 
