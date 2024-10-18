@@ -70,7 +70,6 @@ void ABaseCharacter::OnDeath()
 			GameMode->RespawnEnemy(GetController());
 		}
 	}
-
 	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(this))
 	{
 		// If it casts to a PlayerCharacter then we know that a player has died.

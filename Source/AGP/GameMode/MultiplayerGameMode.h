@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+#include "AGP/Characters/PlayerMeleeCharacter.h"
+#include "AGP/Characters/EnemyCharacter.h"
 #include "MultiplayerGameMode.generated.h"
 
 class APlayerCharacter;

@@ -1,5 +1,6 @@
-#include "EngineUtils.h"
 #include "NavigationNode.h"
+#include "EngineUtils.h"
+
 
 // TODO: Check Multiplayer make sure it only runs on server
 // Sets default values

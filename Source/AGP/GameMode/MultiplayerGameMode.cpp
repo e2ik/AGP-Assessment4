@@ -3,21 +3,21 @@
 
 #include "MultiplayerGameMode.h"
 
-#include "AGP/Characters/PlayerCharacter.h"
-#include "AGP/Characters/EnemyCharacter.h"
 #include "GameFramework/PlayerStart.h"
 #include "EngineUtils.h"
+
+class APlayerMeleeCharacter;
 
 void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
 {
 	if (Controller)
 	{
-		if (APlayerCharacter* CurrentlyPossessedCharacter = Cast<APlayerCharacter>(Controller->GetPawn()))
+		if (APlayerMeleeCharacter* CurrentlyPossessedCharacter = Cast<APlayerMeleeCharacter>(Controller->GetPawn()))
 		{
 			Controller->UnPossess();
 			CurrentlyPossessedCharacter->Destroy();
 			RestartPlayer(Controller);
-			if (APlayerCharacter* NewPossessedCharacter = Cast<APlayerCharacter>(Controller->GetPawn()))
+			if (APlayerMeleeCharacter* NewPossessedCharacter = Cast<APlayerMeleeCharacter>(Controller->GetPawn()))
 			{
 				NewPossessedCharacter->ChooseCharacterMesh();
 				NewPossessedCharacter->DrawUI();
