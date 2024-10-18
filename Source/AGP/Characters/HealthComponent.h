@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "HealthComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHealthChanged);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class AGP_API UHealthComponent : public UActorComponent
@@ -15,6 +16,9 @@ class AGP_API UHealthComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UHealthComponent();
+
+    UPROPERTY(BlueprintAssignable)
+    FOnHealthChanged OnHealthChanged;
 
 	bool IsDead();
 	float GetCurrentHealth() const;

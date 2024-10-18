@@ -147,6 +147,9 @@ ANavigationNode* UPathfindingSubsystem::FindNearestNode(const FVector& TargetLoc
 		return nullptr;
 	}
 
+	UWorld* World = GetWorld();
+	if (!World) return nullptr;
+
 	// Using the minimum programming pattern to find the closest node.
 	// What is the Big O complexity of this? Can you do it more efficiently?
 	ANavigationNode* ClosestNode = nullptr;
@@ -154,7 +157,13 @@ ANavigationNode* UPathfindingSubsystem::FindNearestNode(const FVector& TargetLoc
 	for (ANavigationNode* Node : Nodes)
 	{
 		const float Distance = FVector::Distance(TargetLocation, Node->GetActorLocation());
-		if (Distance < MinDistance)
+        FHitResult HitResult;
+        FVector Start = TargetLocation;
+        FVector End = Node->GetActorLocation();
+        FCollisionQueryParams CollisionParams;
+
+        bool bHit = World->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams);
+		if (!bHit && Distance < MinDistance)
 		{
 			MinDistance = Distance;
 			ClosestNode = Node;
@@ -212,6 +221,16 @@ TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* StartNode, ANavi
 	// all the nodes in the Nodes array. However it is more efficient to only calculate these when you need them
 	// as some nodes might not be explored when finding a path.
 
+	// Front Nodes check
+	if (bIsFlanking) {
+		NodesInFront(FlankLocation, FlankDirection);
+		for (ANavigationNode* Node : FrontNodes) {
+			if (Node) { CameFrom.Add(Node); }
+		}
+		bIsAddingNodes = false;
+		bIsFlanking = false;
+	}
+
 	// Setup the start nodes G and H score.
 	GScores.Add(StartNode, 0);
 	HScores.Add(StartNode, FVector::Distance(StartNode->GetActorLocation(), EndNode->GetActorLocation()));
@@ -237,6 +256,7 @@ TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* StartNode, ANavi
 		{
 			// Then we have found the path so reconstruct it and get the positions of each of the nodes in the path.
 			// UE_LOG(LogTemp, Display, TEXT("PATH FOUND"))
+			FrontNodes.Empty();
 			return ReconstructPath(CameFrom, EndNode);
 		}
 
@@ -291,4 +311,56 @@ TArray<FVector> UPathfindingSubsystem::ReconstructPath(const TMap<ANavigationNod
 void UPathfindingSubsystem::SetNodesArray()
 {
 	Nodes = ProceduralNodes->GetMapNodes();
+}
+
+// Check the nodes in front of player
+void UPathfindingSubsystem::NodesInFront(const FVector& PlayerLocation, const FVector& ForwardVector)
+{   
+    for (ANavigationNode* Node : Nodes) {
+        if (!Node) { continue; }
+        FVector NodeLocation = Node->GetActorLocation();
+        FVector DirectionToNode = (NodeLocation - PlayerLocation).GetSafeNormal();
+        float DistanceToNode = FVector::Dist(NodeLocation, PlayerLocation);
+
+        float DotProduct = FVector::DotProduct(ForwardVector, DirectionToNode);
+        float AngleDegrees = FMath::Acos(DotProduct) * (180.0f / PI);
+
+        float MaxDistance = 1000.0f;
+        float MaxAngle = 25.0f;
+
+        if (DistanceToNode <= MaxDistance && AngleDegrees <= MaxAngle) {
+            FrontNodes.Add(Node);
+            // DrawDebugSphere(GetWorld(), NodeLocation, 50.0f, 12, FColor::Green, false, 5.0f);
+        }
+    }
+}
+
+TArray<FVector> UPathfindingSubsystem::GetPatrolPath(const FVector& StartLocation, int32 PatrolLength)
+{
+    if (PatrolPath.Num() > 0) { return PatrolPath; }
+    if (PatrolLength <= 0) { return PatrolPath; }
+
+    ANavigationNode* CurrentNode = FindNearestNode(StartLocation);
+    PatrolPath.Add(CurrentNode->GetActorLocation());
+
+    ANavigationNode* PreviousNode = nullptr;
+
+    for (int32 i = 0; i < PatrolLength; ++i) {
+        TArray<ANavigationNode*> ConnectedNodes = CurrentNode->GetConnectedNodes();
+
+        // check if connection is bidirectional
+        ConnectedNodes.RemoveAll([CurrentNode](ANavigationNode* Node) {
+            return !Node->GetConnectedNodes().Contains(CurrentNode);
+        });
+
+        if (ConnectedNodes.Num() > 0) {
+            int32 RandomIndex = FMath::RandRange(0, ConnectedNodes.Num() - 1);
+            PreviousNode = CurrentNode;
+            CurrentNode = ConnectedNodes[RandomIndex];
+        } else {
+            break;
+        }
+        PatrolPath.Add(CurrentNode->GetActorLocation());
+    }
+    return PatrolPath;
 }

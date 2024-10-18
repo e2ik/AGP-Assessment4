@@ -3,10 +3,22 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "AGP/Pickups/WeaponPickup.h"
+#include "AGP/BehaviourTree/BTComponent.h"
+#include "AGP/Characters/EnemyCharacter.h"
 
 UClass* UAGPGameInstance::GetWeaponPickupClass() const
 {
     return WeaponPickupClass.Get();
+}
+
+UClass* UAGPGameInstance::GetBTClass() const
+{
+    return BTClass.Get();
+}
+
+UClass* UAGPGameInstance::GetEnemyClass() const
+{
+    return EnemyClass.Get();
 }
 
 void UAGPGameInstance::SpawnGroundHitParticle(const FVector& SpawnLocation)

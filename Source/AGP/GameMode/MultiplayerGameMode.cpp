@@ -6,6 +6,7 @@
 #include "AGP/Characters/PlayerCharacter.h"
 #include "AGP/Characters/EnemyCharacter.h"
 #include "GameFramework/PlayerStart.h"
+#include "AGP/BehaviourTree/AIAssignSubsystem.h"
 #include "EngineUtils.h"
 
 void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
@@ -34,30 +35,36 @@ void AMultiplayerGameMode::RespawnEnemy(AController* Controller)
 		if (AEnemyCharacter* CurrentlyPossessedCharacter = Cast<AEnemyCharacter>(Controller->GetPawn()))
 		{
 			Controller->UnPossess();
+			UAIAssignSubsystem* AIAssignSubsystem = GetWorld()->GetSubsystem<UAIAssignSubsystem>();
+			AIAssignSubsystem->NotifyDeath(CurrentlyPossessedCharacter);
 			CurrentlyPossessedCharacter->Destroy();
+			
+			
 		}
 	}
 
 	// Grab a spawn location
-	AActor* SpawnLocationActor = nullptr;
-	for (TActorIterator<APlayerStart> It(GetWorld()); It; ++It)
-	{
-		SpawnLocationActor = *It;
-		break;
-	}
+	// AActor* SpawnLocationActor = nullptr;
+	// for (TActorIterator<APlayerStart> It(GetWorld()); It; ++It)
+	// {
+	// 	SpawnLocationActor = *It;
+	// 	break;
+	// }
 
-	if (SpawnLocationActor)
-	{
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-		SpawnParams.Owner = this;
-		SpawnParams.Instigator = nullptr;
-		SpawnParams.bNoFail = true;
+	// if (SpawnLocationActor)
+	// {
+	// 	FActorSpawnParameters SpawnParams;
+	// 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	// 	SpawnParams.Owner = this;
+	// 	SpawnParams.Instigator = nullptr;
+	// 	SpawnParams.bNoFail = true;
 
-		AEnemyCharacter* NewEnemyCharacter = GetWorld()->SpawnActor<AEnemyCharacter>(EnemyCharacterClass, SpawnLocationActor->GetActorLocation(), SpawnLocationActor->GetActorRotation(), SpawnParams);
-		if (NewEnemyCharacter)
-		{
-			Controller->Possess(NewEnemyCharacter);
-		}
-	}
+	// 	AEnemyCharacter* NewEnemyCharacter = GetWorld()->SpawnActor<AEnemyCharacter>(EnemyCharacterClass, SpawnLocationActor->GetActorLocation(), SpawnLocationActor->GetActorRotation(), SpawnParams);
+	// 	if (NewEnemyCharacter)
+	// 	{
+	// 		Controller->Possess(NewEnemyCharacter);
+	// 		UAIAssignSubsystem* AIAssignSubsystem = GetWorld()->GetSubsystem<UAIAssignSubsystem>();
+	// 		AIAssignSubsystem->AssignAI();
+	// 	}
+	// }
 }
