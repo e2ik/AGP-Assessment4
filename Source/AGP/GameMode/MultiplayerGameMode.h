@@ -7,6 +7,7 @@
 #include "MultiplayerGameMode.generated.h"
 
 class APlayerCharacter;
+class UAIAssignSubsystem;
 /**
  * 
  */
