@@ -25,6 +25,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual TStatId GetStatId() const override;
 
+	bool GetHasFoundNodes() const { return bHasFoundNodes; }
+	void SetHasFoundNodes(bool Value) { bHasFoundNodes = Value; }
+	bool GetPlaceStarts() const { return bPlaceStarts; }
+	void SetPlaceStarts(bool Value) { bPlaceStarts = Value; }
+
 protected:
 
 	UPROPERTY(EditAnywhere)
@@ -33,6 +38,8 @@ protected:
 	int32 NumOfStarts = 4;
 	UPROPERTY(EditAnywhere)
 	bool bPlaceStarts;
+	UPROPERTY(EditAnywhere)
+	bool bSpawnEnemies;
 
 	UPROPERTY(EditAnywhere)
 	float DesiredTickInterval = 5.0f;
@@ -42,6 +49,9 @@ protected:
 	UPROPERTY()
 	TArray<ANavigationNode*> Nodes;
 
+	UPROPERTY()
+	TArray<FVector> SpawnRadiusLocations;
+
 private:
 
 	void RunCustomTick();
@@ -49,5 +59,6 @@ private:
 	void GetRandomNode();
 	void FindAllNodes();
 	void PlacePlayerStarts(const FVector& Location);
+	void GenerateEnemySpawn(ANavigationNode* CenterNode);
 	
 };

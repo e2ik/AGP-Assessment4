@@ -3,6 +3,8 @@
 #include "Engine/World.h"
 #include "AGP/ProceduralNodes/NavigationNode.h"
 #include "AGP/GameMode/MultiplayerGameMode.h"
+#include "DrawDebugHelpers.h"
+
 
 UAIDirector::UAIDirector()
 {
@@ -19,13 +21,15 @@ void UAIDirector::Initialize(FSubsystemCollectionBase& Collection)
     Super::Initialize(Collection);
     bHasFoundNodes = false;
     bPlaceStarts = false;
+    bSpawnEnemies = false;
 }
 
 void UAIDirector::Deinitialize()
 {
-    Super::Deinitialize();
     bHasFoundNodes = false;
     bPlaceStarts = false;
+    bSpawnEnemies = false;
+    Super::Deinitialize();
 }
 
 void UAIDirector::Tick(float DeltaTime)
@@ -107,6 +111,7 @@ void UAIDirector::GetRandomNode()
 
                 if (!bHit) {
                     PlacePlayerStarts(NodeLocation);
+                    GenerateEnemySpawn(RandomNode);
                     return;
                 }
             }
@@ -134,7 +139,27 @@ void UAIDirector::PlacePlayerStarts(const FVector& Location)
     AMultiplayerGameMode* GameMode = Cast<AMultiplayerGameMode>(World->GetAuthGameMode());
     if (GameMode) { GameMode->SpawnPlayers(); }
 
-
     bPlaceStarts = false;
 }
 
+void UAIDirector::GenerateEnemySpawn(ANavigationNode* CenterNode)
+{
+    UWorld* World = GetWorld();
+    if (!World || !CenterNode) return;
+    if (SpawnRadiusLocations.Num() > 0) { SpawnRadiusLocations.Empty(); }
+
+    const float Radius = 4000.0f;
+    const float InnerRadius = 1500.0f;
+    FVector CenterLocation = CenterNode->GetActorLocation();
+
+    for (ANavigationNode* Node : Nodes) {
+        if (Node && Node != CenterNode) {
+            float Distance = FVector::Dist(CenterLocation, Node->GetActorLocation());
+            if (Distance <= Radius && Distance >= InnerRadius) {
+                SpawnRadiusLocations.Add(Node->GetActorLocation());
+            }
+        }
+    }
+
+    bSpawnEnemies = true;
+}
