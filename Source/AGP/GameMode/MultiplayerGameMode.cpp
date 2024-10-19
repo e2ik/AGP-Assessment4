@@ -14,7 +14,7 @@ void AMultiplayerGameMode::BeginPlay() {
 	
 	// check level
 	FString CurrentLevelName = GetWorld()->GetMapName();
-	CurrentLevelName = FPaths::GetBaseFilename(CurrentLevelName);
+	// CurrentLevelName = FPaths::GetBaseFilename(CurrentLevelName);
 	if (CurrentLevelName.ToLower().Contains("procgenlevel")) {
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This is a procedural level"));
 	}
