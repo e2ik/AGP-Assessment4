@@ -19,7 +19,7 @@ ABaseMeleeCharacter::ABaseMeleeCharacter()
 void ABaseMeleeCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	EquipSword(true, FSwordStats());
 }
 
 // Called every frame

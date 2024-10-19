@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseMeleeCharacter.h"
+#include "PlayerCharacterHUD.h"
 #include "PlayerMeleeCharacter.generated.h"
 
 struct FInputActionValue;
@@ -46,11 +47,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float LookSensitivity = 0.5f;
 
-	// UPROPERTY(EditDefaultsOnly)
-	// TSubclassOf<UPlayerCharacterHUD> PlayerHUDClass;
-	//
-	// UPROPERTY()
-	// UPlayerCharacterHUD* PlayerHUD;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UPlayerCharacterHUD> PlayerHUDClass;
+	
+	UPROPERTY()
+	UPlayerCharacterHUD* PlayerHUD;
 
 public:
 	UFUNCTION(BlueprintImplementableEvent)

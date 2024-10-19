@@ -4,33 +4,32 @@
 #include "PlayerMeleeCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Blueprint/UserWidget.h"
 
 class UEnhancedInputLocalPlayerSubsystem;
 
 void APlayerMeleeCharacter::UpdateHealthBar(float HealthPercent)
 {
-	//TODO: Update this once theres a player hud
-	// if(PlayerHUD && IsLocallyControlled())
-	// {
-	// 	PlayerHUD->SetHealthBar(HealthPercent);
-	// }
+	if(PlayerHUD && IsLocallyControlled())
+	{
+		PlayerHUD->SetHealthBar(HealthPercent);
+	}
 }
 
 void APlayerMeleeCharacter::DrawUI()
 {
-	//TODO: Update this once there is a player hud
-	// if (IsLocallyControlled() && PlayerHUDClass)
-	// {
-	// 	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
-	// 	{
-	// 		PlayerHUD = CreateWidget<UPlayerCharacterHUD>(PlayerController, PlayerHUDClass);
-	// 		if (PlayerHUD)
-	// 		{
-	// 			PlayerHUD->AddToPlayerScreen();
-	// 		}
-	// 	}
-	// }
-	// UpdateHealthBar(1.0f);
+	if (IsLocallyControlled() && PlayerHUDClass)
+	{
+		if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+		{
+			PlayerHUD = CreateWidget<UPlayerCharacterHUD>(PlayerController, PlayerHUDClass);
+			if (PlayerHUD)
+			{
+				PlayerHUD->AddToPlayerScreen();
+			}
+		}
+	}
+	UpdateHealthBar(1.0f);
 }
 
 void APlayerMeleeCharacter::BeginPlay()
@@ -96,5 +95,5 @@ void APlayerMeleeCharacter::Look(const FInputActionValue& Value)
 
 void APlayerMeleeCharacter::SlashSword(const FInputActionValue& Value)
 {
-	Super::Slash();
+	Slash();
 }

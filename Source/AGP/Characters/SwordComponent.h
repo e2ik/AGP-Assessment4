@@ -41,10 +41,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	USkeletalMesh* SwordMesh;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Replicated)
 	USceneComponent* StartPoint;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Replicated)
 	USceneComponent* EndPoint;
 
 public:	
@@ -59,5 +59,8 @@ private:
 
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastSlash(USceneComponent* Start, USceneComponent* End);
+
+	void SlashImplementation(USceneComponent* Start, USceneComponent* End);
+	void SlashVisualImplementation(USceneComponent* Start, USceneComponent* End);
 		
 };
