@@ -282,13 +282,14 @@ void AEnemyCharacter::FollowPath()
 	}
 
 	if (bEndOfPath) {
+		bEndOfPath = false;
+		PathIndex = CurrentPath.Num() - 1;
 		bIsFollowingPath = false;
 		return;
 	}
 
 	if (bIsRepeatPath && !bEndOfPath) {
 		if (PathIndex <= 0) {
-			PathIndex = CurrentPath.Num() - 1;
 			bEndOfPath = true;
 		}
 	}
@@ -420,6 +421,7 @@ void AEnemyCharacter::GeneratePathing()
 	if (CurrentPath.Num() == 0) {
 		PathIndex = 0;
 		CurrentPath = PathfindingSubsystem->GetPatrolPath(GetActorLocation(), 3);
+		Algo::Reverse(CurrentPath);
 		PathIndex = CurrentPath.Num() - 1;
 	} 
 }
@@ -428,7 +430,7 @@ void AEnemyCharacter::PatrolPath()
 {
 	if (PathIndex == 0) ClearPatrolPath();
 	if (PathIndex <= 0) {
-		Algo::Reverse(CurrentPath);
+		// Algo::Reverse(CurrentPath);
 		PathIndex = CurrentPath.Num() - 1;
 	}
 	if (!bEndOfPath) FollowPath();
