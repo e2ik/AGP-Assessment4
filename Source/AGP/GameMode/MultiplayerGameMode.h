@@ -17,7 +17,8 @@ class AGP_API AMultiplayerGameMode : public AGameMode
 	GENERATED_BODY()
 
 public:
-
+	virtual void BeginPlay() override;
+	virtual void StartPlay() override;
 	void RespawnPlayer(AController* Controller);
 	void RespawnEnemy(AController* Controller);
 

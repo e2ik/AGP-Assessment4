@@ -9,6 +9,22 @@
 #include "AGP/BehaviourTree/AIAssignSubsystem.h"
 #include "EngineUtils.h"
 
+void AMultiplayerGameMode::BeginPlay() {
+	Super::BeginPlay();
+	
+	// check level
+	FString CurrentLevelName = GetWorld()->GetMapName();
+	CurrentLevelName = FPaths::GetBaseFilename(CurrentLevelName);
+	if (CurrentLevelName.ToLower().Contains("procgenlevel")) {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This is a procedural level"));
+	}
+}
+
+void AMultiplayerGameMode::StartPlay() {
+	Super::StartPlay();
+	// testing failed
+}
+
 void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
 {
 	if (Controller)
