@@ -452,8 +452,8 @@ void AEnemyCharacter::FireWeapon()
 	// ! Probably don't need this anymore
 	FRotator TargetRotation = (TargetLocation - GetActorLocation()).ToOrientationRotator();
 	FRotator ConstrainRotation = FRotator(GetActorRotation().Pitch, TargetRotation.Yaw, GetActorRotation().Roll);
-	FRotator SmoothRotation = FMath::RInterpTo(GetActorRotation(), ConstrainRotation, GetWorld()->GetDeltaSeconds(), 5.0f);
-	SetActorRotation(SmoothRotation);
+	// FRotator SmoothRotation = FMath::RInterpTo(GetActorRotation(), ConstrainRotation, GetWorld()->GetDeltaSeconds(), 5.0f);
+	SetActorRotation(ConstrainRotation);
 }
 
 void AEnemyCharacter::ReloadWeapon()
