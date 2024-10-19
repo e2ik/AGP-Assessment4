@@ -329,6 +329,7 @@ void AEnemyCharacter::FollowPath()
 
 void AEnemyCharacter::GeneratePatrolPath()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
 	if (CurrentPath.Num() == 0) {
 		CurrentPath = PathfindingSubsystem->GetRandomPath(GetActorLocation());
 		PathIndex = CurrentPath.Num() - 1;
@@ -337,6 +338,7 @@ void AEnemyCharacter::GeneratePatrolPath()
 
 void AEnemyCharacter::GeneratePathAway()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
 	if (SensedCharacter.IsValid()) {
 		if (CurrentPath.Num() == 0) {
 			CurrentPath = PathfindingSubsystem->GetPathAway(GetActorLocation(), SensedCharacter->GetActorLocation());
@@ -347,6 +349,7 @@ void AEnemyCharacter::GeneratePathAway()
 
 void AEnemyCharacter::GeneratePathToWeapon()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
 	if (SensedWeapon) {
 		if (CurrentPath.Num() == 0) {
 			CurrentPath = PathfindingSubsystem->GetPath(GetActorLocation(), SensedWeapon->GetActorLocation());
@@ -357,6 +360,7 @@ void AEnemyCharacter::GeneratePathToWeapon()
 
 void AEnemyCharacter::GeneratePathToPlayer()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
 	if (SensedCharacter.IsValid()) {
 		if (CurrentPath.Num() == 0) {
 			CurrentPath = PathfindingSubsystem->GetPath(GetActorLocation(), SensedCharacter->GetActorLocation());
@@ -376,7 +380,10 @@ FVector AEnemyCharacter::GetPlayerLocation()
 	return StoreLocation;
 }
 
-void AEnemyCharacter::StartPatrol() { bIsPatrolling = true; }
+void AEnemyCharacter::StartPatrol() {
+	if (GetLocalRole() != ROLE_Authority) return;
+	bIsPatrolling = true;
+}
 
 bool AEnemyCharacter::IsHealthBelowThreshold()
 {
@@ -385,6 +392,7 @@ bool AEnemyCharacter::IsHealthBelowThreshold()
 
 void AEnemyCharacter::ClearPath()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
 	bIsPatrolling = false;
 	bIsRepeatPath = false;
 	PathIndex = 0;
@@ -399,6 +407,7 @@ bool AEnemyCharacter::StillPathing() { return bIsFollowingPath; }
 
 void AEnemyCharacter::GeneratePathing()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
 	if (CurrentPath.Num() == 0) {
 		PathIndex = 0;
 		CurrentPath = PathfindingSubsystem->GetPatrolPath(GetActorLocation(), 3);
@@ -409,6 +418,7 @@ void AEnemyCharacter::GeneratePathing()
 
 void AEnemyCharacter::PatrolPath()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
 	if (PathIndex == 0) ClearPatrolPath();
 	if (PathIndex <= 0) {
 		// Algo::Reverse(CurrentPath);
@@ -419,11 +429,13 @@ void AEnemyCharacter::PatrolPath()
 
 void AEnemyCharacter::ClearPatrolPath()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
 	PathfindingSubsystem->ClearPatrolPath();
 }
 
 void AEnemyCharacter::FireWeapon()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
 	if (bIsReloadingWeapon) bIsReloadingWeapon = false;
 	bIsFiringWeapon = true;
 	if (!SensedCharacter.IsValid()) return;
@@ -439,12 +451,14 @@ void AEnemyCharacter::FireWeapon()
 
 void AEnemyCharacter::ReloadWeapon()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
 	bIsReloadingWeapon = true;
 	Reload();
 }
 
 void AEnemyCharacter::GenerateFlankPath()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
 	if (CurrentPath.Num() == 0) {
 		PathIndex = 0;
 		PathfindingSubsystem->bIsFlanking = true;
@@ -469,6 +483,7 @@ void AEnemyCharacter::PlayDeathAnimation() { bIsDead = true; }
 
 void AEnemyCharacter::OnHealthChanged()
 {
+	if (GetLocalRole() != ROLE_Authority) return;
 	if (IsHealthBelowThreshold()) { bIsShotAt = false; }
 	if (HealthComponent->GetCurrentHealth() < PreviousHealth && !SensedCharacter.IsValid() && !IsHealthBelowThreshold()) {
 		bIsShotAt = true;

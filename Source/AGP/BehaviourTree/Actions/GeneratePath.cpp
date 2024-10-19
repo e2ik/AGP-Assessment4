@@ -48,13 +48,8 @@ EStatus UGeneratePath::Process() {
                 case EPathType::FLANK:
                     UE_LOG(LogTemp, Log, TEXT("Pathing to Flank"));
                     EnemyCharacter->GenerateFlankPath();
-                    if (EnemyCharacter->HasValidFlankPath()) {
-                        EnemyCharacter->StartFollowPath();
-                        return EStatus::SUCCESS;
-                    } else {
-                        return EStatus::FAILURE;
-                    }
-                    return EStatus::RUNNING;
+                    EnemyCharacter->StartFollowPath();
+                    return EStatus::SUCCESS;
                     break;
             }            
         }
