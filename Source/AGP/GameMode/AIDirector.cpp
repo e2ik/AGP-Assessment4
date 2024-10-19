@@ -51,6 +51,7 @@ void UAIDirector::RunCustomTick()
     GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Custom Tick"));
     if (!bHasFoundNodes) { FindAllNodes(); }
     if (bPlaceStarts) { GetRandomNode(); }
+    if (bSpawnEnemies) { SpawnEnemies(); }
 }
 
 void UAIDirector::FindAllNodes()
@@ -162,4 +163,19 @@ void UAIDirector::GenerateEnemySpawn(ANavigationNode* CenterNode)
     }
 
     bSpawnEnemies = true;
+}
+
+void UAIDirector::SpawnEnemies()
+{
+    bSpawnEnemies = false;
+    UWorld* World = GetWorld();
+    if (!World) return;
+    AMultiplayerGameMode* GameMode = Cast<AMultiplayerGameMode>(World->GetAuthGameMode());
+    if (GameMode) {
+        for (int32 i = 0; i < NumOfEnemies; ++i) {
+            int32 RandomIndex = FMath::RandRange(0, SpawnRadiusLocations.Num() - 1);
+            FVector SpawnLocation = SpawnRadiusLocations[RandomIndex];
+            GameMode->SpawnEnemy(SpawnLocation);
+        }
+    }
 }

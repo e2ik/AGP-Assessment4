@@ -149,7 +149,7 @@ protected:
 	EEnemyState CurrentState = EEnemyState::Patrol;
 
 	UPROPERTY(EditAnywhere)
-	float PathfindingError = 20.0f;
+	float PathfindingError = 50.0f;
 
 public:	
 

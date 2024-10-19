@@ -8,12 +8,15 @@
 
 void UAIAssignSubsystem::OnWorldBeginPlay(UWorld& inWorld)
 {
-    GetEnemies();
-    AssignAI();
+    // blank now
 }
 
 void UAIAssignSubsystem::AssignAI()
-{    
+{
+    UWorld* World = GetWorld();
+    if (!World) return;
+    if (World->GetNetMode() == NM_Client) return;
+
     for (AEnemyCharacter* Enemy : Enemies) {
 
         EEnemyType EnemyType = Enemy->GetEnemyType();
@@ -66,15 +69,14 @@ void UAIAssignSubsystem::AssignAI()
 
 void UAIAssignSubsystem::GetEnemies()
 {
+    UWorld* World = GetWorld();
+    if (!World) return;
+    if (World->GetNetMode() == NM_Client) return;
+
     Enemies.Empty();
     for (TActorIterator<AEnemyCharacter> It(GetWorld()); It; ++It) {
         AEnemyCharacter* Enemy = *It;
-        if (Enemy) {
-            Enemies.Add(Enemy);
-            FVector Location = Enemy->GetActorLocation();
-            FRotator Rotation = Enemy->GetActorRotation();            
-            EnemySpawnInfos.Add(FEnemySpawnInfo(Location, Rotation));
-        }
+        if (Enemy) { Enemies.Add(Enemy); }
     }
 }
 
@@ -89,6 +91,10 @@ void UAIAssignSubsystem::CheckBTComponent(AEnemyCharacter* Enemy)
 
 void UAIAssignSubsystem::NotifyPlayerSensed(bool Sensed, AEnemyCharacter* Enemy)
 {
+    UWorld* World = GetWorld();
+    if (!World) return;
+    if (World->GetNetMode() == NM_Client) return;
+
     EEnemyType EnemyType = Enemy->GetEnemyType();
 
     if (EnemyType == EEnemyType::PATHING) {
@@ -112,6 +118,10 @@ void UAIAssignSubsystem::NotifyPlayerSensed(bool Sensed, AEnemyCharacter* Enemy)
 
 void UAIAssignSubsystem::NotifyPlayerIsClose(bool Close, AEnemyCharacter* Enemy)
 {
+    UWorld* World = GetWorld();
+    if (!World) return;
+    if (World->GetNetMode() == NM_Client) return;
+
     if (Close) {
         bPlayerIsClose = true;
         Enemy->BTComponent->AttachRoaming();
@@ -130,6 +140,10 @@ void UAIAssignSubsystem::WaitBeforeSwap(AEnemyCharacter* Enemy)
 
 void UAIAssignSubsystem::NotifyDeath(AEnemyCharacter* Enemy)
 {
+    UWorld* World = GetWorld();
+    if (!World) return;
+    if (World->GetNetMode() == NM_Client) return;
+
     if (Enemy->BTComponent) {
         //delete component
         Enemy->BTComponent->DestroyComponent();
@@ -138,28 +152,4 @@ void UAIAssignSubsystem::NotifyDeath(AEnemyCharacter* Enemy)
     }
     Enemies.Remove(Enemy);
     Enemy->PlayDeathAnimation();
-
-    if (Enemies.Num() == 0) {
-        RespawnEnemies();
-    }
-}
-
-void UAIAssignSubsystem::RespawnEnemies()
-{
-    UWorld* World = GetWorld();
-    if (World) {
-        for (const FEnemySpawnInfo& SpawnInfo : EnemySpawnInfos) {
-            FActorSpawnParameters SpawnParams;
-            if (const UAGPGameInstance* GameInstance = GetWorld()->GetGameInstance<UAGPGameInstance>()) {
-                UClass* EnemyClass = GameInstance->GetEnemyClass();
-                if (EnemyClass) {
-                    AEnemyCharacter* NewEnemy = World->SpawnActor<AEnemyCharacter>(EnemyClass, SpawnInfo.Location, SpawnInfo.Rotation, SpawnParams);                    
-                    if (NewEnemy) {                      
-                        Enemies.Add(NewEnemy);
-                    }
-                }
-            }
-        }
-    }
-    AssignAI();
 }

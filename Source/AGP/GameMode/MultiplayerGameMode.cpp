@@ -1,12 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "MultiplayerGameMode.h"
 
 #include "AGP/Characters/PlayerCharacter.h"
 #include "AGP/Characters/EnemyCharacter.h"
 #include "GameFramework/PlayerStart.h"
 #include "AGP/BehaviourTree/AIAssignSubsystem.h"
+#include "AGP/GameMode/AGPGameInstance.h"
 #include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
@@ -56,8 +54,6 @@ void AMultiplayerGameMode::RespawnEnemy(AController* Controller)
 			UAIAssignSubsystem* AIAssignSubsystem = GetWorld()->GetSubsystem<UAIAssignSubsystem>();
 			AIAssignSubsystem->NotifyDeath(CurrentlyPossessedCharacter);
 			CurrentlyPossessedCharacter->Destroy();
-			
-			
 		}
 	}
 
@@ -122,5 +118,21 @@ void AMultiplayerGameMode::SpawnPlayers()
     }
 }
 
+void AMultiplayerGameMode::SpawnEnemy(const FVector& Location)
+{
+	UWorld* World = GetWorld();
+	if (!World) return;
+	FActorSpawnParameters SpawnParams;
+    if (const UAGPGameInstance* GameInstance = GetWorld()->GetGameInstance<UAGPGameInstance>()) {
+        UClass* EnemyClass = GameInstance->GetEnemyClass();
+        if (EnemyClass) {
+            AEnemyCharacter* NewEnemy = World->SpawnActor<AEnemyCharacter>(EnemyClass, Location, FRotator::ZeroRotator, SpawnParams);
+        }
+    }
+	UAIAssignSubsystem* AIAssignSubsystem = GetWorld()->GetSubsystem<UAIAssignSubsystem>();
+	AIAssignSubsystem->GetEnemies();
+	AIAssignSubsystem->AssignAI();
+
+}
 
 
