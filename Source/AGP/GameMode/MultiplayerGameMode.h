@@ -7,10 +7,12 @@
 #include "MultiplayerGameMode.generated.h"
 
 class APlayerCharacter;
+class AEnemyCharacter;
+class APlayerStart;
+class APlayerController;
 class UAIAssignSubsystem;
-/**
- * 
- */
+
+
 UCLASS()
 class AGP_API AMultiplayerGameMode : public AGameMode
 {
@@ -21,6 +23,7 @@ public:
 	virtual void StartPlay() override;
 	void RespawnPlayer(AController* Controller);
 	void RespawnEnemy(AController* Controller);
+	void SpawnPlayers();
 
 protected:
 

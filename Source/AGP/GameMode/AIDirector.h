@@ -10,6 +10,7 @@
 
 
 class ANavigationNode;
+class AMultiplayerGameMode;
 
 UCLASS()
 class AGP_API UAIDirector : public UTickableWorldSubsystem
@@ -28,6 +29,10 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	bool bHasFoundNodes;
+	UPROPERTY(EditAnywhere)
+	int32 NumOfStarts = 4;
+	UPROPERTY(EditAnywhere)
+	bool bPlaceStarts;
 
 	UPROPERTY(EditAnywhere)
 	float DesiredTickInterval = 5.0f;
