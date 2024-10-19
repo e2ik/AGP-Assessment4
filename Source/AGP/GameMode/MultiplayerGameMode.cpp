@@ -8,6 +8,8 @@
 #include "GameFramework/PlayerStart.h"
 #include "AGP/BehaviourTree/AIAssignSubsystem.h"
 #include "EngineUtils.h"
+#include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 void AMultiplayerGameMode::BeginPlay() {
 	Super::BeginPlay();
@@ -84,3 +86,41 @@ void AMultiplayerGameMode::RespawnEnemy(AController* Controller)
 	// 	}
 	// }
 }
+
+void AMultiplayerGameMode::SpawnPlayers()
+{
+    UWorld* World = GetWorld();
+    if (!World) return;
+
+	AActor* OriginalStart = nullptr;
+	// Find original start and delete it
+	for (TActorIterator<APlayerStart> It(World); It; ++It) {
+		// Print the names of all player starts
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *FString::Printf(TEXT("Found PlayerStart: %s"), *It->GetName()));
+		
+		if (It->PlayerStartTag == "DeleteMe") {
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Found the original start"));
+			OriginalStart = *It;
+			OriginalStart->Destroy();
+			break;
+		}
+	}
+
+    // Get all connected PlayerControllers
+    TArray<AActor*> PlayerControllerActors;
+    UGameplayStatics::GetAllActorsOfClass(World, APlayerController::StaticClass(), PlayerControllerActors);
+
+    // Iterate through all connected player controllers
+    for (AActor* Actor : PlayerControllerActors)
+    {
+        APlayerController* PlayerController = Cast<APlayerController>(Actor);
+        if (PlayerController)
+        {
+            // Restart the player, which will use a PlayerStart automatically
+            RestartPlayer(PlayerController);
+        }
+    }
+}
+
+
+

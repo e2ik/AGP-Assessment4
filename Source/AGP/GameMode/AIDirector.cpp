@@ -2,6 +2,7 @@
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "AGP/ProceduralNodes/NavigationNode.h"
+#include "AGP/GameMode/MultiplayerGameMode.h"
 
 UAIDirector::UAIDirector()
 {
@@ -17,11 +18,14 @@ void UAIDirector::Initialize(FSubsystemCollectionBase& Collection)
 {
     Super::Initialize(Collection);
     bHasFoundNodes = false;
+    bPlaceStarts = false;
 }
 
 void UAIDirector::Deinitialize()
 {
     Super::Deinitialize();
+    bHasFoundNodes = false;
+    bPlaceStarts = false;
 }
 
 void UAIDirector::Tick(float DeltaTime)
@@ -42,7 +46,7 @@ void UAIDirector::RunCustomTick()
 {
     GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Custom Tick"));
     if (!bHasFoundNodes) { FindAllNodes(); }
-    GetRandomNode();
+    if (bPlaceStarts) { GetRandomNode(); }
 }
 
 void UAIDirector::FindAllNodes()
@@ -60,35 +64,77 @@ void UAIDirector::FindAllNodes()
     }
 
     bHasFoundNodes = true;
+    bPlaceStarts = true;
 }
 
 void UAIDirector::GetRandomNode()
 {
     UWorld* World = GetWorld();
     if (!World) return;
-    // get a random node
-    if (Nodes.Num() > 0) {
-        int32 RandomIndex = FMath::RandRange(0, Nodes.Num() - 1);
-        ANavigationNode* RandomNode = Nodes[RandomIndex];
-        if (RandomNode) {
-            PlacePlayerStarts(RandomNode->GetActorLocation());
+
+    const int32 MaxAttempts = 10;
+    for (int32 Attempt = 0; Attempt < MaxAttempts; ++Attempt) {
+        // Get a random node
+        if (Nodes.Num() > 0) {
+            int32 RandomIndex = FMath::RandRange(0, Nodes.Num() - 1);
+            ANavigationNode* RandomNode = Nodes[RandomIndex];
+            if (RandomNode) {
+                FVector NodeLocation = RandomNode->GetActorLocation();
+
+                FHitResult HitResult;
+                FCollisionQueryParams CollisionParams;
+                CollisionParams.AddIgnoredActor(RandomNode);
+                float TraceLength = 250.0f;
+                FVector Directions[] = {
+                    NodeLocation + FVector(TraceLength, 0.0f, 0.0f),
+                    NodeLocation + FVector(-TraceLength, 0.0f, 0.0f),
+                    NodeLocation + FVector(0.0f, TraceLength, 0.0f),
+                    NodeLocation + FVector(0.0f, -TraceLength, 0.0f)
+                };
+
+                bool bHit = false;
+                // Perform line traces in each direction
+                for (const FVector& Direction : Directions) {
+                    bHit = World->LineTraceSingleByChannel(
+                        HitResult,
+                        NodeLocation,
+                        Direction,
+                        ECC_Visibility,
+                        CollisionParams
+                    );
+                    if (bHit) { break; }
+                }
+
+                if (!bHit) {
+                    PlacePlayerStarts(NodeLocation);
+                    return;
+                }
+            }
         }
     }
 }
 
+
+
 void UAIDirector::PlacePlayerStarts(const FVector& Location)
 {
-    // Place player starts
     UWorld* World = GetWorld();
     if (!World) return;
 
-    // Spawn player starts
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-    // Ensure you are spawning an APlayerStart
-    APlayerStart* PlayerStart = World->SpawnActor<APlayerStart>(Location, FRotator::ZeroRotator, SpawnParams);
-    if (PlayerStart) {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Player Start Placed"));
+    for (int32 i = 0; i < NumOfStarts; ++i) {
+        FVector RandomOffset = FVector(FMath::RandRange(-100.f, 100.f), FMath::RandRange(-200.f, 200.f), 0.f);
+        FVector SpawnLocation = Location + RandomOffset;
+        APlayerStart* PlayerStart = World->SpawnActor<APlayerStart>(SpawnLocation, FRotator::ZeroRotator, SpawnParams);
     }
+
+    // notify GameMode that player starts have been placed and spawn via gamemode
+    AMultiplayerGameMode* GameMode = Cast<AMultiplayerGameMode>(World->GetAuthGameMode());
+    if (GameMode) { GameMode->SpawnPlayers(); }
+
+
+    bPlaceStarts = false;
 }
+
