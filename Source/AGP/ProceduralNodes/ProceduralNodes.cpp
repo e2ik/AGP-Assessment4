@@ -125,8 +125,6 @@ void UProceduralNodes::NodeGenBridge(AStaticMeshActor* Actor, UStaticMeshCompone
     FVector MinBounds, MaxBounds, MeshCenter;
     GetMeshBounds(MeshComponent, MinBounds, MaxBounds, MeshCenter);
 
-    int32 NodeCount = 0;
-
     float Length = MaxBounds.X - MinBounds.X;
     float Width = MaxBounds.Y - MinBounds.Y;
     bool bIsLengthLonger = Length > Width;
@@ -148,11 +146,30 @@ void UProceduralNodes::NodeGenBridge(AStaticMeshActor* Actor, UStaticMeshCompone
     PossibleNodeLocations.Add(Side1);
     PossibleNodeLocations.Add(Side2);
     PossibleNodeLocations.Add(MeshCenter);
+
+    FVector Offset;
+    if (bIsLengthLonger) { Offset = FVector(0.0f, 150.0f, 0.0f); }
+    else { Offset = FVector(150.0f, 0.0f, 0.0f); }
+
+    FVector Side1Left = Side1 - Offset;
+    FVector Side1Right = Side1 + Offset;
+    FVector Side2Left = Side2 - Offset;
+    FVector Side2Right = Side2 + Offset;
+
+    Side1Left.Z -= 100.0f;
+    Side1Right.Z -= 100.0f;
+    Side2Left.Z -= 100.0f;
+    Side2Right.Z -= 100.0f;
+
+    PossibleNodeLocations.Add(Side1Left);
+    PossibleNodeLocations.Add(Side1Right);
+    PossibleNodeLocations.Add(Side2Left);
+    PossibleNodeLocations.Add(Side2Right);
 }
+
 
 void UProceduralNodes::NodeGenBuilding(AStaticMeshActor* Actor, UStaticMeshComponent* MeshComponent)
 {
-    // TODO: Add a few more nodes underneathe the roof along the perimeter
     if (GetWorld() && GetWorld()->GetNetMode() == NM_Client) return;
     UWorld* World = GetWorld();
     if (!World) return;
@@ -163,6 +180,28 @@ void UProceduralNodes::NodeGenBuilding(AStaticMeshActor* Actor, UStaticMeshCompo
     MeshCenter.Z -= 250.0f;
     PossibleNodeLocations.Add(MeshCenter);
 
+    float RoofHeightOffset = 250.0f;
+    float NodeZ = MinBounds.Z - RoofHeightOffset;
+
+    FVector Corner1 = FVector(MinBounds.X, MinBounds.Y, NodeZ);
+    FVector Corner2 = FVector(MaxBounds.X, MinBounds.Y, NodeZ);
+    FVector Corner3 = FVector(MaxBounds.X, MaxBounds.Y, NodeZ);
+    FVector Corner4 = FVector(MinBounds.X, MaxBounds.Y, NodeZ);
+
+    PossibleNodeLocations.Add(Corner1);
+    PossibleNodeLocations.Add(Corner2);
+    PossibleNodeLocations.Add(Corner3);
+    PossibleNodeLocations.Add(Corner4);
+
+    FVector MidPoint1 = (Corner1 + Corner2) / 2.0f;
+    FVector MidPoint2 = (Corner2 + Corner3) / 2.0f;
+    FVector MidPoint3 = (Corner3 + Corner4) / 2.0f;
+    FVector MidPoint4 = (Corner4 + Corner1) / 2.0f;
+
+    PossibleNodeLocations.Add(MidPoint1);
+    PossibleNodeLocations.Add(MidPoint2);
+    PossibleNodeLocations.Add(MidPoint3);
+    PossibleNodeLocations.Add(MidPoint4);
 }
 
 void UProceduralNodes::NodeGenDoor(AStaticMeshActor* Actor, UStaticMeshComponent* MeshComponent)
@@ -255,7 +294,7 @@ void UProceduralNodes::ConnectNodes()
 
             float Distance = FVector::Dist(Node->GetActorLocation(), OtherNode->GetActorLocation());
 
-            if (Distance < NodeSpacing * 2.3f) {
+            if (Distance < NodeSpacing * 2.5f) {
                 FHitResult HitResult;
                 FCollisionQueryParams TraceParams;
                 TraceParams.AddIgnoredActor(Node);
