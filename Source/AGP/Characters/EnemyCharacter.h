@@ -105,9 +105,13 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION()
+    void OnRep_EnemyType();
 
 	// Behaviour Tree Additions
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(ReplicatedUsing = OnRep_EnemyType, EditAnywhere)
 	EEnemyType EnemyType = EEnemyType::UNASSIGNED;
 	UPROPERTY()
 	UAIAssignSubsystem* AIAssignSubsystem;
