@@ -149,7 +149,7 @@ protected:
 	EEnemyState CurrentState = EEnemyState::Patrol;
 
 	UPROPERTY(EditAnywhere)
-	float PathfindingError = 100.0f; // 150 cm from target by default.
+	float PathfindingError = 50.0f;
 
 public:	
 

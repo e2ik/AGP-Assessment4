@@ -173,11 +173,21 @@ void UProceduralNodes::NodeGenDoor(AStaticMeshActor* Actor, UStaticMeshComponent
 
     FVector MinBounds, MaxBounds, MeshCenter;
     GetMeshBounds(MeshComponent, MinBounds, MaxBounds, MeshCenter);
+
     MeshCenter.Z = MinBounds.Z;
     MeshCenter.Z += 50.0f;
-    PossibleNodeLocations.Add(MeshCenter);
+    FVector RightVector = MeshComponent->GetRightVector();
+    float OffsetDistance = 150.0f;
 
+    FVector RightLocation = MeshCenter + RightVector * OffsetDistance;
+    FVector LeftLocation = MeshCenter - RightVector * OffsetDistance;
+
+    PossibleNodeLocations.Add(MeshCenter);
+    PossibleNodeLocations.Add(RightLocation);
+    PossibleNodeLocations.Add(LeftLocation);
 }
+
+
 
 void UProceduralNodes::NodeGenGazebo(AStaticMeshActor* Actor, UStaticMeshComponent* MeshComponent)
 {
