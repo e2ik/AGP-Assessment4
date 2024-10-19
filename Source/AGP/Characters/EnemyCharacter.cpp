@@ -43,13 +43,6 @@ void AEnemyCharacter::BeginPlay()
 	PathfindingSubsystem = GetWorld()->GetSubsystem<UPathfindingSubsystem>();
 	AIAssignSubsystem = GetWorld()->GetSubsystem<UAIAssignSubsystem>();
 
-	// if (PathfindingSubsystem) {
-	// 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("PathfindingSubsystem found!"));
-	// 	CurrentPath = PathfindingSubsystem->GetRandomPath(GetActorLocation());
-	// } else{
-	// 	UE_LOG(LogTemp, Error, TEXT("Unable to find the PathfindingSubsystem"))
-	// }
-
 	if (PawnSensingComponent) {
 		PawnSensingComponent->OnSeePawn.AddDynamic(this, &AEnemyCharacter::OnSensedPawn);
 	}
@@ -63,7 +56,7 @@ void AEnemyCharacter::BeginPlay()
 	if (EnemyType == EEnemyType::UNASSIGNED) {
 		EEnemyType RandomType = static_cast<EEnemyType>(FMath::RandRange(1, 3));
 		SetEnemyType(RandomType);
-		UpdateEnemyMaterial(); // TODO: Might need to have client logic here
+		UpdateEnemyMaterial();
 	}
 
 	// Check if AI Controller is assigned
@@ -153,12 +146,14 @@ void AEnemyCharacter::UpdateSight()
 	// if (!SensedCharacter.IsValid()) return;
 	if (PawnSensingComponent)
 	{
-		if (!SensedCharacter.IsValid() || !PawnSensingComponent->HasLineOfSightTo(SensedCharacter.Get()))
+		if (!PawnSensingComponent->HasLineOfSightTo(SensedCharacter.Get()))
 		{
 			SensedCharacter = nullptr;
-			bHasSensedPlayer = false;
 			AIAssignSubsystem->NotifyPlayerSensed(false, this);
-			// ClearPath();
+			if (bHasSensedPlayer) {
+				bHasSensedPlayer = false;
+				ClearPath();
+			}
 		}
 	}
 }
@@ -325,11 +320,17 @@ void AEnemyCharacter::FollowPath()
         2.0f // Line thickness
     );
 
-	if (FVector::DistSquared(GetActorLocation(), CurrentPath[PathIndex]) <= FMath::Square(PathfindingError)) {
+	// Changing this to just check for XY as some nodes are lifted, hard to find a good PathfindingError value
+	if (FVector::DistSquared2D(GetActorLocation(), CurrentPath[PathIndex]) <= FMath::Square(PathfindingError)) {
 		PathIndex--;
 		if (PathIndex <= 0) { CurrentPath.Empty(); }
 	} else {
-		FVector Direction = (CurrentPath[PathIndex] - GetActorLocation()).GetSafeNormal();
+		FVector ActorLocation2D = GetActorLocation();
+		ActorLocation2D.Z = 0.0f;		
+		FVector TargetLocation2D = CurrentPath[PathIndex];
+		TargetLocation2D.Z = 0.0f;		
+		FVector Direction = (TargetLocation2D - ActorLocation2D).GetSafeNormal();
+
 		if (bIsRepeatPath) { GetCharacterMovement()->MaxWalkSpeed = 299.0f; }
 		else { GetCharacterMovement()->MaxWalkSpeed = 600.0f; }
 		AddMovementInput(Direction);

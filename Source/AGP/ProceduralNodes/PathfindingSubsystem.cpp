@@ -140,38 +140,37 @@ ANavigationNode* UPathfindingSubsystem::GetRandomNode()
 
 ANavigationNode* UPathfindingSubsystem::FindNearestNode(const FVector& TargetLocation)
 {
-	// Failure condition.
-	if (Nodes.Num() == 0)
-	{
-		UE_LOG(LogTemp, Error, TEXT("The nodes array is empty."))
-		return nullptr;
-	}
+    if (Nodes.Num() == 0) { return nullptr; }
 
-	UWorld* World = GetWorld();
-	if (!World) return nullptr;
+    UWorld* World = GetWorld();
+    if (!World) return nullptr;
 
-	// Using the minimum programming pattern to find the closest node.
-	// What is the Big O complexity of this? Can you do it more efficiently?
-	ANavigationNode* ClosestNode = nullptr;
-	float MinDistance = UE_MAX_FLT;
-	for (ANavigationNode* Node : Nodes)
-	{
-		const float Distance = FVector::Distance(TargetLocation, Node->GetActorLocation());
+    ANavigationNode* ClosestNode = nullptr;
+    float MinDistance = UE_MAX_FLT;
+
+    for (ANavigationNode* Node : Nodes)
+    {
+        const FVector NodeLocation = Node->GetActorLocation();
+        const float Distance = FVector::Distance(TargetLocation, NodeLocation);
+
         FHitResult HitResult;
         FVector Start = TargetLocation;
-        FVector End = Node->GetActorLocation();
+        FVector End = NodeLocation;
         FCollisionQueryParams CollisionParams;
+        CollisionParams.AddIgnoredActor(Node);
 
         bool bHit = World->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams);
-		if (!bHit && Distance < MinDistance)
-		{
-			MinDistance = Distance;
-			ClosestNode = Node;
-		}
-	}
 
-	return ClosestNode;
+        if (!bHit && Distance < MinDistance)
+        {
+            MinDistance = Distance;
+            ClosestNode = Node;
+        }
+    }
+
+    return ClosestNode;
 }
+
 
 ANavigationNode* UPathfindingSubsystem::FindFurthestNode(const FVector& TargetLocation)
 {
