@@ -117,7 +117,7 @@ void AMultiplayerGameMode::SpawnPlayers()
         if (PlayerController)
         {
             // Restart the player, which will use a PlayerStart automatically
-            RestartPlayer(PlayerController);
+            RespawnPlayer(PlayerController);
         }
     }
 }
