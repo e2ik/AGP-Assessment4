@@ -300,7 +300,7 @@ void UProceduralNodes::ConnectNodes()
                 TraceParams.AddIgnoredActor(Node);
                 TraceParams.AddIgnoredActor(OtherNode);
 
-                const float OffsetZ = 200.0f;
+                const float OffsetZ = 100.0f;
                 // Perform the line trace with an upward offset
                 FVector StartLocation = Node->GetActorLocation() + FVector(0.0f, 0.0f, OffsetZ);
                 FVector EndLocation = OtherNode->GetActorLocation() + FVector(0.0f, 0.0f, OffsetZ);

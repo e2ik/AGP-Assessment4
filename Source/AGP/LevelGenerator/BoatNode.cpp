@@ -24,20 +24,19 @@ void ABoatNode::BeginPlay()
 void ABoatNode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	Super::Tick(DeltaTime);
-	DrawDebugSphere(GetWorld(), GetActorLocation(), 50.0, 4, ConnectedNodes.Contains(this) ? FColor::Cyan : FColor::Magenta, false, -1, 0, 10.0);
-	for (const ABoatNode* Node : ConnectedNodes)
-	{
-		if (Node) {
-			if (Node->ConnectedNodes.Contains(this))
-			{
-				DrawDebugLine(GetWorld(), GetActorLocation(), Node->GetActorLocation(), FColor::Purple, false, -1, 0, 5.0f);
-			} else
-			{
-				DrawDebugLine(GetWorld(), GetActorLocation(), Node->GetActorLocation(), FColor::Yellow, false, -1, 0, 5.0f);
-			}
-		}
-	}
+	// DrawDebugSphere(GetWorld(), GetActorLocation(), 50.0, 4, ConnectedNodes.Contains(this) ? FColor::Cyan : FColor::Magenta, false, -1, 0, 10.0);
+	// for (const ABoatNode* Node : ConnectedNodes)
+	// {
+	// 	if (Node) {
+	// 		if (Node->ConnectedNodes.Contains(this))
+	// 		{
+	// 			DrawDebugLine(GetWorld(), GetActorLocation(), Node->GetActorLocation(), FColor::Purple, false, -1, 0, 5.0f);
+	// 		} else
+	// 		{
+	// 			DrawDebugLine(GetWorld(), GetActorLocation(), Node->GetActorLocation(), FColor::Yellow, false, -1, 0, 5.0f);
+	// 		}
+	// 	}
+	// }
 }
 
 bool ABoatNode::ShouldTickIfViewportsOnly() const

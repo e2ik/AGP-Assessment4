@@ -11,6 +11,7 @@ class AEnemyCharacter;
 class APlayerStart;
 class APlayerController;
 class UAIAssignSubsystem;
+class UAGPGameInstance;
 
 
 UCLASS()
@@ -24,6 +25,7 @@ public:
 	void RespawnPlayer(AController* Controller);
 	void RespawnEnemy(AController* Controller);
 	void SpawnPlayers();
+	void SpawnEnemy(const FVector& Location);
 
 protected:
 

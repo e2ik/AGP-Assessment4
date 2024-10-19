@@ -295,31 +295,12 @@ void AEnemyCharacter::FollowPath()
 	}
 
     // Draw the current path
-    for (int32 i = 0; i < CurrentPath.Num() - 1; i++) {
-        DrawDebugLine(
-            GetWorld(),
-            CurrentPath[i],
-            CurrentPath[i + 1],
-            FColor::Red, // Line color
-            false, // Do not persist
-            -1, // Lifetime
-            0, // Depth priority
-            2.0f // Line thickness
-        );
-    }
+    // for (int32 i = 0; i < CurrentPath.Num() - 1; i++) {
+    //     DrawDebugLine(GetWorld(), CurrentPath[i], CurrentPath[i + 1], FColor::Red, false, -1, 0, 2.0f );
+    // }
 
     // Debug point for the current target
-    DrawDebugSphere(
-        GetWorld(),
-        CurrentPath[PathIndex],
-        20.0f, // Sphere radius
-        12, // Segments
-        FColor::Green, // Sphere color
-        false, // Do not persist
-        -1, // Lifetime
-        0, // Depth priority
-        2.0f // Line thickness
-    );
+    // DrawDebugSphere(GetWorld(), CurrentPath[PathIndex], 20.0f, 4, FColor::Green, false, -1, 0, 2.0f );
 
 	// Changing this to just check for XY as some nodes are lifted, hard to find a good PathfindingError value
 	if (FVector::DistSquared2D(GetActorLocation(), CurrentPath[PathIndex]) <= FMath::Square(PathfindingError)) {

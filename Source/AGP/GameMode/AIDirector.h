@@ -37,6 +37,8 @@ protected:
 	UPROPERTY(EditAnywhere)
 	int32 NumOfStarts = 4;
 	UPROPERTY(EditAnywhere)
+	int32 NumOfEnemies = 4;
+	UPROPERTY(EditAnywhere)
 	bool bPlaceStarts;
 	UPROPERTY(EditAnywhere)
 	bool bSpawnEnemies;
@@ -60,5 +62,6 @@ private:
 	void FindAllNodes();
 	void PlacePlayerStarts(const FVector& Location);
 	void GenerateEnemySpawn(ANavigationNode* CenterNode);
+	void SpawnEnemies();
 	
 };
