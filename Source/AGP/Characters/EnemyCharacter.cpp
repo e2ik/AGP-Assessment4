@@ -30,6 +30,13 @@ AEnemyCharacter::AEnemyCharacter()
 	StoreLocation = FVector(MAX_FLT, MAX_FLT, MAX_FLT);
 	SensedCharacter = nullptr;
 	SensedWeapon = nullptr;
+	bReplicates = true;
+}
+
+void AEnemyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME(AEnemyCharacter, EnemyType);
 }
 
 // Called when the game starts or when spawned
@@ -56,6 +63,7 @@ void AEnemyCharacter::BeginPlay()
 	if (EnemyType == EEnemyType::UNASSIGNED) {
 		EEnemyType RandomType = static_cast<EEnemyType>(FMath::RandRange(1, 3));
 		SetEnemyType(RandomType);
+		OnRep_EnemyType();
 		UpdateEnemyMaterial();
 	}
 
@@ -64,6 +72,11 @@ void AEnemyCharacter::BeginPlay()
 		AAIController* AIController = GetWorld()->SpawnActor<AAIController>(AIControllerClass, GetActorLocation(), GetActorRotation());
 		if (AIController) { AIController->Possess(this); }
 	}	
+}
+
+void AEnemyCharacter::OnRep_EnemyType()
+{
+	UpdateEnemyMaterial();
 }
 
 void AEnemyCharacter::MoveAlongPath()
