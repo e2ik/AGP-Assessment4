@@ -25,7 +25,7 @@ public:
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<APlayerCharacter> PlayerCharacterClass;
+	TSubclassOf<APlayerMeleeCharacter> PlayerMeleeCharacterClass;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AEnemyCharacter> EnemyCharacterClass;

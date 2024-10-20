@@ -60,7 +60,7 @@ private:
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastSlash(USceneComponent* Start, USceneComponent* End);
 
-	void SlashImplementation(USceneComponent* Start, USceneComponent* End);
-	void SlashVisualImplementation(USceneComponent* Start, USceneComponent* End);
+	bool SlashImplementation(USceneComponent* Start, USceneComponent* End);
+	void SlashVisualImplementation();
 		
 };

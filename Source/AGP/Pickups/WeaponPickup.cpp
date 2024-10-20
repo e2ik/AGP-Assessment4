@@ -5,6 +5,7 @@
 
 #include "../Characters/PlayerCharacter.h"
 #include "PickupManagerSubsystem.h"
+#include "AGP/Characters/BaseMeleeCharacter.h"
 #include "Net/UnrealNetwork.h"
 
 void AWeaponPickup::BeginPlay()
@@ -27,6 +28,12 @@ void AWeaponPickup::OnPickupOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	if (ABaseCharacter* Player = Cast<ABaseCharacter>(OtherActor))
 	{
 		Player->EquipWeapon(true, WeaponStats);
+		UPickupManagerSubsystem* PickupManager = GetWorld()->GetSubsystem<UPickupManagerSubsystem>();
+		if (PickupManager) { PickupManager->RemovePickup(GetActorLocation()); }
+	}
+	if (ABaseMeleeCharacter* Player = Cast<ABaseMeleeCharacter>(OtherActor))
+	{
+		Player->EquipSword(true, FSwordStats());
 		UPickupManagerSubsystem* PickupManager = GetWorld()->GetSubsystem<UPickupManagerSubsystem>();
 		if (PickupManager) { PickupManager->RemovePickup(GetActorLocation()); }
 	}

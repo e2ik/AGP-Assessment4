@@ -51,11 +51,10 @@ void APlayerMeleeCharacter::BeginPlay()
 void APlayerMeleeCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-	//TODO: Update this once theres a player hud
-	// if (PlayerHUD)
-	// {
-	// 	PlayerHUD->RemoveFromParent();
-	// }
+	if (PlayerHUD)
+	{
+		PlayerHUD->RemoveFromParent();
+	}
 }
 
 void APlayerMeleeCharacter::Tick(float DeltaSeconds)

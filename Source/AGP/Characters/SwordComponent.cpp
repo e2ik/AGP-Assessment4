@@ -4,6 +4,8 @@
 #include "SwordComponent.h"
 
 #include "BaseMeleeCharacter.h"
+#include "HealthComponent.h"
+#include "Evaluation/Blending/MovieSceneBlendType.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
@@ -37,9 +39,12 @@ void USwordComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 		FHitResult HitResult;
 		FCollisionQueryParams QueryParams;
 		GetWorld()->LineTraceSingleByChannel(HitResult, StartPoint->GetComponentLocation(), EndPoint->GetComponentLocation(), ECC_WorldStatic, QueryParams);
-		if(HitResult.GetActor())
+		if(ABaseMeleeCharacter* HitCharacter = Cast<ABaseMeleeCharacter>(HitResult.GetActor()))
 		{
-			UE_LOG(LogTemp, Display, TEXT("Hit something"))
+			if (UHealthComponent* HitCharacterHealth = HitCharacter->GetComponentByClass<UHealthComponent>())
+			{
+				HitCharacterHealth->ApplyDamage(10.0);
+			}
 		}
 		if (TimeSinceLastSlash > SlashTime)
 		{
@@ -55,18 +60,20 @@ void USwordComponent::Slash(USceneComponent* Start, USceneComponent* End)
 	StartPoint = Start;
 	EndPoint = End;
 	SlashTime = 0;
-	SlashImplementation(Start, End);
-	UE_LOG(LogTemp, Display, TEXT("SLASHING"))
+	ServerSlash(Start, End);
 }
 
 void USwordComponent::ServerSlash_Implementation(USceneComponent* Start, USceneComponent* End)
 {
-	
+	if (SlashImplementation(Start, End))
+	{
+		MulticastSlash(Start, End);
+	}
 }
 
 void USwordComponent::MulticastSlash_Implementation(USceneComponent* Start, USceneComponent* End)
 {
-	
+	SlashVisualImplementation();
 }
 
 void USwordComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -76,18 +83,22 @@ void USwordComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME(USwordComponent, EndPoint);
 }
 
-void USwordComponent::SlashImplementation(USceneComponent* Start, USceneComponent* End)
+bool USwordComponent::SlashImplementation(USceneComponent* Start, USceneComponent* End)
 {
-	SlashVisualImplementation(Start, End);
+	SlashVisualImplementation();
+	return true;
 }
 
-void USwordComponent::SlashVisualImplementation(USceneComponent* Start, USceneComponent* End)
+void USwordComponent::SlashVisualImplementation()
 {
 	UE_LOG(LogTemp, Display, TEXT("SLASHINGVISUAL"))
 	if (ABaseMeleeCharacter* BaseCharacter = Cast<ABaseMeleeCharacter>(GetOwner()))
 	{
 		UE_LOG(LogTemp, Display, TEXT("Base character cast successful."))
 		BaseCharacter->SwordSlashGraphical();
+	} else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Base Character Cast Unsuccessful AHHHHHH"))
 	}
 }
 

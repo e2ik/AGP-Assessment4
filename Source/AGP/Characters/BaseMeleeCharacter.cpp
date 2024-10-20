@@ -2,8 +2,7 @@
 
 
 #include "BaseMeleeCharacter.h"
-
-#include "WeaponComponent.h"
+#include "HealthComponent.h"
 #include "AGP/GameMode/MultiplayerGameMode.h"
 #include "Net/UnrealNetwork.h"
 
@@ -12,14 +11,13 @@ ABaseMeleeCharacter::ABaseMeleeCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>("Health Component");
 }
 
 // Called when the game starts or when spawned
 void ABaseMeleeCharacter::BeginPlay()
 {
-	Super::BeginPlay();
-	EquipSword(true, FSwordStats());
+	Super::BeginPlay();	
 }
 
 // Called every frame
