@@ -62,5 +62,7 @@ private:
 
 	bool SlashImplementation(USceneComponent* Start, USceneComponent* End);
 	void SlashVisualImplementation();
-		
+
+
+	//ADD Some kinda server repeating slash thing to actually do damage.
 };

@@ -38,13 +38,18 @@ void USwordComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	{
 		FHitResult HitResult;
 		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(GetOwner());
 		GetWorld()->LineTraceSingleByChannel(HitResult, StartPoint->GetComponentLocation(), EndPoint->GetComponentLocation(), ECC_WorldStatic, QueryParams);
 		if(ABaseMeleeCharacter* HitCharacter = Cast<ABaseMeleeCharacter>(HitResult.GetActor()))
 		{
+			DrawDebugLine(GetWorld(), StartPoint->GetComponentLocation(), EndPoint->GetComponentLocation(), FColor::Red, false, 1.0f, 0, 10.0f);
 			if (UHealthComponent* HitCharacterHealth = HitCharacter->GetComponentByClass<UHealthComponent>())
 			{
 				HitCharacterHealth->ApplyDamage(10.0);
 			}
+		} else
+		{
+			DrawDebugLine(GetWorld(), StartPoint->GetComponentLocation(), EndPoint->GetComponentLocation(), FColor::Blue, false, 1.0f, 0, 10.0f);
 		}
 		if (TimeSinceLastSlash > SlashTime)
 		{
