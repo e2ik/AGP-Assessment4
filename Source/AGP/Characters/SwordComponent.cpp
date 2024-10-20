@@ -74,7 +74,7 @@ bool USwordComponent::SlashImplementation(USceneComponent* Start, USceneComponen
 	FHitResult HitResult;
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(GetOwner());
-	GetWorld()->LineTraceSingleByChannel(HitResult, StartPoint->GetComponentLocation(), EndPoint->GetComponentLocation(), ECC_WorldStatic, QueryParams);
+	GetWorld()->LineTraceSingleByChannel(HitResult, Start->GetComponentLocation(), End->GetComponentLocation(), ECC_WorldStatic, QueryParams);
 	if(ABaseMeleeCharacter* HitCharacter = Cast<ABaseMeleeCharacter>(HitResult.GetActor()))
 	{
 		if (UHealthComponent* HitCharacterHealth = HitCharacter->GetComponentByClass<UHealthComponent>())
@@ -82,7 +82,7 @@ bool USwordComponent::SlashImplementation(USceneComponent* Start, USceneComponen
 			HitCharacterHealth->ApplyDamage(10.0);
 		}
 	}
-	SlashVisualImplementation(StartPoint->GetComponentLocation(), EndPoint->GetComponentLocation());
+	SlashVisualImplementation(Start->GetComponentLocation(), End->GetComponentLocation());
 	return true;
 }
 
