@@ -33,7 +33,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere)
-	float TimeSinceLastSlash = 0.0;
+	float TimeSinceLastSlash = UE_MAX_FLT;
 
 	UPROPERTY(EditAnywhere)
 	float SlashTime = 1.0f;
@@ -61,8 +61,5 @@ private:
 	void MulticastSlash(USceneComponent* Start, USceneComponent* End);
 
 	bool SlashImplementation(USceneComponent* Start, USceneComponent* End);
-	void SlashVisualImplementation();
-
-
-	//ADD Some kinda server repeating slash thing to actually do damage.
+	void SlashVisualImplementation(FVector Start, FVector End);
 };

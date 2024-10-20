@@ -34,30 +34,10 @@ void USwordComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	TimeSinceLastSlash += DeltaTime;
-	if (StartPoint && EndPoint)
+	if (TimeSinceLastSlash < SlashTime)
 	{
-		FHitResult HitResult;
-		FCollisionQueryParams QueryParams;
-		QueryParams.AddIgnoredActor(GetOwner());
-		GetWorld()->LineTraceSingleByChannel(HitResult, StartPoint->GetComponentLocation(), EndPoint->GetComponentLocation(), ECC_WorldStatic, QueryParams);
-		if(ABaseMeleeCharacter* HitCharacter = Cast<ABaseMeleeCharacter>(HitResult.GetActor()))
-		{
-			DrawDebugLine(GetWorld(), StartPoint->GetComponentLocation(), EndPoint->GetComponentLocation(), FColor::Red, false, 1.0f, 0, 10.0f);
-			if (UHealthComponent* HitCharacterHealth = HitCharacter->GetComponentByClass<UHealthComponent>())
-			{
-				HitCharacterHealth->ApplyDamage(10.0);
-			}
-		} else
-		{
-			DrawDebugLine(GetWorld(), StartPoint->GetComponentLocation(), EndPoint->GetComponentLocation(), FColor::Blue, false, 1.0f, 0, 10.0f);
-		}
-		if (TimeSinceLastSlash > SlashTime)
-		{
-			StartPoint = nullptr;
-			EndPoint = nullptr;
-		}
+		SlashImplementation(StartPoint, EndPoint);
 	}
-	// ...
 }
 
 void USwordComponent::Slash(USceneComponent* Start, USceneComponent* End)
@@ -78,7 +58,8 @@ void USwordComponent::ServerSlash_Implementation(USceneComponent* Start, USceneC
 
 void USwordComponent::MulticastSlash_Implementation(USceneComponent* Start, USceneComponent* End)
 {
-	SlashVisualImplementation();
+	if (!Start || !End) return;
+	SlashVisualImplementation(Start->GetComponentLocation(), End->GetComponentLocation());
 }
 
 void USwordComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -90,11 +71,22 @@ void USwordComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 bool USwordComponent::SlashImplementation(USceneComponent* Start, USceneComponent* End)
 {
-	SlashVisualImplementation();
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(GetOwner());
+	GetWorld()->LineTraceSingleByChannel(HitResult, StartPoint->GetComponentLocation(), EndPoint->GetComponentLocation(), ECC_WorldStatic, QueryParams);
+	if(ABaseMeleeCharacter* HitCharacter = Cast<ABaseMeleeCharacter>(HitResult.GetActor()))
+	{
+		if (UHealthComponent* HitCharacterHealth = HitCharacter->GetComponentByClass<UHealthComponent>())
+		{
+			HitCharacterHealth->ApplyDamage(10.0);
+		}
+	}
+	SlashVisualImplementation(StartPoint->GetComponentLocation(), EndPoint->GetComponentLocation());
 	return true;
 }
 
-void USwordComponent::SlashVisualImplementation()
+void USwordComponent::SlashVisualImplementation(FVector Start, FVector End)
 {
 	UE_LOG(LogTemp, Display, TEXT("SLASHINGVISUAL"))
 	if (ABaseMeleeCharacter* BaseCharacter = Cast<ABaseMeleeCharacter>(GetOwner()))
@@ -105,5 +97,6 @@ void USwordComponent::SlashVisualImplementation()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Base Character Cast Unsuccessful AHHHHHH"))
 	}
+	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 10.0f);
 }
 
