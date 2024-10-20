@@ -86,11 +86,19 @@ void UHealthComponent::OnDeath()
 	{
 		Character->OnDeath();
 	}
+	if (ABaseCharacter* Character = Cast<ABaseCharacter>(GetOwner()))
+	{
+		Character->OnDeath();
+	}
 }
 
 void UHealthComponent::UpdateHealthBar()
 {
 	if (APlayerMeleeCharacter* PlayerCharacter = Cast<APlayerMeleeCharacter>(GetOwner()))
+	{
+		PlayerCharacter->UpdateHealthBar(GetCurrentHealthPercentage());
+	}
+	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner()))
 	{
 		PlayerCharacter->UpdateHealthBar(GetCurrentHealthPercentage());
 	}

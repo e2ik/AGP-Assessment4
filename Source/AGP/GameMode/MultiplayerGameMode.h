@@ -28,6 +28,9 @@ protected:
 	TSubclassOf<APlayerMeleeCharacter> PlayerMeleeCharacterClass;
 
 	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<APlayerCharacter> PlayerCharacterClass;
+
+	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AEnemyCharacter> EnemyCharacterClass;
 	
 };
