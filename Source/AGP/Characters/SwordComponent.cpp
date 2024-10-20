@@ -74,13 +74,23 @@ bool USwordComponent::SlashImplementation(USceneComponent* Start, USceneComponen
 	FHitResult HitResult;
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(GetOwner());
-	GetWorld()->LineTraceSingleByChannel(HitResult, Start->GetComponentLocation(), End->GetComponentLocation(), ECC_WorldStatic, QueryParams);
-	if(ABaseMeleeCharacter* HitCharacter = Cast<ABaseMeleeCharacter>(HitResult.GetActor()))
+
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start->GetComponentLocation(), End->GetComponentLocation(), ECC_WorldStatic, QueryParams))
 	{
-		if (UHealthComponent* HitCharacterHealth = HitCharacter->GetComponentByClass<UHealthComponent>())
-		{
-			HitCharacterHealth->ApplyDamage(10.0);
-		}
+		// for (auto Hit : HitResult) {
+			if(ABaseMeleeCharacter* HitCharacter = Cast<ABaseMeleeCharacter>(HitResult.GetActor()))
+			{
+				UE_LOG(LogTemp, Display, TEXT("HIT A CHARACTER"))
+				if (UHealthComponent* HitCharacterHealth = HitCharacter->GetComponentByClass<UHealthComponent>())
+				{
+					UE_LOG(LogTemp, Display, TEXT("FOUND HEALTH COMPONENET"))
+					HitCharacterHealth->ApplyDamage(10.0);
+				} else
+				{
+					UE_LOG(LogTemp, Display, TEXT("No Health Component"))
+				}
+			}
+		// }
 	}
 	SlashVisualImplementation(Start->GetComponentLocation(), End->GetComponentLocation());
 	return true;

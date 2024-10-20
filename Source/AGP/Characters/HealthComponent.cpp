@@ -3,6 +3,7 @@
 
 #include "HealthComponent.h"
 #include "PlayerCharacter.h"
+#include "PlayerMeleeCharacter.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
@@ -81,7 +82,7 @@ void UHealthComponent::OnDeath()
 	// checking that we are only handling this logic on the server.
 	if (GetOwnerRole() != ROLE_Authority) return;
 	
-	if (ABaseCharacter* Character = Cast<ABaseCharacter>(GetOwner()))
+	if (ABaseMeleeCharacter* Character = Cast<ABaseMeleeCharacter>(GetOwner()))
 	{
 		Character->OnDeath();
 	}
@@ -89,7 +90,7 @@ void UHealthComponent::OnDeath()
 
 void UHealthComponent::UpdateHealthBar()
 {
-	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner()))
+	if (APlayerMeleeCharacter* PlayerCharacter = Cast<APlayerMeleeCharacter>(GetOwner()))
 	{
 		PlayerCharacter->UpdateHealthBar(GetCurrentHealthPercentage());
 	}

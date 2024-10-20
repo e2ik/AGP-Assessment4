@@ -51,7 +51,6 @@ void ABoat::MoveAlongPath()
 	if (bIsStraight)
 	{
 		Direction = (CurrentBoatNode->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-		UE_LOG(LogTemp, Warning, TEXT("SDirection: %f, %f, %f"), Direction.X, Direction.Y, Direction.Z);
 		if (FVector::Distance(GetActorLocation(), CurrentBoatNode->GetActorLocation()) < PathfindingError)
 		{
 			GetNextBoatTarget();
@@ -72,7 +71,6 @@ void ABoat::MoveAlongPath()
 		float Alpha = 1 - (ArcLength/TotalArcLength);
 		Alpha = Alpha > 0 ? Alpha : 0;
 		Direction = FMath::Lerp(Direction1, Direction2, Alpha).GetSafeNormal();
-		UE_LOG(LogTemp, Warning, TEXT("CDirection: %f, %f, %f"), Direction.X, Direction.Y, Direction.Z);
 		if (FVector::Distance(GetActorLocation(), TargetBoatNode->GetActorLocation()) < PathfindingError * 1.9)
 		{
 			GetNextBoatTarget();
