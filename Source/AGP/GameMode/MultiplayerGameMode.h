@@ -7,6 +7,7 @@
 #include "MultiplayerGameMode.generated.h"
 
 class APlayerCharacter;
+class APlayerMeleeCharacter;
 class AEnemyCharacter;
 class APlayerStart;
 class APlayerController;
@@ -31,6 +32,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<APlayerCharacter> PlayerCharacterClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<APlayerMeleeCharacter> PlayerMeleeCharacterClass;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AEnemyCharacter> EnemyCharacterClass;

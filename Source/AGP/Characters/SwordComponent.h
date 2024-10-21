@@ -47,6 +47,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Replicated)
 	USceneComponent* EndPoint;
 
+	// put a sword cooldown
+	float CooldownDuration = 1.0f;
+	bool bCanSlash = true;
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
