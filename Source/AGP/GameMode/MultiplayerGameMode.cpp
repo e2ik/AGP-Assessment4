@@ -1,6 +1,7 @@
 #include "MultiplayerGameMode.h"
 
 #include "AGP/Characters/PlayerCharacter.h"
+#include "AGP/Characters/PlayerMeleeCharacter.h"
 #include "AGP/Characters/EnemyCharacter.h"
 #include "GameFramework/PlayerStart.h"
 #include "AGP/BehaviourTree/AIAssignSubsystem.h"
@@ -27,22 +28,47 @@ void AMultiplayerGameMode::StartPlay() {
 
 void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
 {
-	if (Controller)
-	{
-		if (APlayerCharacter* CurrentlyPossessedCharacter = Cast<APlayerCharacter>(Controller->GetPawn()))
-		{
-			Controller->UnPossess();
-			CurrentlyPossessedCharacter->Destroy();
-			RestartPlayer(Controller);
-			if (APlayerCharacter* NewPossessedCharacter = Cast<APlayerCharacter>(Controller->GetPawn()))
-			{
-				NewPossessedCharacter->ChooseCharacterMesh();
-				NewPossessedCharacter->DrawUI();
-			}
-		}
-	}
-	
+    if (Controller)
+    {
+        // Get currently possessed pawn
+        APawn* CurrentPawn = Controller->GetPawn();
+
+        // Check if it's APlayerCharacter
+        if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(CurrentPawn))
+        {
+            Controller->UnPossess();
+            PlayerCharacter->Destroy();
+
+            // Spawn new PlayerCharacter
+            APlayerCharacter* NewCharacter = GetWorld()->SpawnActor<APlayerCharacter>(PlayerCharacterClass, PlayerCharacter->GetActorLocation(), FRotator::ZeroRotator);
+            Controller->Possess(NewCharacter);
+
+            if (NewCharacter)
+            {
+                NewCharacter->ChooseCharacterMesh();
+                NewCharacter->DrawUI();
+            }
+        }
+        // Check if it's APlayerMeleeCharacter
+        else if (APlayerMeleeCharacter* PlayerMeleeCharacter = Cast<APlayerMeleeCharacter>(CurrentPawn))
+        {
+            Controller->UnPossess();
+            PlayerMeleeCharacter->Destroy();
+
+            // Spawn new PlayerMeleeCharacter
+            APlayerMeleeCharacter* NewMeleeCharacter = GetWorld()->SpawnActor<APlayerMeleeCharacter>(PlayerMeleeCharacterClass, PlayerMeleeCharacter->GetActorLocation(), FRotator::ZeroRotator);
+            Controller->Possess(NewMeleeCharacter);
+
+            if (NewMeleeCharacter)
+            {
+                NewMeleeCharacter->ChooseCharacterMesh();
+                NewMeleeCharacter->DrawUI();
+            }
+        }
+    }
 }
+
+
 
 void AMultiplayerGameMode::RespawnEnemy(AController* Controller)
 {

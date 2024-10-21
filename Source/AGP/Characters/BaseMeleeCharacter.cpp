@@ -50,14 +50,13 @@ void ABaseMeleeCharacter::OnDeath()
 {
 	if (GetLocalRole() != ROLE_Authority) return;
 
-	//TODO: Make this reference the new player character type or adjust player character.
-	// if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(this))
-	// {
-	// 	if (AMultiplayerGameMode* GameMode = Cast<AMultiplayerGameMode>(GetWorld()->GetAuthGameMode()))
-	// 	{
-	// 		GameMode->RespawnPlayer(GetController());
-	// 	}
-	// }
+	if (APlayerMeleeCharacter* PlayerCharacter = Cast<APlayerMeleeCharacter>(this))
+	{
+		if (AMultiplayerGameMode* GameMode = Cast<AMultiplayerGameMode>(GetWorld()->GetAuthGameMode()))
+		{
+			GameMode->RespawnPlayer(GetController());
+		}
+	}
 
 	//TODO: Make this reference the new enemy character or adjust enemy character.
 	// if (AEnemyCharacter* EnemyCharacter = Cast<AEnemyCharacter>(this))

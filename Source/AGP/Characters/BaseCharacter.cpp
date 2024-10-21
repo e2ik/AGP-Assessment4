@@ -68,16 +68,6 @@ void ABaseCharacter::OnDeath()
 			GameMode->RespawnEnemy(GetController());
 		}
 	}
-
-	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(this))
-	{
-		// If it casts to a PlayerCharacter then we know that a player has died.
-		if (AMultiplayerGameMode* GameMode = Cast<AMultiplayerGameMode>(GetWorld()->GetAuthGameMode()))
-		{
-			// Tell the GameMode to respawn this player.
-			GameMode->RespawnPlayer(GetController());
-		}
-	}
 }
 
 // Called every frame

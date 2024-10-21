@@ -35,6 +35,12 @@ void USwordComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	TimeSinceLastSlash += DeltaTime;
+
+	if (TimeSinceLastSlash >= CooldownDuration)
+	{
+		bCanSlash = true;
+	}
+
 	if (TimeSinceLastSlash < SlashTime)
 	{
 		SlashImplementation(StartPoint, EndPoint);
@@ -43,10 +49,14 @@ void USwordComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 void USwordComponent::Slash(USceneComponent* Start, USceneComponent* End)
 {
-	StartPoint = Start;
-	EndPoint = End;
-	SlashTime = 0;
-	ServerSlash(Start, End);
+	if (bCanSlash) {
+		StartPoint = Start;
+		EndPoint = End;
+		SlashTime = 0;
+		ServerSlash(Start, End);
+		bCanSlash = false;
+		TimeSinceLastSlash = 0;
+	}
 }
 
 void USwordComponent::ServerSlash_Implementation(USceneComponent* Start, USceneComponent* End)
@@ -72,43 +82,56 @@ void USwordComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 bool USwordComponent::SlashImplementation(USceneComponent* Start, USceneComponent* End)
 {
-	FHitResult HitResult;
-	FCollisionQueryParams QueryParams;
-	QueryParams.AddIgnoredActor(GetOwner());
+    FHitResult HitResult;
+    FCollisionQueryParams QueryParams;
+    QueryParams.AddIgnoredActor(GetOwner());
 
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start->GetComponentLocation(), End->GetComponentLocation(), ECC_WorldStatic, QueryParams))
-	{
-		// for (auto Hit : HitResult) {
-			if(ABaseMeleeCharacter* HitCharacter = Cast<ABaseMeleeCharacter>(HitResult.GetActor()))
-			{
-				UE_LOG(LogTemp, Display, TEXT("HIT A CHARACTER"))
-				if (UHealthComponent* HitCharacterHealth = HitCharacter->GetComponentByClass<UHealthComponent>())
-				{
-					UE_LOG(LogTemp, Display, TEXT("FOUND HEALTH COMPONENET"))
-					HitCharacterHealth->ApplyDamage(10.0);
-				} else
-				{
-					UE_LOG(LogTemp, Display, TEXT("No Health Component"))
-				}
-			}
+    // Define the box's size (half extents)
+    FVector BoxHalfSize(50.0f, 50.0f, 50.0f);  // Adjust the size as needed
 
-			if(ABaseCharacter* HitCharacter = Cast<ABaseCharacter>(HitResult.GetActor()))
-			{
-				UE_LOG(LogTemp, Display, TEXT("HIT A CHARACTER"))
-				if (UHealthComponent* HitCharacterHealth = HitCharacter->GetComponentByClass<UHealthComponent>())
-				{
-					UE_LOG(LogTemp, Display, TEXT("FOUND HEALTH COMPONENET"))
-					HitCharacterHealth->ApplyDamage(10.0);
-				} else
-				{
-					UE_LOG(LogTemp, Display, TEXT("No Health Component"))
-				}
-			}
-		// }
-	}
-	SlashVisualImplementation(Start->GetComponentLocation(), End->GetComponentLocation());
-	return true;
+    // Array to store multiple hits
+    TArray<FHitResult> HitResults;
+
+    // Calculate rotation and distance between start and end
+    FQuat TraceRotation = FRotationMatrix::MakeFromX(End->GetComponentLocation() - Start->GetComponentLocation()).ToQuat();
+    FVector TraceStart = Start->GetComponentLocation();
+    FVector TraceEnd = End->GetComponentLocation();
+
+    // Perform the box sweep (trace)
+    if (GetWorld()->SweepMultiByChannel(HitResults, TraceStart, TraceEnd, TraceRotation, ECC_WorldDynamic, FCollisionShape::MakeBox(BoxHalfSize), QueryParams))
+    {
+        for (const FHitResult& Hit : HitResults)
+        {
+            // Check for ABaseMeleeCharacter
+            if (ABaseMeleeCharacter* MeleeHitCharacter = Cast<ABaseMeleeCharacter>(Hit.GetActor()))
+            {
+                if (UHealthComponent* HitCharacterHealth = MeleeHitCharacter->FindComponentByClass<UHealthComponent>())
+                {
+                    HitCharacterHealth->ApplyDamage(10.0f);
+                }
+                break;
+            }
+
+            // Check for ABaseCharacter
+            else if (ABaseCharacter* BaseHitCharacter = Cast<ABaseCharacter>(Hit.GetActor()))
+            {
+                if (UHealthComponent* HitCharacterHealth = BaseHitCharacter->FindComponentByClass<UHealthComponent>())
+                {
+                    HitCharacterHealth->ApplyDamage(10.0f);
+                }
+                break;
+            }
+        }
+    }
+
+    // Call for visual effects of the slash
+    SlashVisualImplementation(Start->GetComponentLocation(), End->GetComponentLocation());
+
+    return true;
 }
+
+
+
 
 void USwordComponent::SlashVisualImplementation(FVector Start, FVector End)
 {
