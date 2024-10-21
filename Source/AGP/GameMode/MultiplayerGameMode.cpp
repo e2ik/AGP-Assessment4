@@ -19,6 +19,10 @@ void AMultiplayerGameMode::BeginPlay() {
 	if (CurrentLevelName.ToLower().Contains("procgenlevel")) {
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This is a procedural level"));
 	}
+	if (CurrentLevelName.ToLower().Contains("titlescreen"))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This is the Title Screen"));
+	}
 }
 
 void AMultiplayerGameMode::StartPlay() {
@@ -32,6 +36,21 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
     {
         // Get currently possessed pawn
         APawn* CurrentPawn = Controller->GetPawn();
+
+        //If the game level is title screen should just spawn TitleScreenControllers with constant location, rotation, and scale
+    	if (GetWorld()->GetMapName().Contains("titlescreen"))
+    	{
+    		Controller->UnPossess();
+    		if(CurrentPawn)
+    		{
+    			CurrentPawn->Destroyed();
+    		}
+    		FVector Location = FVector(3220.0f, -6340.0f, 280.0f);
+    		FRotator Rotation = FRotator(0.0f, 0.0f, 159.9f);
+    		ATitleScreenController* TitleScreenController = GetWorld()->SpawnActor<ATitleScreenController>(TitleScreenControllerClass, Location, Rotation);
+			Controller->Possess(TitleScreenController);
+    		return;
+    	}
 
         // Check if it's APlayerCharacter
         if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(CurrentPawn))
