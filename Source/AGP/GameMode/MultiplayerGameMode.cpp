@@ -40,7 +40,8 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
             PlayerCharacter->Destroy();
 
             // Spawn new PlayerCharacter
-            APlayerCharacter* NewCharacter = GetWorld()->SpawnActor<APlayerCharacter>(PlayerCharacterClass, PlayerCharacter->GetActorLocation(), FRotator::ZeroRotator);
+			FVector StartLocation = GetPlayerStartLocation();
+            APlayerCharacter* NewCharacter = GetWorld()->SpawnActor<APlayerCharacter>(PlayerCharacterClass, StartLocation, FRotator::ZeroRotator);
             Controller->Possess(NewCharacter);
 
             if (NewCharacter)
@@ -56,7 +57,8 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
             PlayerMeleeCharacter->Destroy();
 
             // Spawn new PlayerMeleeCharacter
-            APlayerMeleeCharacter* NewMeleeCharacter = GetWorld()->SpawnActor<APlayerMeleeCharacter>(PlayerMeleeCharacterClass, PlayerMeleeCharacter->GetActorLocation(), FRotator::ZeroRotator);
+			FVector StartLocation = GetPlayerStartLocation();
+            APlayerMeleeCharacter* NewMeleeCharacter = GetWorld()->SpawnActor<APlayerMeleeCharacter>(PlayerMeleeCharacterClass, StartLocation, FRotator::ZeroRotator);
             Controller->Possess(NewMeleeCharacter);
 
             if (NewMeleeCharacter)
@@ -161,4 +163,14 @@ void AMultiplayerGameMode::SpawnEnemy(const FVector& Location)
 
 }
 
+FVector AMultiplayerGameMode::GetPlayerStartLocation()
+{
+	AActor* SpawnLocationActor = nullptr;
+	for (TActorIterator<APlayerStart> It(GetWorld()); It; ++It)
+	{
+		SpawnLocationActor = *It;
+		break;
+	}
+	return SpawnLocationActor->GetActorLocation();
+}
 
