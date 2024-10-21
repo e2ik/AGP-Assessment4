@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NavigationNode.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "PathfindingSubsystem.generated.h"
 
@@ -82,6 +83,7 @@ private:
 
 	// --- Obstacle Detection ---
 
+	// DEFUNCT --- NO LONGER USED
 	// Using a modified MinDist pattern, finds the nearest node to the target location, from the current node, across ALL nodes
 	// when a new minimum has been found, it checks if the path to the potential node is obstructed using IsSpanTraversible()
 	ANavigationNode* FindNearestShortcutNode(const ANavigationNode* CurrentNode, const FVector& TargetLocation);
@@ -96,5 +98,7 @@ private:
 
 	// okay we make a map that records the traversed state of spans
 	// probably like TMap<TArray<ANavigationNode*>, bool>;
+	//TMap<ANavigationNode*, bool> SpanMap;
+	// problem: TMap does not like it when a TArray is used as its key. perhaps create a span struct instead.
 	
 };

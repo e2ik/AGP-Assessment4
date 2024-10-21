@@ -350,6 +350,17 @@ bool UPathfindingSubsystem::IsSpanTraversable(const ANavigationNode* StartNode, 
 	{
 		UE_LOG(LogTemp, Log, TEXT("Span has been checked %i times!!!"), TimesSpanChecked)
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Testing if the span arrays are the same!!!"))
+	if (!StartNode->ConnectedNodes.IsEmpty() && !EndNode->ConnectedNodes.IsEmpty())
+	{
+		TArray<ANavigationNode*> SpanArray = {StartNode->ConnectedNodes.Top(), EndNode->ConnectedNodes.Top()};
+		SpanArray.Sort();
+		TArray<ANavigationNode*> SpanArray2 = {EndNode->ConnectedNodes.Top(), StartNode->ConnectedNodes.Top()};
+		SpanArray2.Sort();
+		UE_LOG(LogTemp, Warning, TEXT("Spans are: %s"), SpanArray == SpanArray2 ? TEXT("the same") : TEXT("not the same"));
+	}
+	
 	
 
 	UE_LOG(LogTemp, Log, TEXT("Attempting cube sweep..."))
