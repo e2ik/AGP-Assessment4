@@ -6,6 +6,7 @@
 #include "EngineUtils.h"
 #include "NavigationNode.h"
 #include "ProceduralNodes.h"
+#include "EntitySystem/MovieSceneEntitySystemRunner.h"
 
 void UPathfindingSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
@@ -338,29 +339,20 @@ ANavigationNode* UPathfindingSubsystem::FindNearestShortcutNode(const ANavigatio
 
 bool UPathfindingSubsystem::IsSpanTraversable(const ANavigationNode* StartNode, const ANavigationNode* EndNode)
 {
-	// if the nodes already have a connection, they are traversable
-	if (StartNode->ConnectedNodes.Contains(EndNode))
-	{
-		UE_LOG(LogTemp, Log, TEXT("node was connected, returning"))
-		return true;
-	}
-
 	TimesSpanChecked++;
 	if (TimesSpanChecked % 100 == 0)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Span has been checked %i times!!!"), TimesSpanChecked)
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Testing if the span arrays are the same!!!"))
-	if (!StartNode->ConnectedNodes.IsEmpty() && !EndNode->ConnectedNodes.IsEmpty())
+	UE_LOG(LogTemp, Warning, TEXT("Testing if the span exists!"))
+
+	if (SpanExists(StartNode, EndNode))
 	{
-		TArray<ANavigationNode*> SpanArray = {StartNode->ConnectedNodes.Top(), EndNode->ConnectedNodes.Top()};
-		SpanArray.Sort();
-		TArray<ANavigationNode*> SpanArray2 = {EndNode->ConnectedNodes.Top(), StartNode->ConnectedNodes.Top()};
-		SpanArray2.Sort();
-		UE_LOG(LogTemp, Warning, TEXT("Spans are: %s"), SpanArray == SpanArray2 ? TEXT("the same") : TEXT("not the same"));
+		UE_LOG(LogTemp, Warning, TEXT("Span exists!"))
+		return SpanMap[StartNode->GetActorLocation() + EndNode->GetActorLocation()];
 	}
-	
+	UE_LOG(LogTemp, Warning, TEXT("Span doesn't exist"))
 	
 
 	UE_LOG(LogTemp, Log, TEXT("Attempting cube sweep..."))
@@ -387,6 +379,7 @@ bool UPathfindingSubsystem::IsSpanTraversable(const ANavigationNode* StartNode, 
 		if (HitResults.IsEmpty())
 		{
 			UE_LOG(LogTemp, Log, TEXT("no objects were hit during sweep"))
+			SpanMap.Add(StartNode->GetActorLocation() + EndNode->GetActorLocation(), true);
 			return true;
 		}
 		
@@ -403,6 +396,7 @@ bool UPathfindingSubsystem::IsSpanTraversable(const ANavigationNode* StartNode, 
 					if (HitBox.GetSize().Z >= 176.0f)
 					{
 						UE_LOG(LogTemp, Log, TEXT("impassable object detected, returning"))
+						SpanMap.Add(StartNode->GetActorLocation() + EndNode->GetActorLocation(), false);
 						return false;
 					}
 					UE_LOG(LogTemp, Log, TEXT("passable object detected"))
@@ -411,5 +405,11 @@ bool UPathfindingSubsystem::IsSpanTraversable(const ANavigationNode* StartNode, 
 		}
 	}
 	UE_LOG(LogTemp, Log, TEXT("finished sweep, valid span"))
+	SpanMap.Add(StartNode->GetActorLocation() + EndNode->GetActorLocation(), false);
 	return true;
+}
+
+bool UPathfindingSubsystem::SpanExists(const ANavigationNode* StartNode, const ANavigationNode* EndNode)
+{
+	return SpanMap.Contains(StartNode->GetActorLocation() + EndNode->GetActorLocation());
 }
