@@ -4,6 +4,7 @@
 #include "../CAction.h"
 #include "ClearPath.generated.h"
 
+class AEnemyCharacter;
 
 UCLASS()
 class AGP_API UClearPath : public UCAction

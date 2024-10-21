@@ -1,6 +1,8 @@
 #include "AIAssignSubsystem.h"
 #include "AGP/Characters/EnemyCharacter.h"
 #include "AGP/Characters/PlayerCharacter.h"
+#include "AGP/BehaviourTree/BTComponent.h"
+#include "AGP/GameMode/AGPGameInstance.h"
 #include "Engine/Engine.h"
 #include "EngineUtils.h"
 #include "TimerManager.h"

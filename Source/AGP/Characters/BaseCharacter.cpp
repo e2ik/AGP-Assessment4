@@ -3,8 +3,6 @@
 
 #include "BaseCharacter.h"
 #include "HealthComponent.h"
-#include "PlayerCharacter.h"
-#include "EnemyCharacter.h"
 #include "AGP/GameMode/MultiplayerGameMode.h"
 #include "Net/UnrealNetwork.h"
 

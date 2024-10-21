@@ -1,4 +1,5 @@
 #include "FollowPath.h"
+#include "AGP/Characters/EnemyCharacter.h"
 
 UFollowPath::UFollowPath() : UCAction() {
     Name = "FollowPath";

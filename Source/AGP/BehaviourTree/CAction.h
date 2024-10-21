@@ -6,6 +6,7 @@
 #include "CNode.h"
 #include "CAction.generated.h"
 
+class AEnemyCharacter;
 
 UCLASS()
 class AGP_API UCAction : public UObject

@@ -1,4 +1,5 @@
 #include "ReloadWeapon.h"
+#include "AGP/Characters/EnemyCharacter.h"
 
 UReloadWeapon::UReloadWeapon()
 {

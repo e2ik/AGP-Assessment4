@@ -1,4 +1,5 @@
 #include "Patrol.h"
+#include "AGP/Characters/EnemyCharacter.h"
 
 UPatrol::UPatrol() {
     Name = "Patrol";

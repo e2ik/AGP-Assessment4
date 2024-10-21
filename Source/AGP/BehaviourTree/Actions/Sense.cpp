@@ -1,4 +1,5 @@
 #include "Sense.h"
+#include "AGP/Characters/EnemyCharacter.h"
 
 USense::USense() {
     Name = "Sense";

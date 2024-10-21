@@ -4,6 +4,7 @@
 #include "../CAction.h"
 #include "GeneratePathAway.generated.h"
 
+class AEnemyCharacter;
 
 UCLASS()
 class AGP_API UGeneratePathAway : public UCAction
