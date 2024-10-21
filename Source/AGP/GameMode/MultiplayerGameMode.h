@@ -27,6 +27,7 @@ public:
 	void RespawnEnemy(AController* Controller);
 	void SpawnPlayers();
 	void SpawnEnemy(const FVector& Location);
+	FVector GetPlayerStartLocation();
 
 protected:
 
