@@ -1,4 +1,5 @@
 #include "ConditionCheck.h"
+#include "AGP/Characters/EnemyCharacter.h"
 
 UConditionCheck::UConditionCheck() {
     Name = "ConditionCheck";

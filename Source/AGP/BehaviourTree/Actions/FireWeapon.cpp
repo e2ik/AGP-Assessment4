@@ -1,4 +1,5 @@
 #include "FireWeapon.h"
+#include "AGP/Characters/EnemyCharacter.h"
 
 UFireWeapon::UFireWeapon()
 {

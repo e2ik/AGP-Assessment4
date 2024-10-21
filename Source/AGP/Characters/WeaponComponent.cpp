@@ -6,6 +6,7 @@
 #include "BaseCharacter.h"
 #include "HealthComponent.h"
 #include "PlayerCharacter.h"
+#include "PlayerMeleeCharacter.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
@@ -95,6 +96,13 @@ bool UWeaponComponent::FireImplementation(const FVector& BulletStart, const FVec
 		{
 			OutHitActor = HitCharacter;
 			if (UHealthComponent* HitCharacterHealth = HitCharacter->GetComponentByClass<UHealthComponent>())
+			{
+				HitCharacterHealth->ApplyDamage(WeaponStats.BaseDamage);
+			}
+			DrawDebugLine(GetWorld(), BulletStart, HitResult.ImpactPoint, FColor::Green, false, 1.0f);
+		} else if (ABaseMeleeCharacter* HitMeleeCharacter = Cast<ABaseMeleeCharacter>(HitResult.GetActor())) {
+			OutHitActor = HitMeleeCharacter;
+			if (UHealthComponent* HitCharacterHealth = HitMeleeCharacter->GetComponentByClass<UHealthComponent>())
 			{
 				HitCharacterHealth->ApplyDamage(WeaponStats.BaseDamage);
 			}

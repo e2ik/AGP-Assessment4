@@ -4,6 +4,7 @@
 #include "../CAction.h"
 #include "ConditionCheck.generated.h"
 
+class AEnemyCharacter;
 
 UCLASS()
 class AGP_API UConditionCheck : public UCAction

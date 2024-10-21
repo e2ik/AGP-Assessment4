@@ -4,6 +4,8 @@
 #include "../CAction.h"
 #include "Sense.generated.h"
 
+class AEnemyCharacter;
+
 UENUM()
 enum class ESenseObject: uint8 {
 	PLAYER,

@@ -14,6 +14,8 @@ enum class EPathType : uint8
 	RANDOM
 };
 
+class AEnemyCharacter;
+
 UCLASS()
 class AGP_API UGeneratePath : public UCAction
 {

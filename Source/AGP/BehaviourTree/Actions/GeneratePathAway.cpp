@@ -1,4 +1,5 @@
 #include "GeneratePathAway.h"
+#include "AGP/Characters/EnemyCharacter.h"
 
 UGeneratePathAway::UGeneratePathAway() : UCAction() {
     Name = "GeneratePathAway";

@@ -4,6 +4,7 @@
 #include "../CAction.h"
 #include "ReloadWeapon.generated.h"
 
+class AEnemyCharacter;
 
 UCLASS()
 class AGP_API UReloadWeapon : public UCAction

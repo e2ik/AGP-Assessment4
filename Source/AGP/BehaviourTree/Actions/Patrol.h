@@ -4,6 +4,7 @@
 #include "../CAction.h"
 #include "Patrol.generated.h"
 
+class AEnemyCharacter;
 
 UCLASS()
 class AGP_API UPatrol : public UCAction

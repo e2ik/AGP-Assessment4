@@ -1,4 +1,5 @@
 #include "ClearPath.h"
+#include "AGP/Characters/EnemyCharacter.h"
 
 UClearPath::UClearPath() {
     Name = "ClearPath";

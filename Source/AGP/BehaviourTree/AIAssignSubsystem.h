@@ -6,6 +6,8 @@
 
 class AEnemyCharacter;
 class APlayerCharacter;
+class UBTComponent;
+class UAGPGameInstance;
 
 UCLASS()
 class AGP_API UAIAssignSubsystem : public UWorldSubsystem

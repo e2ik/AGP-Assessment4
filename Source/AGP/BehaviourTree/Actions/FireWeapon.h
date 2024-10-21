@@ -4,6 +4,7 @@
 #include "../CAction.h"
 #include "FireWeapon.generated.h"
 
+class AEnemyCharacter;
 
 UCLASS()
 class AGP_API UFireWeapon : public UCAction

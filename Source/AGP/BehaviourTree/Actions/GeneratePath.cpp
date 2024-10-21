@@ -1,4 +1,5 @@
 #include "GeneratePath.h"
+#include "AGP/Characters/EnemyCharacter.h"
 
 UGeneratePath::UGeneratePath() : UCAction() {
     Name = "GeneratePath";
