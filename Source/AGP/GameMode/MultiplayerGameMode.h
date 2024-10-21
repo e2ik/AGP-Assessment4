@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AGP/TitleScreenController.h"
 #include "GameFramework/GameMode.h"
 #include "MultiplayerGameMode.generated.h"
 
@@ -36,6 +37,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<APlayerMeleeCharacter> PlayerMeleeCharacterClass;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<ATitleScreenController> TitleScreenControllerClass;
+	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AEnemyCharacter> EnemyCharacterClass;
 	
