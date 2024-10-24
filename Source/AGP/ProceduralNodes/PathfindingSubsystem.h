@@ -13,54 +13,6 @@ class UProceduralNodes;
  * 
  */
 
-// USTRUCT()
-// struct FNodeSpan
-// {
-// 	GENERATED_BODY()
-// 	
-// public:
-// 	UPROPERTY()
-// 	ANavigationNode* StartNode;
-// 	UPROPERTY()
-// 	ANavigationNode* EndNode;
-//
-// 	FVector VectorSum;
-// 	//int32 ID;
-//
-// 	FNodeSpan()
-// 	{
-// 		StartNode = EndNode = nullptr;
-// 		VectorSum = FVector::ZeroVector;
-// 	}
-//
-// 	FNodeSpan(ANavigationNode* startNode, ANavigationNode* endNode)
-// 	{
-// 		StartNode = startNode;
-// 		EndNode = endNode;
-// 		VectorSum = StartNode->GetActorLocation() + EndNode->GetActorLocation();
-// 	}
-//
-// 	FString ToString() const
-// 	{
-// 		FString SpanString = "";
-// 		SpanString += "First Node has name " + StartNode->GetName() + ", Position " + StartNode->GetActorLocation().ToString() + "\n";
-// 		SpanString += "Last Node has name " + EndNode->GetName() + ", Position " + EndNode->GetActorLocation().ToString() + "\n";
-// 		return SpanString;
-// 	}
-//
-// 	friend bool operator==(const FNodeSpan& first, const FNodeSpan& second)
-// 	{
-// 		return (first.StartNode == second.StartNode && first.EndNode == second.EndNode) || (first.StartNode == second.EndNode && first.EndNode == second.StartNode);
-// 	}
-//
-// 	// friend FVector GetHashType(const FNodeSpan& other)
-// 	// {
-// 	// 	return FVector(GetTypeHash(other.VectorSum));
-// 	// }
-//
-// 	
-// };
-
 UCLASS()
 class AGP_API UPathfindingSubsystem : public UWorldSubsystem
 {

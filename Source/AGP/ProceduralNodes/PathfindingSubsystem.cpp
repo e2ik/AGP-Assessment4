@@ -264,8 +264,9 @@ TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* StartNode, ANavi
 		{
 			
 			if (!ConnectedNode) continue; // Failsafe if the ConnectedNode is a nullptr.
-			if (IsSpanTraversable(ConnectedNode, EndNode))
-			{
+			// span check temporarily disabled. improving efficiency.
+			// if (IsSpanTraversable(ConnectedNode, EndNode))				
+			// {
 				const float TentativeGScore = GScores[CurrentNode] + FVector::Distance(CurrentNode->GetActorLocation(), ConnectedNode->GetActorLocation());
 				// Because we didn't setup all the scores and came from at the start, we need to check if the connected node has a gscore
 				// already otherwise set it. If it doesn't have a gscore then it won't have all the other things either so initialise them as well.
@@ -288,7 +289,8 @@ TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* StartNode, ANavi
 						OpenSet.Add(ConnectedNode);
 					}
 				}
-			}
+			//}
+			// span check temporarily disabled
 			
 		}
 	}
@@ -373,17 +375,17 @@ TArray<FVector> UPathfindingSubsystem::GetPatrolPath(const FVector& StartLocatio
 bool UPathfindingSubsystem::IsSpanTraversable(const ANavigationNode* StartNode, const ANavigationNode* EndNode)
 {
 
-	UE_LOG(LogTemp, Warning, TEXT("Testing if the span exists!"))
+	//UE_LOG(LogTemp, Warning, TEXT("Testing if the span exists!"))
 
 	if (SpanExists(StartNode, EndNode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Span exists!"))
+		//UE_LOG(LogTemp, Warning, TEXT("Span exists!"))
 		return SpanMap[StartNode->GetActorLocation() + EndNode->GetActorLocation()];
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Span doesn't exist"))
+	//UE_LOG(LogTemp, Warning, TEXT("Span doesn't exist"))
 	
 
-	UE_LOG(LogTemp, Log, TEXT("Attempting cube sweep..."))
+	//UE_LOG(LogTemp, Log, TEXT("Attempting cube sweep..."))
 
 	// creating a Cube shape to be swept between two nodes
 	FVector CubeStartLocation = StartNode->GetActorLocation();
@@ -402,11 +404,11 @@ bool UPathfindingSubsystem::IsSpanTraversable(const ANavigationNode* StartNode, 
 	if (GetWorld()->SweepMultiByChannel(HitResults, CubeMidPoint,
 		CubeMidPoint, CubeQuat, ECC_WorldStatic, CubeShape))
 	{
-		UE_LOG(LogTemp, Log, TEXT("cube sweep success, hit %d objects"), HitResults.Num())
+		//UE_LOG(LogTemp, Log, TEXT("cube sweep success, hit %d objects"), HitResults.Num())
 		// checking for any strange occurrences, has happened before with some objects.
 		if (HitResults.IsEmpty())
 		{
-			UE_LOG(LogTemp, Log, TEXT("no objects were hit during sweep"))
+			//UE_LOG(LogTemp, Log, TEXT("no objects were hit during sweep"))
 			SpanMap.Add(StartNode->GetActorLocation() + EndNode->GetActorLocation(), true);
 			return true;
 		}
@@ -419,20 +421,20 @@ bool UPathfindingSubsystem::IsSpanTraversable(const ANavigationNode* StartNode, 
 				{
 					// note: this could probably just be a simple Cast<AStaticMeshActor> instead of this silliness.
 					FBox HitBox = HitActor->GetComponentsBoundingBox();
-					UE_LOG(LogTemp, Log, TEXT("Hit actor: name %s, height %f"), *HitActor->GetActorLabel(), HitBox.GetSize().Z)
+					//UE_LOG(LogTemp, Log, TEXT("Hit actor: name %s, height %f"), *HitActor->GetActorLabel(), HitBox.GetSize().Z)
 					// if the hit object is greater or equal to the character height, it can't be jumped
 					if (HitBox.GetSize().Z >= 176.0f)
 					{
-						UE_LOG(LogTemp, Log, TEXT("impassable object detected, returning"))
+						//UE_LOG(LogTemp, Log, TEXT("impassable object detected, returning"))
 						SpanMap.Add(StartNode->GetActorLocation() + EndNode->GetActorLocation(), false);
 						return false;
 					}
-					UE_LOG(LogTemp, Log, TEXT("passable object detected"))
+					//UE_LOG(LogTemp, Log, TEXT("passable object detected"))
 				}
 			}
 		}
 	}
-	UE_LOG(LogTemp, Log, TEXT("finished sweep, valid span"))
+	//UE_LOG(LogTemp, Log, TEXT("finished sweep, valid span"))
 	SpanMap.Add(StartNode->GetActorLocation() + EndNode->GetActorLocation(), false);
 	return true;
 }
