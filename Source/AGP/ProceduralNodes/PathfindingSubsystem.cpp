@@ -207,12 +207,6 @@ TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* StartNode, ANavi
 		return TArray<FVector>();
 	}
 
-	TimesPathfinding++;
-	if (TimesPathfinding % 100 == 0)
-	{
-		UE_LOG(LogTemp, Log, TEXT("Pathfinding has been done %i times!!!"), TimesPathfinding)
-	}
-
 	// Setup the open set and add the start node.
 	TArray<ANavigationNode*> OpenSet;
 	OpenSet.Add(StartNode);
@@ -375,45 +369,9 @@ TArray<FVector> UPathfindingSubsystem::GetPatrolPath(const FVector& StartLocatio
     }
     return PatrolPath;
 }
-ANavigationNode* UPathfindingSubsystem::FindNearestShortcutNode(const ANavigationNode* CurrentNode, const FVector& TargetLocation)
-{
-	
-	float MinDist = UE_MAX_FLT;
-	ANavigationNode* ShortcutNode = nullptr;
-	for (ANavigationNode* Node : ProcedurallyPlacedNodes)
-	{
-		// check to ensure that the function doesn't return the nearest node to be the current node
-		if (Node != CurrentNode) 
-		{
-			float Dist = FVector::Distance(TargetLocation, Node->GetActorLocation());
-			if (Dist < MinDist)
-			{
-				// if the current node and node are a valid path, then they will be accurately measured
-				if (IsSpanTraversable(CurrentNode, Node))
-				{
-					MinDist = Dist;
-					ShortcutNode = Node;
-				}
-			}
-		}
-	}	
-	return ShortcutNode;
-
-	// UE_LOG(LogTemp, Log, TEXT("Suitable shortcut node: %hs"), ShortcutNode ? "Found" : "Not found")
-	// if (ShortcutNode)
-	// {
-	// 	UE_LOG(LogTemp, Log, TEXT("Current node is: %s, shortcut is %s"), *CurrentNode->GetActorLocation().ToString(), *ShortcutNode->GetActorLocation().ToString())
-	// }
-	
-}
 
 bool UPathfindingSubsystem::IsSpanTraversable(const ANavigationNode* StartNode, const ANavigationNode* EndNode)
 {
-	TimesSpanChecked++;
-	if (TimesSpanChecked % 100 == 0)
-	{
-		UE_LOG(LogTemp, Log, TEXT("Span has been checked %i times!!!"), TimesSpanChecked)
-	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Testing if the span exists!"))
 

@@ -122,18 +122,9 @@ private:
 
 	// --- Obstacle Detection ---
 
-	// DEFUNCT --- NO LONGER USED
-	// Using a modified MinDist pattern, finds the nearest node to the target location, from the current node, across ALL nodes
-	// when a new minimum has been found, it checks if the path to the potential node is obstructed using IsSpanTraversible()
-	ANavigationNode* FindNearestShortcutNode(const ANavigationNode* CurrentNode, const FVector& TargetLocation);
-
 	// Performs a sweep from one node to another, checking for any hits along the path. Any hits have their heights checked,
 	// being below the height of the enemy character being "traversable".
 	bool IsSpanTraversable(const ANavigationNode* StartNode, const ANavigationNode* EndNode);
-
-	// delete these 
-	int32 TimesSpanChecked;
-	int32 TimesPathfinding;
 
 	// okay we make a map that records the traversed state of spans
 	// probably like TMap<TArray<ANavigationNode*>, bool>;
