@@ -16,6 +16,8 @@ void UPathfindingSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 		ProceduralNodes->OnNodesGenerated.AddDynamic(this, &UPathfindingSubsystem::SetNodesArray);
 	}
 	// PopulateNodes();
+
+
 }
 
 TArray<FVector> UPathfindingSubsystem::GetWaypointPositions() const
@@ -103,6 +105,7 @@ void UPathfindingSubsystem::PlaceProceduralNodes(const TArray<FVector>& Landscap
 			}
 		}
 	}
+	
 }
 
 void UPathfindingSubsystem::PopulateNodes()
@@ -114,6 +117,7 @@ void UPathfindingSubsystem::PopulateNodes()
 		Nodes.Add(*It);
 		//UE_LOG(LogTemp, Warning, TEXT("NODE: %s"), *(*It)->GetActorLocation().ToString())
 	}
+	
 }
 
 void UPathfindingSubsystem::RemoveAllNodes()
@@ -288,9 +292,10 @@ TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* StartNode, ANavi
 					{
 						OpenSet.Add(ConnectedNode);
 					}
-				}
-			//}
-			// span check temporarily disabled
+				//}
+				// span check temporarily disabled
+			}
+			
 			
 		}
 	}
@@ -318,6 +323,22 @@ TArray<FVector> UPathfindingSubsystem::ReconstructPath(const TMap<ANavigationNod
 void UPathfindingSubsystem::SetNodesArray()
 {
 	Nodes = ProceduralNodes->GetMapNodes();
+
+	UE_LOG(LogTemp, Log, TEXT("Nodes is of size %i"), Nodes.Num())
+	for (ANavigationNode* Node : Nodes)
+	{
+		if (Node)
+		{
+			for (ANavigationNode* ConnectedNode : Node->ConnectedNodes)
+			{
+				if (ConnectedNode)
+				{
+					IsSpanTraversable(Node, ConnectedNode);
+				}
+			}
+		}
+	}
+	UE_LOG(LogTemp, Log, TEXT("SpanMap is of size %i"), SpanMap.Num())
 }
 
 // Check the nodes in front of player
