@@ -85,5 +85,15 @@ private:
 	TMap<FVector, bool> SpanMap;
 
 	bool SpanExists(const ANavigationNode* StartNode, const ANavigationNode* EndNode);
+
+	// alrighty new way!!
+	// populates the span map; called after the nodes have been populated through SetNodesArray()
+	// void PopulateSpanMap();
+
+	// functions as a pure check of the span map to see if a span exists, and is recorded as traversible. if it does not exist (moving node?) then it will perform SweepSpan();
+	// bool IsSpanTraversibleREFACTORED();
+
+	// the actual sweeping functionality of the old IsSpanTraversible(). 
+	// bool SweepSpan(); 
 	
 };
