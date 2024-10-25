@@ -86,7 +86,8 @@ private:
 
 	bool SpanExists(const ANavigationNode* StartNode, const ANavigationNode* EndNode);
 
-	// alrighty new way!!
+	// alrighty redoing stuff!!
+	
 	// populates the span map; called after the nodes have been populated through SetNodesArray()
 	// void PopulateSpanMap();
 
