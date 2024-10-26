@@ -14,6 +14,7 @@
 
 class UPawnSensingComponent;
 class APlayerCharacter;
+class APlayerMeleeCharacter;
 class UPathfindingSubsystem;
 class UBTComponent;
 class UAIAssignSubsystem;
@@ -144,7 +145,7 @@ protected:
 	UPawnSensingComponent* PawnSensingComponent;
 
 	UPROPERTY(Transient)
-	TWeakObjectPtr<APlayerCharacter> SensedCharacter;
+	TWeakObjectPtr<AActor> SensedCharacter;
 
 	UPROPERTY(VisibleAnywhere)
 	TArray<FVector> CurrentPath;
