@@ -31,6 +31,8 @@ public:
 
 protected:
 
+	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
+
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<APlayerCharacter> PlayerCharacterClass;
 

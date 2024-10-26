@@ -5,6 +5,7 @@
 #include "GameMode/AGPGameInstance.h"
 #include "GameMode/MultiplayerGameMode.h"
 #include "Kismet/GameplayStatics.h"
+#include "AGP/GameMode/AGPGameInstance.h"
 
 void UTitleScreenWidget::OnHostButtonPressed()
 {
@@ -22,8 +23,21 @@ void UTitleScreenWidget::OnJoinButtonPressed()
 	}
 }
 
-void UTitleScreenWidget::OnPlayButtonPressed()
+void UTitleScreenWidget::OnMeleeButtonPressed()
 {
+	if (UAGPGameInstance* GameInstance = Cast<UAGPGameInstance>(GetGameInstance()))
+	{
+		GameInstance->SetSelectedPawnClass(GameInstance->GetPlayerMeleeClass());
+	}
+	GetWorld()->ServerTravel("/Game/Levels/ProcGenLevel?listen");
+}
+
+void UTitleScreenWidget::OnGunButtonPressed()
+{
+	if (UAGPGameInstance* GameInstance = Cast<UAGPGameInstance>(GetGameInstance()))
+	{
+		GameInstance->SetSelectedPawnClass(GameInstance->GetPlayerClass());
+	}
 	GetWorld()->ServerTravel("/Game/Levels/ProcGenLevel?listen");
 }
 
@@ -48,9 +62,9 @@ void UTitleScreenWidget::RespawnPlayer(APlayerController* PlayerController)
 	APlayerMeleeCharacter* NewMeleeCharacter = GetWorld()->SpawnActor<APlayerMeleeCharacter>(PlayerMeleeCharacterClass, FVector(0.0), FRotator(0.0));
 	PlayerController->Possess(NewMeleeCharacter);
 
-	if (NewMeleeCharacter)
-	{
-		NewMeleeCharacter->ChooseCharacterMesh();
-		NewMeleeCharacter->DrawUI();
-	}
+	// if (NewMeleeCharacter)
+	// {
+	// 	NewMeleeCharacter->ChooseCharacterMesh();
+	// 	NewMeleeCharacter->DrawUI();
+	// }
 }

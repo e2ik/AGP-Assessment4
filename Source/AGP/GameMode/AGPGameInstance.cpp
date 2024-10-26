@@ -7,6 +7,8 @@
 #include "AGP/Pickups/WeaponPickup.h"
 #include "AGP/BehaviourTree/BTComponent.h"
 #include "AGP/Characters/EnemyCharacter.h"
+#include "AGP/Characters/PlayerCharacter.h"
+#include "AGP/Characters/PlayerMeleeCharacter.h"
 
 
 void UAGPGameInstance::Init()
@@ -70,6 +72,16 @@ UClass* UAGPGameInstance::GetEnemyClass() const
     return EnemyClass.Get();
 }
 
+UClass* UAGPGameInstance::GetPlayerClass() const
+{
+    return PlayerClass.Get();
+}
+
+UClass* UAGPGameInstance::GetPlayerMeleeClass() const
+{
+    return PlayerMeleeClass.Get();
+}
+
 void UAGPGameInstance::SpawnGroundHitParticle(const FVector& SpawnLocation)
 {
     if (GroundHitParticle) {
@@ -96,6 +108,11 @@ void UAGPGameInstance::PlayGunshotSound2D()
     if (GunshotSoundCue) {
         UGameplayStatics::PlaySound2D(GetWorld(), GunshotSoundCue);
     }
+}
+
+void UAGPGameInstance::SetSelectedPawnClass(TSubclassOf<APawn> PawnClass)
+{
+    SelectedPawnClass = PawnClass;
 }
 
 
