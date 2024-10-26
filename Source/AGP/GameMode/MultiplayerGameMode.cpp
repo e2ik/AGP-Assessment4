@@ -30,6 +30,18 @@ void AMultiplayerGameMode::StartPlay() {
 	// testing failed
 }
 
+UClass* AMultiplayerGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
+{
+	if (UAGPGameInstance* GameInstance = Cast<UAGPGameInstance>(GetGameInstance()))
+	{
+		if (GameInstance->SelectedPawnClass)
+		{
+			return GameInstance->SelectedPawnClass;
+		}
+	}
+	return Super::GetDefaultPawnClassForController_Implementation(InController);
+}
+
 void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
 {
     if (Controller)
@@ -38,19 +50,19 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
         APawn* CurrentPawn = Controller->GetPawn();
 
         //If the game level is title screen should just spawn TitleScreenControllers with constant location, rotation, and scale
-    	if (GetWorld()->GetMapName().Contains("titlescreen"))
-    	{
-    		Controller->UnPossess();
-    		if(CurrentPawn)
-    		{
-    			CurrentPawn->Destroyed();
-    		}
-    		FVector Location = FVector(3220.0f, -6340.0f, 280.0f);
-    		FRotator Rotation = FRotator(0.0f, 0.0f, 159.9f);
-    		ATitleScreenController* TitleScreenController = GetWorld()->SpawnActor<ATitleScreenController>(TitleScreenControllerClass, Location, Rotation);
+		if (GetWorld()->GetMapName().Contains("titlescreen"))
+		{
+			Controller->UnPossess();
+				if(CurrentPawn)
+				{
+					CurrentPawn->Destroyed();
+				}
+			FVector Location = FVector(3220.0f, -6340.0f, 280.0f);
+			FRotator Rotation = FRotator(0.0f, 0.0f, 159.9f);
+			ATitleScreenController* TitleScreenController = GetWorld()->SpawnActor<ATitleScreenController>(TitleScreenControllerClass, Location, Rotation);
 			Controller->Possess(TitleScreenController);
-    		return;
-    	}
+			return;
+		}
 
         // Check if it's APlayerCharacter
         if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(CurrentPawn))

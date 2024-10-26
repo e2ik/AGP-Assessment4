@@ -7,6 +7,9 @@
 #include "Characters/PlayerMeleeCharacter.h"
 #include "TitleScreenWidget.generated.h"
 
+
+class UAGPGameInstance;
+
 /**
  * 
  */
@@ -24,7 +27,10 @@ protected:
 	void OnJoinButtonPressed();
 
 	UFUNCTION(BlueprintCallable)
-	void OnPlayButtonPressed();
+	void OnMeleeButtonPressed();
+
+	UFUNCTION(BlueprintCallable)
+	void OnGunButtonPressed();
 
 	void RespawnPlayer(APlayerController* PlayerController);
 	
