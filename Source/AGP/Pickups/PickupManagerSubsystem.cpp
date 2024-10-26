@@ -56,7 +56,7 @@ void UPickupManagerSubsystem::SpawnWeaponPickup()
     }
 }
 
-void UPickupManagerSubsystem::SpawnWeaponPickupNearPlayer(const FVector& PlayerLocation)
+void UPickupManagerSubsystem::SpawnWeaponPickupNearPlayer(const FVector& PlayerLocation, int32 Level)
 {
     if (PossibleSpawnLocations.IsEmpty())
     {
@@ -87,7 +87,11 @@ void UPickupManagerSubsystem::SpawnWeaponPickupNearPlayer(const FVector& PlayerL
             }
 
             AWeaponPickup* NewPickup = GetWorld()->SpawnActor<AWeaponPickup>(GameInstance->GetWeaponPickupClass(), NewPosition, FRotator::ZeroRotator);
-            if (NewPickup) { SpawnedPickups.Add(NewPosition, NewPickup); }
+            if (NewPickup) {
+				NewPickup->SetWeaponStats(Level);
+				NewPickup->UpdateWeaponPickupMaterial();
+				SpawnedPickups.Add(NewPosition, NewPickup);
+				}
         }
     }
 }
