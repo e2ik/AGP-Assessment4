@@ -11,30 +11,19 @@ UAIDirector::UAIDirector()
 
 }
 
-TStatId UAIDirector::GetStatId() const
-{
-    RETURN_QUICK_DECLARE_CYCLE_STAT(UAIDirector, STATGROUP_Tickables);
-}
-
-void UAIDirector::Initialize(FSubsystemCollectionBase& Collection)
-{
-    Super::Initialize(Collection);
-    bHasFoundNodes = false;
-    bPlaceStarts = false;
-    bSpawnEnemies = false;
-}
-
-void UAIDirector::Deinitialize()
-{
-    bHasFoundNodes = false;
-    bPlaceStarts = false;
-    bSpawnEnemies = false;
-    Super::Deinitialize();
-}
-
 void UAIDirector::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+
+    // Get the world time
+    GameTime = GetWorld()->GetTimeSeconds();
+
+    UAIAssignSubsystem* AIAssignSubsystem = GetWorld()->GetSubsystem<UAIAssignSubsystem>();
+    if (AIAssignSubsystem) {
+        int32 NumOfCurrentEnemies = AIAssignSubsystem->GetNumOfEnemies();
+        GEngine->AddOnScreenDebugMessage(0, 0.f, FColor::Green, FString::Printf(TEXT("Number of Enemies: %d"), NumOfCurrentEnemies));
+    }
+
     // throttle tick
     float CurrentTime = GetWorld()->GetTimeSeconds();
     if ((CurrentTime - LastTickTime) >= DesiredTickInterval) {
@@ -48,7 +37,7 @@ void UAIDirector::Tick(float DeltaTime)
 
 void UAIDirector::RunCustomTick()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Custom Tick"));
+    // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Custom Tick"));
     if (!bHasFoundNodes) { FindAllNodes(); }
     if (bPlaceStarts) { GetRandomNode(); }
     if (bSpawnEnemies) { SpawnEnemies(); }
