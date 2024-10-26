@@ -281,7 +281,7 @@ void UAIDirector::ConstructBT() {
     UCDecorator* CheckTotalDeaths = NewObject<UCDecorator>();
     CheckTotalDeaths->Initialize("Check Total Deaths");
     CheckTotalDeaths->InitializeCondition([this]() {
-        return TotalDeathResets >= 4;
+        return TotalDeathResets >= 2;
     });
     USpawnWeapon* SpawnWeaponAction = NewObject<USpawnWeapon>();
     SpawnWeaponAction->PassDirector(this);
@@ -336,12 +336,20 @@ void UAIDirector::SpawnWeaponAtPlayer()
     UClass* WeaponPickupClass = GameInstance->GetWeaponPickupClass();
     if (!WeaponPickupClass) return;
 
+    int32 WeaponLevel = 1;
+    if (TotalDeathResets >= 3) { WeaponLevel = 4; }
+    else if (TotalDeathResets >= 2) { WeaponLevel = 3; }
+    else if (TotalDeathResets >= 1) { WeaponLevel = 2; }
+
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, 
+            FString::Printf(TEXT("Total Death Resets: %d"), TotalDeathResets));
+
     for (TActorIterator<APlayerCharacter> ActorItr(World); ActorItr; ++ActorItr) {
         APlayerCharacter* Player = *ActorItr;
         if (Player) {
             UPickupManagerSubsystem* PickupSubsystem = World->GetSubsystem<UPickupManagerSubsystem>();
             if (PickupSubsystem) {
-                PickupSubsystem->SpawnWeaponPickupNearPlayer(Player->GetActorLocation());
+                PickupSubsystem->SpawnWeaponPickupNearPlayer(Player->GetActorLocation(), WeaponLevel);
             }
         }
     }
