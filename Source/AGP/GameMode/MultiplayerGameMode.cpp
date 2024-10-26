@@ -52,6 +52,13 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
 
             if (NewCharacter)
             {
+				// give them weapons on spawn
+				if (!NewCharacter->WeaponComponent) {
+					NewCharacter->WeaponComponent = NewObject<UWeaponComponent>(NewCharacter, UWeaponComponent::StaticClass());
+					NewCharacter->WeaponComponent->RegisterComponent();
+					NewCharacter->WeaponComponent->SetWeaponStats(FWeaponStats());
+					NewCharacter->EquipWeapon(true);
+				}
                 NewCharacter->ChooseCharacterMesh();
                 NewCharacter->DrawUI();
             }
@@ -69,6 +76,11 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
 
             if (NewMeleeCharacter)
             {
+				if (!NewMeleeCharacter->SwordComponent) {
+					NewMeleeCharacter->SwordComponent = NewObject<USwordComponent>(NewMeleeCharacter, USwordComponent::StaticClass());
+					NewMeleeCharacter->SwordComponent->RegisterComponent();
+					NewMeleeCharacter->EquipSword(true);
+				}
                 NewMeleeCharacter->ChooseCharacterMesh();
                 NewMeleeCharacter->DrawUI();
             }
@@ -161,6 +173,16 @@ void AMultiplayerGameMode::SpawnEnemy(const FVector& Location)
         UClass* EnemyClass = GameInstance->GetEnemyClass();
         if (EnemyClass) {
             AEnemyCharacter* NewEnemy = World->SpawnActor<AEnemyCharacter>(EnemyClass, Location, FRotator::ZeroRotator, SpawnParams);
+
+			// give them weapons on spawn
+			if (NewEnemy) {
+				if (!NewEnemy->WeaponComponent) {
+					NewEnemy->WeaponComponent = NewObject<UWeaponComponent>(NewEnemy, UWeaponComponent::StaticClass());
+					NewEnemy->WeaponComponent->RegisterComponent();
+					NewEnemy->EquipWeapon(true);
+				}
+			}
+
         }
     }
 	UAIAssignSubsystem* AIAssignSubsystem = GetWorld()->GetSubsystem<UAIAssignSubsystem>();

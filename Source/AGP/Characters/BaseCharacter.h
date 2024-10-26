@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "WeaponComponent.h"
 #include "GameFramework/Character.h"
+#include "AGP/GameMode/MultiplayerGameMode.h"
 #include "BaseCharacter.generated.h"
 
 class UHealthComponent;
@@ -79,5 +80,7 @@ private:
 	void EquipWeaponImplementation(bool bEquipWeapon, const FWeaponStats& WeaponStats = FWeaponStats());
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastEquipWeapon(bool bEquipWeapon, const FWeaponStats& WeaponStats = FWeaponStats());
+
+	friend class AMultiplayerGameMode;
 
 };

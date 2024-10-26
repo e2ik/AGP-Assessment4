@@ -46,6 +46,7 @@ void APlayerCharacter::DrawUI()
 		}
 	}
 	UpdateHealthBar(1.0f);
+	if (WeaponComponent) WeaponComponent->UpdateAmmoUI();
 }
 
 // Called when the game starts or when spawned

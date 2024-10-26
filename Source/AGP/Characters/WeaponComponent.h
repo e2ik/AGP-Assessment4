@@ -62,6 +62,9 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION()
+	void UpdateAmmoUI();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -72,9 +75,6 @@ protected:
 	int32 RoundsRemainingInMagazine;
 	float TimeSinceLastShot;
 	bool bIsReloading = false;
-
-	UFUNCTION()
-	void UpdateAmmoUI();
 
 public:	
 	// Called every frame
