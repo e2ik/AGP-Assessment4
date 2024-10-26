@@ -128,7 +128,7 @@ void AWeaponPickup::SetWeaponStats(int32 Level)
 	switch (Level) {
 		case 1:
 			WeaponRarity = EWeaponRarity::Common;
-			WeaponStats.Accuracy = 0.9f;
+			WeaponStats.Accuracy = 0.95f;
 			WeaponStats.FireRate = 0.6f;
 			WeaponStats.BaseDamage = 15.0f;
 			WeaponStats.MagazineSize = 8;
@@ -136,7 +136,7 @@ void AWeaponPickup::SetWeaponStats(int32 Level)
 			break;
 		case 2:
 			WeaponRarity = EWeaponRarity::Rare;
-			WeaponStats.Accuracy = 0.95f;
+			WeaponStats.Accuracy = 0.96f;
 			WeaponStats.FireRate = 0.4f;
 			WeaponStats.BaseDamage = 20.0f;
 			WeaponStats.MagazineSize = 15;
@@ -160,11 +160,11 @@ void AWeaponPickup::SetWeaponStats(int32 Level)
 			break;
 		default:
 			WeaponRarity = EWeaponRarity::Common;
-			WeaponStats.Accuracy = FMath::RandRange(0.9f, 1.0f);
-			WeaponStats.FireRate = FMath::RandRange(0.05f, 0.2f);
-			WeaponStats.BaseDamage = FMath::RandRange(5.0f, 30.0f);
-			WeaponStats.MagazineSize = FMath::RandRange(1, 100);
-			WeaponStats.ReloadTime = FMath::RandRange(0.1f, 4.0f);
+			WeaponStats.Accuracy = 0.95f;
+			WeaponStats.FireRate = 0.6f;
+			WeaponStats.BaseDamage = 15.0f;
+			WeaponStats.MagazineSize = 8;
+			WeaponStats.ReloadTime = 2.0f;
 			break;
 	}
 }

@@ -19,12 +19,12 @@ struct FWeaponStats
 public:
 	
 	EWeaponType WeaponType = EWeaponType::Rifle;
-	float Accuracy = 1.0f;
-	float FireRate = 0.2f;
-	float BaseDamage = 10.0f;
+	float Accuracy = 0.95f;
+	float FireRate = 0.6f;
+	float BaseDamage = 15.0f;
 	UPROPERTY()
-	int32 MagazineSize = 5;
-	float ReloadTime = 1.0f;
+	int32 MagazineSize = 8;
+	float ReloadTime = 2.0f;
 
 	/**
 	 * A debug ToString function that allows the easier printing of the weapon stats.
