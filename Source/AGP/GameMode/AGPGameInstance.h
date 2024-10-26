@@ -4,6 +4,9 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "NiagaraSystem.h"
+#include "OnlineSubsystem.h"
+#include "OnlineSessionSettings.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "Sound/SoundCue.h"
 #include "AGPGameInstance.generated.h"
 
@@ -27,6 +30,11 @@ public:
 	void SpawnCharacterHitParticle(const FVector& SpawnLocation);
 	void PlayGunshotSoundAtLocation(const FVector& Location);
 	void PlayGunshotSound2D();
+	virtual void Init() override;
+	void CreateSession(FName SessionName);
+	void OnCreateSessionComplete(FName SessionName, bool bSuccess);
+	void ServerTravel();
+	void ClientTravel();
 
 protected:
 
@@ -47,5 +55,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	USoundCue* GunshotSoundCue;
+
+private:
+	IOnlineSubsystem* OnlineSubsystem;
+
+	IOnlineSessionPtr Session;
 	
 };

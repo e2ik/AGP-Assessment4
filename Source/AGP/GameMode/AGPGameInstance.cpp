@@ -1,10 +1,59 @@
  // Fill out your copyright notice in the Description page of Project Settings.
 #include "AGPGameInstance.h"
+#include "AGPGameInstance.h"
 #include "NiagaraFunctionLibrary.h"
+#include "OnlineSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "AGP/Pickups/WeaponPickup.h"
 #include "AGP/BehaviourTree/BTComponent.h"
 #include "AGP/Characters/EnemyCharacter.h"
+
+
+void UAGPGameInstance::Init()
+{
+    OnlineSubsystem = IOnlineSubsystem::Get();
+    if (OnlineSubsystem)
+    {
+        Session = OnlineSubsystem->GetSessionInterface();
+        Session->OnCreateSessionCompleteDelegates.AddUObject(this, &UAGPGameInstance::OnCreateSessionComplete);
+    }
+}
+
+void UAGPGameInstance::CreateSession(FName SessionName)
+{
+    if (Session.IsValid())
+    {
+        FOnlineSessionSettings SessionSettings = FOnlineSessionSettings();
+        SessionSettings.bIsLANMatch = true;
+        SessionSettings.NumPublicConnections = 3;
+        SessionSettings.bShouldAdvertise = true;
+        bool bSuccess = Session->CreateSession(0, SessionName, SessionSettings);
+        OnCreateSessionComplete(SessionName, bSuccess);
+    }
+}
+
+void UAGPGameInstance::OnCreateSessionComplete(FName SessionName, bool bSuccess)
+{
+    if(bSuccess)
+    {
+        UE_LOG(LogTemp, Display, TEXT("Session Created: %s"), SessionName)
+    }
+    else
+    {
+        UE_LOG(LogTemp, Display, TEXT("Session Creation Failed: %s"), SessionName)
+    }
+}
+
+void UAGPGameInstance::ServerTravel()
+{
+    
+}
+
+void UAGPGameInstance::ClientTravel()
+{
+    
+}
+
 
 UClass* UAGPGameInstance::GetWeaponPickupClass() const
 {
