@@ -34,20 +34,27 @@ void APlayerCharacter::UpdateAmmoUI(int32 RoundsRemaining, int32 MagazineSize)
 
 void APlayerCharacter::DrawUI()
 {
-	if (IsLocallyControlled() && PlayerHUDClass)
-	{
-		if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
-		{
-			PlayerHUD = CreateWidget<UPlayerCharacterHUD>(PlayerController, PlayerHUDClass);
-			if (PlayerHUD)
-			{
-				PlayerHUD->AddToPlayerScreen();
-			}
-		}
-	}
-	UpdateHealthBar(1.0f);
-	if (WeaponComponent) WeaponComponent->UpdateAmmoUI();
+    FString CurrentLevelName = GetWorld()->GetMapName();
+    FString DesiredLevelName = TEXT("ProcGenLevel");
+
+    if (CurrentLevelName.Contains(DesiredLevelName))
+    {
+        if (IsLocallyControlled() && PlayerHUDClass)
+        {
+            if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+            {
+                PlayerHUD = CreateWidget<UPlayerCharacterHUD>(PlayerController, PlayerHUDClass);
+                if (PlayerHUD)
+                {
+                    PlayerHUD->AddToPlayerScreen();
+                }
+            }
+        }
+        UpdateHealthBar(1.0f);        
+        if (WeaponComponent) { WeaponComponent->UpdateAmmoUI(); }
+    }
 }
+
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
