@@ -20,10 +20,8 @@ class AGP_API UAIDirector : public UTickableWorldSubsystem
 public:
 
 	UAIDirector();
-    virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-    virtual void Deinitialize() override;
 	virtual void Tick(float DeltaTime) override;
-	virtual TStatId GetStatId() const override;
+	virtual TStatId GetStatId() const override { return TStatId(); }
 
 	bool GetHasFoundNodes() const { return bHasFoundNodes; }
 	void SetHasFoundNodes(bool Value) { bHasFoundNodes = Value; }
@@ -31,6 +29,10 @@ public:
 	void SetPlaceStarts(bool Value) { bPlaceStarts = Value; }
 
 protected:
+
+	// game specific trackables
+	UPROPERTY()
+	float GameTime = 0.0f;
 
 	UPROPERTY(EditAnywhere)
 	bool bHasFoundNodes;
