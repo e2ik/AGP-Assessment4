@@ -18,3 +18,4 @@
 #include "Director/Spawn.h"
 #include "Director/IncreaseCount.h"
 #include "Director/DecreaseCount.h"
+#include "Director/SpawnWeapon.h"

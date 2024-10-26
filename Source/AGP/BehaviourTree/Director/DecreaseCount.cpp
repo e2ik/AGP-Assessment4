@@ -9,6 +9,7 @@ EStatus UDecreaseCount::Process() {
     if (Director) {
         Director->DecreaseNumOfEnemies();
         Director->SetPlayerDeathCount(0);
+        Director->TotalDeathResets++;
     }
     return EStatus::SUCCESS;
 }
