@@ -5,6 +5,7 @@
 #include "AGP/Characters/EnemyCharacter.h"
 #include "GameFramework/PlayerStart.h"
 #include "AGP/BehaviourTree/AIAssignSubsystem.h"
+#include "AGP/GameMode/AIDirector.h"
 #include "AGP/GameMode/AGPGameInstance.h"
 #include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
@@ -36,6 +37,11 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
         // Check if it's APlayerCharacter
         if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(CurrentPawn))
         {
+			// tickable pass (probably a bad way to do it)
+			UAIDirector* Director = GetWorld()->GetSubsystem<UAIDirector>();
+			if (Director) { Director->RegisterPlayerDeath(Controller); }
+
+
             Controller->UnPossess();
             PlayerCharacter->Destroy();
 

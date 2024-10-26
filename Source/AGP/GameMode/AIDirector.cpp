@@ -3,6 +3,7 @@
 #include "Engine/World.h"
 #include "AGP/ProceduralNodes/NavigationNode.h"
 #include "AGP/GameMode/MultiplayerGameMode.h"
+#include "AGP/BehaviourTree/AIAssignSubsystem.h"
 #include "DrawDebugHelpers.h"
 
 
@@ -21,7 +22,7 @@ void UAIDirector::Tick(float DeltaTime)
     UAIAssignSubsystem* AIAssignSubsystem = GetWorld()->GetSubsystem<UAIAssignSubsystem>();
     if (AIAssignSubsystem) {
         int32 NumOfCurrentEnemies = AIAssignSubsystem->GetNumOfEnemies();
-        GEngine->AddOnScreenDebugMessage(0, 0.f, FColor::Green, FString::Printf(TEXT("Number of Enemies: %d"), NumOfCurrentEnemies));
+        // GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Green, FString::Printf(TEXT("Number of Enemies: %d"), NumOfCurrentEnemies));
     }
 
     // throttle tick
@@ -39,8 +40,10 @@ void UAIDirector::RunCustomTick()
 {
     // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Custom Tick"));
     if (!bHasFoundNodes) { FindAllNodes(); }
-    if (bPlaceStarts) { GetRandomNode(); }
+    if (bPlaceStarts) { GetRandomNode(); SetPlayersMap(); }
     if (bSpawnEnemies) { SpawnEnemies(); }
+    if (bStartBT) { RunBT(); }
+
 }
 
 void UAIDirector::FindAllNodes()
@@ -150,7 +153,6 @@ void UAIDirector::GenerateEnemySpawn(ANavigationNode* CenterNode)
             }
         }
     }
-
     bSpawnEnemies = true;
 }
 
@@ -166,5 +168,128 @@ void UAIDirector::SpawnEnemies()
             FVector SpawnLocation = SpawnRadiusLocations[RandomIndex];
             GameMode->SpawnEnemy(SpawnLocation);
         }
+    }
+    bStartBT = true;
+}
+
+void UAIDirector::SetPlayersMap()
+{
+    UWorld* World = GetWorld();
+    if (!World) return;
+
+    if (PlayerIndexMap.Num() > 0) { PlayerIndexMap.Empty(); }
+    if (PlayerControllerMap.Num() > 0) { PlayerControllerMap.Empty(); }
+
+    for (int32 i = 0; i < NumOfStarts; ++i) {
+        FString PlayerName = FString::Printf(TEXT("Player%d"), i + 1);
+        PlayerIndexMap.Add(i, PlayerName);
+    }
+
+    for (int32 i = 0; i < NumOfStarts; ++i) {
+        PlayerControllerMap.Add(i, -1);
+    }
+}
+
+void UAIDirector::RegisterPlayerDeath(AController* Controller)
+{
+    NumOfPlayerDeaths++;
+    UWorld* World = GetWorld();
+    if (!World) return;
+
+    int32 PlayerNumber = -1;
+
+    AMultiplayerGameMode* GameMode = Cast<AMultiplayerGameMode>(World->GetAuthGameMode());
+    if (GameMode && Controller) {
+        APlayerState* PlayerState = Controller->GetPlayerState<APlayerState>();
+        if (PlayerState) {
+            PlayerNumber = PlayerState->GetPlayerId();
+            if (!PlayerControllerMap.Contains(PlayerNumber) && !bPlaceStarts) {
+                for (auto& Pair : PlayerControllerMap) {
+                    if (Pair.Value == -1) {
+                        Pair.Value = PlayerNumber;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    // Now find the PlayerKey in PlayerIndexMap
+    const int32* PlayerKey = PlayerControllerMap.FindKey(PlayerNumber);
+    if (PlayerKey) {
+        // Use PlayerKey to get the player name from PlayerIndexMap
+        const FString* PlayerNamePtr = PlayerIndexMap.Find(*PlayerKey);
+        if (PlayerNamePtr) {
+            // Log the death message with the player name
+            //TODO: call a hud update can pass this string I guess
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s has died"), **PlayerNamePtr));
+        }
+    }
+}
+
+void UAIDirector::RunBT()
+{
+    ConstructBT();
+    if (!bBTConstructed) return;
+
+    // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Running BT"));
+    CurrentStatus = RootBT->Process();
+    EStatus ChildStatus = RootBT->GetChild(0)->GetNodeStatus();
+    if (ChildStatus != EStatus::RUNNING) RootBT->Reset();
+}
+
+void UAIDirector::ConstructBT() {
+    RootBT = NewObject<UCBTree>();
+    BTName = "AI Director BT";
+    RootBT->Initialize(BTName);
+
+	UCSelector* RootSelector = NewObject<UCSelector>();
+	RootSelector->Initialize("Main Sequence");
+
+    UCDecorator* CheckEnemies = NewObject<UCDecorator>();
+    CheckEnemies->Initialize("Check Enemies");
+    CheckEnemies->InitializeCondition([this]() {
+        UAIAssignSubsystem* AIAssignSubsystem = GetWorld()->GetSubsystem<UAIAssignSubsystem>();
+        if (AIAssignSubsystem) {
+            int32 NumOfCurrentEnemies = AIAssignSubsystem->GetNumOfEnemies();
+            return NumOfCurrentEnemies <= 0;
+        }
+        return false;
+    });
+
+    USpawn* SpawnAction = NewObject<USpawn>();
+    SpawnAction->PassDirector(this);
+
+    UCDecorator* CheckPlayerDeaths = NewObject<UCDecorator>();
+    CheckPlayerDeaths->Initialize("Check Player Deaths");
+    CheckPlayerDeaths->InitializeCondition([this]() {
+        return NumOfPlayerDeaths >= 2;
+    });
+
+    UDecreaseCount* DecreaseAction = NewObject<UDecreaseCount>();
+    DecreaseAction->PassDirector(this);
+
+
+
+    RootSelector->AddChild(CheckEnemies);
+    RootSelector->AddChild(CheckPlayerDeaths);
+    CheckPlayerDeaths->AddChild(DecreaseAction);
+    CheckEnemies->AddChild(SpawnAction);
+    RootBT->AddChild(RootSelector);
+
+    bBTConstructed = true;
+}
+
+void UAIDirector::IncreaseNumOfEnemies()
+{
+    if (NumOfEnemies < MaxEnemies) {
+        NumOfEnemies++;
+    }
+}
+
+void UAIDirector::DecreaseNumOfEnemies()
+{
+    if (NumOfEnemies > 4) {
+        NumOfEnemies--;
     }
 }
