@@ -6,6 +6,7 @@
 #include "Algo/Reverse.h"
 #include "HealthComponent.h"
 #include "PlayerCharacter.h"
+#include "PlayerMeleeCharacter.h"
 #include "AGP/ProceduralNodes/PathfindingSubsystem.h"
 #include "AGP/BehaviourTree/BTComponent.h"
 #include "AGP/BehaviourTree/AIAssignSubsystem.h"
@@ -145,7 +146,17 @@ void AEnemyCharacter::OnSensedPawn(APawn* SensedActor)
 {
 	if (APlayerCharacter* Player = Cast<APlayerCharacter>(SensedActor))
 	{
-		SensedCharacter = TWeakObjectPtr<APlayerCharacter>(Player); 
+		SensedCharacter = Player; 
+		AIAssignSubsystem->NotifyPlayerSensed(true, this);
+		if (!bHasSensedPlayer) {
+			bHasSensedPlayer = true;
+			ClearPath();
+		}
+	}
+
+	if (APlayerMeleeCharacter* MeleePlayer = Cast<APlayerMeleeCharacter>(SensedActor))
+	{
+		SensedCharacter = MeleePlayer;
 		AIAssignSubsystem->NotifyPlayerSensed(true, this);
 		if (!bHasSensedPlayer) {
 			bHasSensedPlayer = true;
