@@ -13,6 +13,10 @@
 class ANavigationNode;
 class AMultiplayerGameMode;
 class UAIAssignSubsystem;
+class UAGPGameInstance;
+class UPickupManagerSubsystem;
+class APlayerCharacter;
+class APlayerMeleeCharacter;
 
 UCLASS()
 class AGP_API UAIDirector : public UTickableWorldSubsystem
@@ -35,6 +39,12 @@ public:
 	void DecreaseNumOfEnemies();
 	void GetPlayerDeathCount(int32& OutDeaths) const { OutDeaths = NumOfPlayerDeaths; }
 	void SetPlayerDeathCount(int32 Value) { NumOfPlayerDeaths = Value; }
+	void SpawnWeaponAtPlayer();
+
+	UPROPERTY()
+	int32 TotalDeathResets = 0;
+	UPROPERTY(EditAnywhere)
+	bool bTimerCheck;
 
 protected:
 
@@ -96,5 +106,7 @@ private:
 	void SetPlayersMap();
 	void RunBT();
 	void ConstructBT();
+
+	float LastExecutionTime = 0.0f;
 	
 };

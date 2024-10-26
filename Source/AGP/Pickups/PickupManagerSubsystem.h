@@ -22,6 +22,7 @@ public:
 	}
 
 	void RemovePickup(const FVector& Location);
+	void SpawnWeaponPickupNearPlayer(const FVector& PlayerLocation);
 
 protected:
 	

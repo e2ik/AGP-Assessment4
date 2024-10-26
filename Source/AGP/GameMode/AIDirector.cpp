@@ -3,7 +3,12 @@
 #include "Engine/World.h"
 #include "AGP/ProceduralNodes/NavigationNode.h"
 #include "AGP/GameMode/MultiplayerGameMode.h"
+#include "AGP/Characters/PlayerCharacter.h"
+#include "AGP/Characters/PlayerMeleeCharacter.h"
 #include "AGP/BehaviourTree/AIAssignSubsystem.h"
+#include "AGP/Pickups/PickupManagerSubsystem.h"
+#include "AGP/GameMode/AGPGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 
 
@@ -18,6 +23,10 @@ void UAIDirector::Tick(float DeltaTime)
 
     // Get the world time
     GameTime = GetWorld()->GetTimeSeconds();
+    if (GameTime - LastExecutionTime >= 30.0f) {
+        bTimerCheck = true;
+        LastExecutionTime = GameTime;
+    }
 
     UAIAssignSubsystem* AIAssignSubsystem = GetWorld()->GetSubsystem<UAIAssignSubsystem>();
     if (AIAssignSubsystem) {
@@ -269,10 +278,30 @@ void UAIDirector::ConstructBT() {
     UDecreaseCount* DecreaseAction = NewObject<UDecreaseCount>();
     DecreaseAction->PassDirector(this);
 
+    UCDecorator* CheckTotalDeaths = NewObject<UCDecorator>();
+    CheckTotalDeaths->Initialize("Check Total Deaths");
+    CheckTotalDeaths->InitializeCondition([this]() {
+        return TotalDeathResets >= 4;
+    });
+    USpawnWeapon* SpawnWeaponAction = NewObject<USpawnWeapon>();
+    SpawnWeaponAction->PassDirector(this);
+
+    UCDecorator* CheckGameTime = NewObject<UCDecorator>();
+    CheckGameTime->Initialize("Check Game Time");
+    CheckGameTime->InitializeCondition([this]() {
+        return bTimerCheck;
+    });
+    USpawnWeapon* SpawnWeaponAction2 = NewObject<USpawnWeapon>();
+    SpawnWeaponAction2->PassDirector(this);
+
 
 
     RootSelector->AddChild(CheckEnemies);
     RootSelector->AddChild(CheckPlayerDeaths);
+    RootSelector->AddChild(CheckTotalDeaths);
+    RootSelector->AddChild(CheckGameTime);
+    CheckGameTime->AddChild(SpawnWeaponAction2);
+    CheckTotalDeaths->AddChild(SpawnWeaponAction);
     CheckPlayerDeaths->AddChild(DecreaseAction);
     CheckEnemies->AddChild(SpawnAction);
     RootBT->AddChild(RootSelector);
@@ -293,3 +322,28 @@ void UAIDirector::DecreaseNumOfEnemies()
         NumOfEnemies--;
     }
 }
+
+void UAIDirector::SpawnWeaponAtPlayer()
+{
+    UWorld* World = GetWorld();
+    if (!World) return;
+
+    // Get the game instance
+    UAGPGameInstance* GameInstance = Cast<UAGPGameInstance>(UGameplayStatics::GetGameInstance(World));
+    if (!GameInstance) return;
+
+    // Get the weapon pickup class from the game instance
+    UClass* WeaponPickupClass = GameInstance->GetWeaponPickupClass();
+    if (!WeaponPickupClass) return;
+
+    for (TActorIterator<APlayerCharacter> ActorItr(World); ActorItr; ++ActorItr) {
+        APlayerCharacter* Player = *ActorItr;
+        if (Player) {
+            UPickupManagerSubsystem* PickupSubsystem = World->GetSubsystem<UPickupManagerSubsystem>();
+            if (PickupSubsystem) {
+                PickupSubsystem->SpawnWeaponPickupNearPlayer(Player->GetActorLocation());
+            }
+        }
+    }
+}
+
