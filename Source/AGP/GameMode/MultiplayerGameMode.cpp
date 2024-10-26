@@ -5,6 +5,7 @@
 #include "AGP/Characters/EnemyCharacter.h"
 #include "GameFramework/PlayerStart.h"
 #include "AGP/BehaviourTree/AIAssignSubsystem.h"
+#include "AGP/GameMode/AIDirector.h"
 #include "AGP/GameMode/AGPGameInstance.h"
 #include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
@@ -36,6 +37,11 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
         // Check if it's APlayerCharacter
         if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(CurrentPawn))
         {
+			// tickable pass (probably a bad way to do it)
+			UAIDirector* Director = GetWorld()->GetSubsystem<UAIDirector>();
+			if (Director) { Director->RegisterPlayerDeath(Controller); }
+
+
             Controller->UnPossess();
             PlayerCharacter->Destroy();
 
@@ -46,6 +52,13 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
 
             if (NewCharacter)
             {
+				// give them weapons on spawn
+				if (!NewCharacter->WeaponComponent) {
+					NewCharacter->WeaponComponent = NewObject<UWeaponComponent>(NewCharacter, UWeaponComponent::StaticClass());
+					NewCharacter->WeaponComponent->RegisterComponent();
+					NewCharacter->WeaponComponent->SetWeaponStats(FWeaponStats());
+					NewCharacter->EquipWeapon(true);
+				}
                 NewCharacter->ChooseCharacterMesh();
                 NewCharacter->DrawUI();
             }
@@ -63,6 +76,11 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
 
             if (NewMeleeCharacter)
             {
+				if (!NewMeleeCharacter->SwordComponent) {
+					NewMeleeCharacter->SwordComponent = NewObject<USwordComponent>(NewMeleeCharacter, USwordComponent::StaticClass());
+					NewMeleeCharacter->SwordComponent->RegisterComponent();
+					NewMeleeCharacter->EquipSword(true);
+				}
                 NewMeleeCharacter->ChooseCharacterMesh();
                 NewMeleeCharacter->DrawUI();
             }
@@ -155,6 +173,16 @@ void AMultiplayerGameMode::SpawnEnemy(const FVector& Location)
         UClass* EnemyClass = GameInstance->GetEnemyClass();
         if (EnemyClass) {
             AEnemyCharacter* NewEnemy = World->SpawnActor<AEnemyCharacter>(EnemyClass, Location, FRotator::ZeroRotator, SpawnParams);
+
+			// give them weapons on spawn
+			if (NewEnemy) {
+				if (!NewEnemy->WeaponComponent) {
+					NewEnemy->WeaponComponent = NewObject<UWeaponComponent>(NewEnemy, UWeaponComponent::StaticClass());
+					NewEnemy->WeaponComponent->RegisterComponent();
+					NewEnemy->EquipWeapon(true);
+				}
+			}
+
         }
     }
 	UAIAssignSubsystem* AIAssignSubsystem = GetWorld()->GetSubsystem<UAIAssignSubsystem>();

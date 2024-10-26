@@ -107,7 +107,7 @@ bool USwordComponent::SlashImplementation(USceneComponent* Start, USceneComponen
             {
                 if (UHealthComponent* HitCharacterHealth = MeleeHitCharacter->FindComponentByClass<UHealthComponent>())
                 {
-                    HitCharacterHealth->ApplyDamage(10.0f);
+                    HitCharacterHealth->ApplyDamage(SwordStats.BaseDamage);
                 }
                 break;
             }
@@ -117,7 +117,7 @@ bool USwordComponent::SlashImplementation(USceneComponent* Start, USceneComponen
             {
                 if (UHealthComponent* HitCharacterHealth = BaseHitCharacter->FindComponentByClass<UHealthComponent>())
                 {
-                    HitCharacterHealth->ApplyDamage(10.0f);
+                    HitCharacterHealth->ApplyDamage(SwordStats.BaseDamage);
                 }
                 break;
             }

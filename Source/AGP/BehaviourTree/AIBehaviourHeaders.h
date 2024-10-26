@@ -15,3 +15,7 @@
 #include "Actions/ClearPath.h"
 #include "Actions/FireWeapon.h"
 #include "Actions/ReloadWeapon.h"
+#include "Director/Spawn.h"
+#include "Director/IncreaseCount.h"
+#include "Director/DecreaseCount.h"
+#include "Director/SpawnWeapon.h"
