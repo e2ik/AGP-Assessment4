@@ -158,9 +158,5 @@ void UAIAssignSubsystem::NotifyDeath(AEnemyCharacter* Enemy)
 
 int32 UAIAssignSubsystem::GetNumOfEnemies()
 {
-    UWorld* World = GetWorld();
-    if (!World) return 0;
-    if (World->GetNetMode() == NM_Client) return 0;
-
     return Enemies.Num();
 }

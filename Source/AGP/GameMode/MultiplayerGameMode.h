@@ -13,6 +13,7 @@ class APlayerStart;
 class APlayerController;
 class UAIAssignSubsystem;
 class UAGPGameInstance;
+class UAIDirector;
 
 
 UCLASS()
