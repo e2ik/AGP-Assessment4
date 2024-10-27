@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "SwordComponent.h"
 #include "GameFramework/Character.h"
+#include "AGP/GameMode/MultiplayerGameMode.h"
 #include "BaseMeleeCharacter.generated.h"
 
 class USwordComponent;
@@ -65,4 +66,5 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastEquipWeapon(bool bEquipWeapon, const FSwordStats& SwordStats = FSwordStats());
 	
+	friend class AMultiplayerGameMode;
 };

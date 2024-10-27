@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AGP/TitleScreenController.h"
 #include "GameFramework/GameMode.h"
 #include "MultiplayerGameMode.generated.h"
 
@@ -13,6 +14,7 @@ class APlayerStart;
 class APlayerController;
 class UAIAssignSubsystem;
 class UAGPGameInstance;
+class UAIDirector;
 
 
 UCLASS()
@@ -31,12 +33,17 @@ public:
 
 protected:
 
+	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
+
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<APlayerCharacter> PlayerCharacterClass;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<APlayerMeleeCharacter> PlayerMeleeCharacterClass;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<ATitleScreenController> TitleScreenControllerClass;
+	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AEnemyCharacter> EnemyCharacterClass;
 	

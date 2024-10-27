@@ -12,7 +12,7 @@ struct FSwordStats
 	GENERATED_BODY()
 
 public:
-	float BaseDamage = 10.0f;
+	float BaseDamage = 40.0f;
 	float SlashTime = 1.0f;
 	
 };
@@ -40,6 +40,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	USkeletalMesh* SwordMesh;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Sword Stats")
+    FSwordStats SwordStats;
 	
 	UPROPERTY(EditDefaultsOnly, Replicated)
 	USceneComponent* StartPoint;

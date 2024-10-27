@@ -5,6 +5,7 @@
 #include "AGP/Characters/EnemyCharacter.h"
 #include "GameFramework/PlayerStart.h"
 #include "AGP/BehaviourTree/AIAssignSubsystem.h"
+#include "AGP/GameMode/AIDirector.h"
 #include "AGP/GameMode/AGPGameInstance.h"
 #include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
@@ -19,11 +20,27 @@ void AMultiplayerGameMode::BeginPlay() {
 	if (CurrentLevelName.ToLower().Contains("procgenlevel")) {
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This is a procedural level"));
 	}
+	if (CurrentLevelName.ToLower().Contains("titlescreen"))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This is the Title Screen"));
+	}
 }
 
 void AMultiplayerGameMode::StartPlay() {
 	Super::StartPlay();
 	// testing failed
+}
+
+UClass* AMultiplayerGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
+{
+	if (UAGPGameInstance* GameInstance = Cast<UAGPGameInstance>(GetGameInstance()))
+	{
+		if (GameInstance->SelectedPawnClass)
+		{
+			return GameInstance->SelectedPawnClass;
+		}
+	}
+	return Super::GetDefaultPawnClassForController_Implementation(InController);
 }
 
 void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
@@ -33,9 +50,29 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
         // Get currently possessed pawn
         APawn* CurrentPawn = Controller->GetPawn();
 
+        //If the game level is title screen should just spawn TitleScreenControllers with constant location, rotation, and scale
+		if (GetWorld()->GetMapName().Contains("titlescreen"))
+		{
+			Controller->UnPossess();
+				if(CurrentPawn)
+				{
+					CurrentPawn->Destroyed();
+				}
+			FVector Location = FVector(3220.0f, -6340.0f, 280.0f);
+			FRotator Rotation = FRotator(0.0f, 0.0f, 159.9f);
+			ATitleScreenController* TitleScreenController = GetWorld()->SpawnActor<ATitleScreenController>(TitleScreenControllerClass, Location, Rotation);
+			Controller->Possess(TitleScreenController);
+			return;
+		}
+
         // Check if it's APlayerCharacter
         if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(CurrentPawn))
         {
+			// tickable pass (probably a bad way to do it)
+			UAIDirector* Director = GetWorld()->GetSubsystem<UAIDirector>();
+			if (Director) { Director->RegisterPlayerDeath(Controller); }
+
+
             Controller->UnPossess();
             PlayerCharacter->Destroy();
 
@@ -46,6 +83,13 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
 
             if (NewCharacter)
             {
+				// give them weapons on spawn
+				if (!NewCharacter->WeaponComponent) {
+					NewCharacter->WeaponComponent = NewObject<UWeaponComponent>(NewCharacter, UWeaponComponent::StaticClass());
+					NewCharacter->WeaponComponent->RegisterComponent();
+					NewCharacter->WeaponComponent->SetWeaponStats(FWeaponStats());
+					NewCharacter->EquipWeapon(true);
+				}
                 NewCharacter->ChooseCharacterMesh();
                 NewCharacter->DrawUI();
             }
@@ -63,6 +107,11 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
 
             if (NewMeleeCharacter)
             {
+				if (!NewMeleeCharacter->SwordComponent) {
+					NewMeleeCharacter->SwordComponent = NewObject<USwordComponent>(NewMeleeCharacter, USwordComponent::StaticClass());
+					NewMeleeCharacter->SwordComponent->RegisterComponent();
+					NewMeleeCharacter->EquipSword(true);
+				}
                 NewMeleeCharacter->ChooseCharacterMesh();
                 NewMeleeCharacter->DrawUI();
             }
@@ -155,6 +204,16 @@ void AMultiplayerGameMode::SpawnEnemy(const FVector& Location)
         UClass* EnemyClass = GameInstance->GetEnemyClass();
         if (EnemyClass) {
             AEnemyCharacter* NewEnemy = World->SpawnActor<AEnemyCharacter>(EnemyClass, Location, FRotator::ZeroRotator, SpawnParams);
+
+			// give them weapons on spawn
+			if (NewEnemy) {
+				if (!NewEnemy->WeaponComponent) {
+					NewEnemy->WeaponComponent = NewObject<UWeaponComponent>(NewEnemy, UWeaponComponent::StaticClass());
+					NewEnemy->WeaponComponent->RegisterComponent();
+					NewEnemy->EquipWeapon(true);
+				}
+			}
+
         }
     }
 	UAIAssignSubsystem* AIAssignSubsystem = GetWorld()->GetSubsystem<UAIAssignSubsystem>();
