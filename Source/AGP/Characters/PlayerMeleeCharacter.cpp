@@ -32,6 +32,7 @@ void APlayerMeleeCharacter::DrawUI()
                 if (PlayerHUD)
                 {
                     PlayerHUD->AddToPlayerScreen();
+					PlayerHUD->HideAmmoText();
                 }
             }
         }

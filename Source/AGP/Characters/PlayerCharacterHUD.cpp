@@ -21,3 +21,11 @@ void UPlayerCharacterHUD::SetAmmoText(int32 RoundsRemaining, int32 MagazineSize)
 		AmmoText->SetText(FText::FromString(FString::FromInt(RoundsRemaining) + " / " + FString::FromInt(MagazineSize)));
 	}
 }
+
+void UPlayerCharacterHUD::HideAmmoText()
+{
+	if (AmmoText)
+	{
+		AmmoText->SetVisibility(ESlateVisibility::Hidden);
+	}
+}

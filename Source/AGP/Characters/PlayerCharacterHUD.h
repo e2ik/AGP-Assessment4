@@ -17,6 +17,8 @@ public:
 	void SetHealthBar(float HealthPercent);
 	void SetAmmoText(int32 RoundsRemaining, int32 MagazineSize);
 
+	void HideAmmoText();
+
 protected:
 
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
