@@ -50,6 +50,7 @@ void APlayerCharacter::DrawUI()
                 }
             }
         }
+		
         UpdateHealthBar(1.0f);        
         if (WeaponComponent) { WeaponComponent->UpdateAmmoUI(); }
     }

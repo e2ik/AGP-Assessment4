@@ -185,7 +185,7 @@ void UWeaponComponent::MulticastFire_Implementation(const FVector& BulletStart, 
 
 void UWeaponComponent::SetWeaponStats(const FWeaponStats& WeaponInfo)
 {
-	this->WeaponStats = WeaponInfo;
+	WeaponStats = WeaponInfo;
 	// Set the number of bullets to the magazine size
 	RoundsRemainingInMagazine = WeaponInfo.MagazineSize;
 	UpdateAmmoUI();
