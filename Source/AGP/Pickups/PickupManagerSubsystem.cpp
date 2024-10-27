@@ -80,7 +80,6 @@ void UPickupManagerSubsystem::SpawnWeaponPickupNearPlayer(const FVector& PlayerL
         FVector NewPosition = ClosestSpawnPosition;
 
         if (const UAGPGameInstance* GameInstance = GetWorld()->GetGameInstance<UAGPGameInstance>()) {
- 
             if (SpawnedPickups.Contains(NewPosition)) {
                 AWeaponPickup* ExistingPickup = SpawnedPickups[NewPosition];
                 if (IsValid(ExistingPickup)) { ExistingPickup->Destroy(); }
