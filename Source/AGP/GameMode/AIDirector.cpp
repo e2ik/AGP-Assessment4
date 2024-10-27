@@ -1,5 +1,6 @@
 #include "AIDirector.h"
 #include "Engine/Engine.h"
+#include "EngineUtils.h"
 #include "Engine/World.h"
 #include "AGP/ProceduralNodes/NavigationNode.h"
 #include "AGP/GameMode/MultiplayerGameMode.h"
