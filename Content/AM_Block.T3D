@@ -1,0 +1,22 @@
+Begin Object Class=/Script/Engine.AnimMontage Name="AM_Block" ExportPath=/Script/Engine.AnimMontage'"/Game/Animations/AM_Block.AM_Block"'
+   Begin Object Class=/Script/Engine.AnimDataModel Name="AnimDataModel" ExportPath=/Script/Engine.AnimDataModel'"/Game/Animations/AM_Block.AM_Block:AnimDataModel"'
+   End Object
+   Begin Object Class=/Script/NiagaraAnimNotifies.AnimNotifyState_TimedNiagaraEffect Name="AnimNotifyState_TimedNiagaraEffect_0" ExportPath=/Script/NiagaraAnimNotifies.AnimNotifyState_TimedNiagaraEffect'"/Game/Animations/AM_Block.AM_Block:AnimNotifyState_TimedNiagaraEffect_0"'
+   End Object
+   Begin Object Name="AnimDataModel" ExportPath=/Script/Engine.AnimDataModel'"/Game/Animations/AM_Block.AM_Block:AnimDataModel"'
+      NumberOfFrames=84000
+      NumberOfKeys=84001
+   End Object
+   Begin Object Name="AnimNotifyState_TimedNiagaraEffect_0" ExportPath=/Script/NiagaraAnimNotifies.AnimNotifyState_TimedNiagaraEffect'"/Game/Animations/AM_Block.AM_Block:AnimNotifyState_TimedNiagaraEffect_0"'
+      Template=/Script/Niagara.NiagaraSystem'"/Game/NiagaraSystem/NS_RuneEffect.NS_RuneEffect"'
+      SocketName="Shield"
+      bDestroyAtEnd=True
+   End Object
+   CompositeSections(0)=(SectionName="Default",NextSectionName="Default",LinkedMontage=/Script/Engine.AnimMontage'"AM_Block"',SegmentIndex=0,SegmentLength=1.400000,LinkedSequence=/Script/Engine.AnimSequence'"/Game/Animations/Block.Block"')
+   SlotAnimTracks(0)=(AnimTrack=(AnimSegments=((AnimReference=/Script/Engine.AnimSequence'"/Game/Animations/Block.Block"',CachedPlayLength=1.400000,AnimEndTime=1.400000))))
+   Notifies(0)=(TriggerTimeOffset=-0.000100,EndTriggerTimeOffset=-0.000100,NotifyName="TimedNiagaraEffect",NotifyStateClass=/Script/NiagaraAnimNotifies.AnimNotifyState_TimedNiagaraEffect'"AnimNotifyState_TimedNiagaraEffect_0"',Duration=1.400000,EndLink=(LinkedMontage=/Script/Engine.AnimMontage'"AM_Block"',SegmentIndex=0,SegmentLength=1.400000,LinkValue=1.400000,LinkedSequence=/Script/Engine.AnimSequence'"/Game/Animations/Block.Block"'),Guid=C9C1CD3E445920B7174DBA9F9241E571,LinkedMontage=/Script/Engine.AnimMontage'"AM_Block"',SegmentIndex=0,SegmentLength=1.400000,LinkedSequence=/Script/Engine.AnimSequence'"/Game/Animations/Block.Block"')
+   SequenceLength=1.400000
+   AnimNotifyTracks(0)=(TrackName="1",TrackColor=(R=0.500000,G=0.500000,B=0.500000,A=1.000000))
+   DataModelInterface=AnimDataModel'AM_Block:AnimDataModel'
+   Skeleton=/Script/Engine.Skeleton'"/Game/Characters/Mannequins/Meshes/SK_Mannequin.SK_Mannequin"'
+End Object
