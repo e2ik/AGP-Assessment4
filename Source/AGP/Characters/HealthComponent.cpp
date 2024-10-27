@@ -36,6 +36,17 @@ void UHealthComponent::ApplyDamage(float DamageAmount)
 	if (bIsDead) return;
 	if (!bCanDamage) return;
 	CurrentHealth -= DamageAmount;
+
+    AActor* OwnerActor = GetOwner();
+    if (OwnerActor) {
+        if (ABaseCharacter* CharacterOwner = Cast<ABaseCharacter>(OwnerActor)) {
+            CharacterOwner->MulticastDisplayRedFlash();
+        }
+		else if (ABaseMeleeCharacter* MeleeCharacterOwner = Cast<ABaseMeleeCharacter>(OwnerActor)) {
+			MeleeCharacterOwner->MulticastDisplayRedFlash();
+		}
+    }
+
 	if (CurrentHealth <= 0.0f)
 	{
 		OnDeath();

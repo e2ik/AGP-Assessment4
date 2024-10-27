@@ -23,6 +23,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool HasSword();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void DisplayRedFlash();
+
+	UFUNCTION(NetMultiCast, Reliable)
+	void MulticastDisplayRedFlash();
+
 	void EquipSword(bool bEquipWeapon, const FSwordStats& SwordStats = FSwordStats());
 
 	UFUNCTION(BlueprintImplementableEvent)

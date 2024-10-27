@@ -135,3 +135,8 @@ void ABaseCharacter::MulticastEquipWeapon_Implementation(bool bEquipWeapon, cons
 	EquipWeaponGraphical(bEquipWeapon);
 }
 
+void ABaseCharacter::MulticastDisplayRedFlash_Implementation()
+{
+	DisplayRedFlash();
+}
+

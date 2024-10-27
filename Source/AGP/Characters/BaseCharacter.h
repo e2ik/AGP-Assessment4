@@ -22,6 +22,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool HasWeapon();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void DisplayRedFlash();
+
 	void EquipWeapon(bool bEquipWeapon, const FWeaponStats& WeaponStats = FWeaponStats());
 	UFUNCTION(BlueprintImplementableEvent)
 	void EquipWeaponGraphical(bool bEquipWeapon);
@@ -32,10 +35,11 @@ public:
 	 * Will reload the weapon if the character has a weapon equipped.
 	 */
 	void Reload();
-
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
 	void OnDeath();
+
+	UFUNCTION(NetMultiCast, Reliable)
+	void MulticastDisplayRedFlash();
 
 protected:
 	// Called when the game starts or when spawned
