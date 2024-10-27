@@ -35,8 +35,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	UInputAction* FireAction;
 
-	UPROPERTY(EditDefaultsOnly)
-	UInputAction* DashAction;
+	// UPROPERTY(EditDefaultsOnly)
+	// UInputAction* DashAction;
 
 	UPROPERTY(EditDefaultsOnly)
 	UInputAction* BlockAction;
@@ -56,16 +56,25 @@ protected:
 public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ChooseCharacterMesh();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnBlockSword();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnStopBlockSword();
 	
 	void UpdateHealthBar(float HealthPercent);
 	void DrawUI();
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsBlocking() const;
 	
 private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void SlashSword(const FInputActionValue& Value);
 	void Dash(const FInputActionValue& Value);
-	void Block(const FInputActionValue& Value);
+	void StartBlocking(const FInputActionValue& Value);
+	void StopBlocking(const FInputActionValue& Value);
 };

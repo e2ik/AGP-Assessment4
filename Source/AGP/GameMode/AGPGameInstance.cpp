@@ -103,6 +103,13 @@ void UAGPGameInstance::PlayGunshotSoundAtLocation(const FVector& Location)
     }
 }
 
+void UAGPGameInstance::SpawnBlockEffect(const FVector& SpawnLocation)
+{
+    if (BlockEffect) {
+        UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), BlockEffect, SpawnLocation);
+    }
+}
+
 void UAGPGameInstance::PlayGunshotSound2D()
 {
     if (GunshotSoundCue) {

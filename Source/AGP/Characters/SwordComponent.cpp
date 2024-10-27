@@ -8,6 +8,7 @@
 #include "HealthComponent.h"
 #include "Evaluation/Blending/MovieSceneBlendType.h"
 #include "Net/UnrealNetwork.h"
+#include "AGP/Characters/HealthComponent.h"
 
 // Sets default values for this component's properties
 USwordComponent::USwordComponent()
@@ -45,6 +46,11 @@ void USwordComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	{
 		SlashImplementation(StartPoint, EndPoint);
 	}
+
+	if (bIsBlocking)
+	{
+		StartBlocking();
+	}
 }
 
 void USwordComponent::Slash(USceneComponent* Start, USceneComponent* End)
@@ -78,6 +84,7 @@ void USwordComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(USwordComponent, StartPoint);
 	DOREPLIFETIME(USwordComponent, EndPoint);
+	DOREPLIFETIME(USwordComponent, bIsBlocking);
 }
 
 bool USwordComponent::SlashImplementation(USceneComponent* Start, USceneComponent* End)
@@ -147,3 +154,85 @@ void USwordComponent::SlashVisualImplementation(FVector Start, FVector End)
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 10.0f);
 }
 
+void USwordComponent::Block()
+{
+	if (GetOwnerRole() == ROLE_Authority)
+	{
+		BlockImplementation();
+	} else
+	{
+		ServerBlock();
+	}
+}
+
+void USwordComponent::BlockImplementation()
+{
+	// Shouldn't be able to reload if you are already reloading.
+	if (bIsBlocking) return;
+	bIsBlocking = true;
+	OnRep_IsBlocking();
+	BlockVisualImplementation();
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Blocking"));
+	UHealthComponent* HealthComponent = GetOwner()->FindComponentByClass<UHealthComponent>();
+	HealthComponent->SetCanDamage(false);
+}
+
+void USwordComponent::BlockVisualImplementation()
+{
+	if (ABaseMeleeCharacter* BaseCharacter = Cast<ABaseMeleeCharacter>(GetOwner()))
+	{
+		BaseCharacter->BlockGraphical();
+	}
+}
+
+void USwordComponent::ServerBlock_Implementation()
+{
+	BlockImplementation();
+}
+
+void USwordComponent::StartBlocking()
+{
+	OnStartBlocking();
+}
+
+void USwordComponent::StopBlock()
+{
+	if (GetOwnerRole() == ROLE_Authority)
+	{
+		StopBlockImplementation();
+	} else
+	{
+		ServerStopBlock();
+	}
+}
+
+void USwordComponent::StopBlockImplementation()
+{
+	if (!bIsBlocking) return;
+	bIsBlocking = false;
+	OnRep_IsBlocking();
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Stopped Blocking"));
+	UHealthComponent* HealthComponent = GetOwner()->FindComponentByClass<UHealthComponent>();
+	HealthComponent->SetCanDamage(true);
+}
+
+void USwordComponent::ServerStopBlock_Implementation()
+{
+	StopBlockImplementation();
+}
+
+void USwordComponent::StopBlocking()
+{
+	OnStopBlocking();
+}
+
+void USwordComponent::OnRep_IsBlocking()
+{
+	if (bIsBlocking)
+	{
+		StartBlocking();
+	} else
+	{
+		StopBlocking();
+	}
+}

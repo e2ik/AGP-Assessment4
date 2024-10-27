@@ -80,7 +80,10 @@ void APlayerMeleeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerMeleeCharacter::Look);
 		Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		Input->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerMeleeCharacter::SlashSword);
-		// Input->BindAction(DashAction, ETriggerEvent::Started, this, &ABaseMeleeCharacter::Dash);
+
+        Input->BindAction(BlockAction, ETriggerEvent::Started, this, &APlayerMeleeCharacter::StartBlocking);
+        Input->BindAction(BlockAction, ETriggerEvent::Completed, this, &APlayerMeleeCharacter::StopBlocking);
+		Input->BindAction(BlockAction, ETriggerEvent::Canceled, this, &APlayerMeleeCharacter::StopBlocking);
 	}
 }
 
@@ -103,4 +106,21 @@ void APlayerMeleeCharacter::Look(const FInputActionValue& Value)
 void APlayerMeleeCharacter::SlashSword(const FInputActionValue& Value)
 {
 	Slash();
+}
+
+void APlayerMeleeCharacter::StartBlocking(const FInputActionValue& Value)
+{
+    Block();
+    OnBlockSword();
+}
+
+void APlayerMeleeCharacter::StopBlocking(const FInputActionValue& Value)
+{
+    StopBlock();
+    OnStopBlockSword();
+}
+
+bool APlayerMeleeCharacter::IsBlocking() const
+{
+	return SwordComponent && SwordComponent->bIsBlocking;
 }

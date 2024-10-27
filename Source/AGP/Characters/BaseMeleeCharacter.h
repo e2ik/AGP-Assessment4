@@ -31,9 +31,15 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void SwordSlashGraphical();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void BlockGraphical();
+
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void OnDeath();
+
+	void Block();
+	void StopBlock();
 	
 protected:
 	// Called when the game starts or when spawned

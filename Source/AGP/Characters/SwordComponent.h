@@ -4,7 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "NiagaraSystem.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "SwordComponent.generated.h"
+
+class UHealthComponent;
 
 USTRUCT(BlueprintType)
 struct FSwordStats
@@ -27,6 +32,17 @@ public:
 	USwordComponent();
 
 	void Slash(USceneComponent* Start, USceneComponent* End);
+
+	void Block();
+	void StopBlock();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnStartBlocking();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnStopBlocking();
+
+	UPROPERTY(EditAnywhere)
+	UNiagaraSystem* BlockEffect;
 
 protected:
 	// Called when the game starts
@@ -54,11 +70,22 @@ protected:
 	float CooldownDuration = 1.0f;
 	bool bCanSlash = true;
 
+	UPROPERTY()
+	UNiagaraComponent* BlockEffectComponent;
+
+	
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UPROPERTY(Replicated)
+	bool bIsBlocking = false;
+
+	UFUNCTION()
+	void OnRep_IsBlocking();
 	
 private:
 	UFUNCTION(Server, Reliable)
@@ -69,4 +96,17 @@ private:
 
 	bool SlashImplementation(USceneComponent* Start, USceneComponent* End);
 	void SlashVisualImplementation(FVector Start, FVector End);
+	void BlockVisualImplementation();
+
+	// BLOCK
+	void BlockImplementation();
+	UFUNCTION(Server, Reliable)
+	void ServerBlock();
+	// STOPBLOCK
+	void StopBlockImplementation();
+	UFUNCTION(Server, Reliable)
+	void ServerStopBlock();
+
+	void StartBlocking();
+	void StopBlocking();
 };
