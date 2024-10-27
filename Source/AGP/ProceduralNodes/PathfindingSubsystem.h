@@ -89,12 +89,14 @@ private:
 	// alrighty redoing stuff!!
 	
 	// populates the span map; called after the nodes have been populated through SetNodesArray()
-	// void PopulateSpanMap();
+	void PopulateSpanMap();
 
 	// functions as a pure check of the span map to see if a span exists, and is recorded as traversible. if it does not exist (moving node?) then it will perform SweepSpan();
-	// bool IsSpanTraversibleREFACTORED();
+	bool CheckSpan(ANavigationNode* StartNode, ANavigationNode* EndNode);
 
 	// the actual sweeping functionality of the old IsSpanTraversible(). 
-	// bool SweepSpan(); 
+	bool SweepSpan(FVector StartLocation, FVector EndLocation);
+
+	void DrawSpan(bool bUnblockedSpan, FVector StartLocation, FVector EndLocation);
 	
 };

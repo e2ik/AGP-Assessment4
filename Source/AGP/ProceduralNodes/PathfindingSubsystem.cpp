@@ -3,6 +3,7 @@
 
 #include "PathfindingSubsystem.h"
 
+#include "CollisionDebugDrawingPublic.h"
 #include "EngineUtils.h"
 #include "NavigationNode.h"
 #include "ProceduralNodes.h"
@@ -269,8 +270,8 @@ TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* StartNode, ANavi
 			
 			if (!ConnectedNode) continue; // Failsafe if the ConnectedNode is a nullptr.
 			// span check temporarily disabled. improving efficiency.
-			// if (IsSpanTraversable(ConnectedNode, EndNode))				
-			// {
+			if (CheckSpan(ConnectedNode, EndNode))				
+			{
 				const float TentativeGScore = GScores[CurrentNode] + FVector::Distance(CurrentNode->GetActorLocation(), ConnectedNode->GetActorLocation());
 				// Because we didn't setup all the scores and came from at the start, we need to check if the connected node has a gscore
 				// already otherwise set it. If it doesn't have a gscore then it won't have all the other things either so initialise them as well.
@@ -292,7 +293,7 @@ TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* StartNode, ANavi
 					{
 						OpenSet.Add(ConnectedNode);
 					}
-				//}
+				}
 				// span check temporarily disabled
 			}
 			
@@ -324,21 +325,34 @@ void UPathfindingSubsystem::SetNodesArray()
 {
 	Nodes = ProceduralNodes->GetMapNodes();
 
+	int32 BlockCount = 0;
+	int32 PassCount = 0;
 	UE_LOG(LogTemp, Log, TEXT("Nodes is of size %i"), Nodes.Num())
-	for (ANavigationNode* Node : Nodes)
-	{
-		if (Node)
-		{
-			for (ANavigationNode* ConnectedNode : Node->ConnectedNodes)
-			{
-				if (ConnectedNode)
-				{
-					IsSpanTraversable(Node, ConnectedNode);
-				}
-			}
-		}
-	}
+	// for (ANavigationNode* Node : Nodes)
+	// {
+	// 	if (Node)
+	// 	{
+	// 		for (ANavigationNode* ConnectedNode : Node->ConnectedNodes)
+	// 		{
+	// 			if (ConnectedNode)
+	// 			{
+	// 				IsSpanTraversable(Node, ConnectedNode);
+	// 			}
+	// 		}
+	// 	}
+	// }
+
+	PopulateSpanMap();
+
+	
 	UE_LOG(LogTemp, Log, TEXT("SpanMap is of size %i"), SpanMap.Num())
+	for (auto Span : SpanMap)
+	{
+		Span.Value ? PassCount++ : BlockCount++;
+	}
+	UE_LOG(LogTemp, Log, TEXT("SpanMap contains %i true values, %i false values"), PassCount, BlockCount)
+
+	//DrawBoxSweeps()
 }
 
 // Check the nodes in front of player
@@ -456,11 +470,137 @@ bool UPathfindingSubsystem::IsSpanTraversable(const ANavigationNode* StartNode, 
 		}
 	}
 	//UE_LOG(LogTemp, Log, TEXT("finished sweep, valid span"))
-	SpanMap.Add(StartNode->GetActorLocation() + EndNode->GetActorLocation(), false);
+	SpanMap.Add(StartNode->GetActorLocation() + EndNode->GetActorLocation(), true);
 	return true;
 }
 
 bool UPathfindingSubsystem::SpanExists(const ANavigationNode* StartNode, const ANavigationNode* EndNode)
 {
 	return SpanMap.Contains(StartNode->GetActorLocation() + EndNode->GetActorLocation());
+}
+
+void UPathfindingSubsystem::PopulateSpanMap()
+{
+	// call this function after the noes are added to the scene
+
+	TMap<FVector, int> SpanCount;
+	
+	for (ANavigationNode* Node : Nodes)
+	{
+		if (!Node) continue;
+		for (ANavigationNode* ConnectedNode : Node->ConnectedNodes)
+		{
+			if (ConnectedNode)
+			{
+				CheckSpan(Node, ConnectedNode);
+				// make this a bloody cross product ffs. the vector sum isn't unique. god damn it. 
+				if (SpanCount.Contains(ConnectedNode->GetActorLocation() + Node->GetActorLocation()))
+				{
+					//UE_LOG(LogTemp, Log, TEXT("The vectors %s and %f are considered the same as %f"), *ConnectedNode->GetActorLocation().ToString(), )
+					SpanCount[ConnectedNode->GetActorLocation() + Node->GetActorLocation()]++;
+					
+				}
+				else
+				{
+					SpanCount.Add(ConnectedNode->GetActorLocation() + Node->GetActorLocation(), 1);
+				}
+				
+			}
+		}
+	}
+	int max = 0;
+	for (auto Span : SpanCount)
+	{
+		if (Span.Value > max)
+		{
+			max = Span.Value;
+		}
+	}
+	UE_LOG(LogTemp, Log, TEXT("Largest span count is %i"), max)
+}
+
+bool UPathfindingSubsystem::CheckSpan(ANavigationNode* StartNode, ANavigationNode* EndNode)
+{
+	// take two nodes, check if their span already exists in SpanMap. if not, call SweepSpan
+
+	if (SpanExists(StartNode, EndNode))
+	{
+		return SpanMap[StartNode->GetActorLocation() + EndNode->GetActorLocation()];
+	}
+
+	return SweepSpan(StartNode->GetActorLocation(), EndNode->GetActorLocation());
+	
+}
+
+bool UPathfindingSubsystem::SweepSpan(FVector StartLocation, FVector EndLocation)
+{
+	// perform the actual sweep
+	
+	FVector VectorSum = StartLocation + EndLocation;
+	// creating a Cube shape to be swept between two nodes
+	FVector CubeMidPoint = (VectorSum) / 2;
+	float CubeLength = FVector::Distance(StartLocation, EndLocation);
+	
+	// cube length is the span of the nodes, cube width is the character's capsule collider radius,
+	// cube height is the capsule collider height
+	// * note that the cube shape uses half values, as the constructor takes a parameter of type HalfExtent
+	FCollisionShape CubeShape = FCollisionShape::MakeBox(FVector{CubeLength / 2, 34.0f, 88.0f});
+	TArray<FHitResult> HitResults;
+	FQuat CubeQuat = (VectorSum).ToOrientationQuat();
+
+	// performing a sweep with the cube in the static channel
+	if (GetWorld()->SweepMultiByChannel(HitResults, CubeMidPoint,
+		CubeMidPoint, CubeQuat, ECC_WorldStatic, CubeShape))
+	{
+		//UE_LOG(LogTemp, Log, TEXT("cube sweep success, hit %d objects"), HitResults.Num())
+
+		// this is prob redundant, because it won't iterate if its empty, thus it will return true
+		// checking for any strange occurrences, has happened before with some objects.
+		if (HitResults.IsEmpty())
+		{
+			//UE_LOG(LogTemp, Log, TEXT("no objects were hit during sweep"))
+			SpanMap.Add(VectorSum, true);
+			DrawSpan(true, StartLocation, EndLocation);
+			return true;
+		}
+		
+		for (FHitResult Hit : HitResults)
+		{
+			if (AActor* HitActor = Cast<AActor>(Hit.GetActor()))
+			{
+				if (HitActor->IsA(AStaticMeshActor::StaticClass()))
+				{
+					// note: this could probably just be a simple Cast<AStaticMeshActor> instead of this silliness.
+					FBox HitBox = HitActor->GetComponentsBoundingBox();
+					//UE_LOG(LogTemp, Log, TEXT("Hit actor: name %s, height %f"), *HitActor->GetActorLabel(), HitBox.GetSize().Z)
+					// if the hit object is greater or equal to the character height, it can't be jumped
+					if (HitBox.GetSize().Z >= 176.0f)
+					{
+						//UE_LOG(LogTemp, Log, TEXT("impassable object detected, returning"))
+						SpanMap.Add(VectorSum, false);
+						DrawSpan(false, StartLocation, EndLocation);
+						return false;
+					}
+					//UE_LOG(LogTemp, Log, TEXT("passable object detected"))
+				}
+			}
+		}
+	}
+	//UE_LOG(LogTemp, Log, TEXT("finished sweep, valid span"))
+	SpanMap.Add(VectorSum, true);
+	DrawSpan(true, StartLocation, EndLocation);
+	return true;
+}
+
+void UPathfindingSubsystem::DrawSpan(bool bUnblockedSpan, FVector StartLocation, FVector EndLocation)
+{
+	if (bUnblockedSpan)
+	{
+		DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Blue, true, -1, 0, 2);
+	}
+	else
+	{
+		DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, true, -1, 0, 2);
+	}
+	
 }
