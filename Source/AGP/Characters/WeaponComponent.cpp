@@ -100,19 +100,20 @@ bool UWeaponComponent::FireImplementation(const FVector& BulletStart, const FVec
 			{
 				HitCharacterHealth->ApplyDamage(WeaponStats.BaseDamage);
 			}
-			DrawDebugLine(GetWorld(), BulletStart, HitResult.ImpactPoint, FColor::Green, false, 1.0f);
+			// DrawDebugLine(GetWorld(), BulletStart, HitResult.ImpactPoint, FColor::Green, false, 1.0f);
 		} else if (ABaseMeleeCharacter* HitMeleeCharacter = Cast<ABaseMeleeCharacter>(HitResult.GetActor())) {
 			OutHitActor = HitMeleeCharacter;
 			if (UHealthComponent* HitCharacterHealth = HitMeleeCharacter->GetComponentByClass<UHealthComponent>())
 			{
 				HitCharacterHealth->ApplyDamage(WeaponStats.BaseDamage);
 			}
-			DrawDebugLine(GetWorld(), BulletStart, HitResult.ImpactPoint, FColor::Green, false, 1.0f);
+			// DrawDebugLine(GetWorld(), BulletStart, HitResult.ImpactPoint, FColor::Green, false, 1.0f);
 		} else if (HitResult.Component.IsValid() && HitResult.Component->GetCollisionObjectType() == ECC_WorldStatic) {
 			OutHitActor = HitActor;
-			DrawDebugLine(GetWorld(), BulletStart, HitResult.ImpactPoint, FColor::Orange, false, 1.0f);
+
+			// DrawDebugLine(GetWorld(), BulletStart, HitResult.ImpactPoint, FColor::Orange, false, 1.0f);
 		} else {
-			DrawDebugLine(GetWorld(), BulletStart, HitResult.ImpactPoint, FColor::Orange, false, 1.0f);
+			// DrawDebugLine(GetWorld(), BulletStart, HitResult.ImpactPoint, FColor::Orange, false, 1.0f);
 			OutHitActor = nullptr;
 		}
 		
@@ -121,7 +122,7 @@ bool UWeaponComponent::FireImplementation(const FVector& BulletStart, const FVec
 	{
 		OutHitActor = nullptr;
 		OutHitLocation = AccuracyAdjustedFireAt;
-		DrawDebugLine(GetWorld(), BulletStart, AccuracyAdjustedFireAt, FColor::Red, false, 1.0f);
+		// DrawDebugLine(GetWorld(), BulletStart, AccuracyAdjustedFireAt, FColor::Red, false, 1.0f);
 	}
 
 	TimeSinceLastShot = 0.0f;
@@ -132,11 +133,13 @@ bool UWeaponComponent::FireImplementation(const FVector& BulletStart, const FVec
 
 void UWeaponComponent::FireVisualImplementation(const FVector& BulletStart, const FVector& HitLocation, AActor* HitActor)
 {
-	DrawDebugLine(GetWorld(), BulletStart, HitLocation, FColor::Blue, false, 1.0f);
+	// DrawDebugLine(GetWorld(), BulletStart, HitLocation, FColor::Blue, false, 1.0f);
 
 	// Add a particle effect here to show the shot
 	UGameInstance* GameInstance = GetWorld()->GetGameInstance();
 	if (UAGPGameInstance* AGPGameInstance = Cast<UAGPGameInstance>(GameInstance)) {
+
+
 		APawn* Owner = Cast<APawn>(GetOwner());
 		if (Owner && Owner->IsLocallyControlled() && Owner->Controller && Owner->Controller->IsLocalPlayerController()) {
 			AGPGameInstance->PlayGunshotSound2D();
@@ -150,9 +153,13 @@ void UWeaponComponent::FireVisualImplementation(const FVector& BulletStart, cons
 		{
 			if (ABaseCharacter* HitCharacter = Cast<ABaseCharacter>(HitActor)) {
 				AGPGameInstance->SpawnCharacterHitParticle(HitLocation);
+				AGPGameInstance->SpawnGunEffect(BulletStart, HitLocation, 1);
 			} else {
 				AGPGameInstance->SpawnGroundHitParticle(HitLocation);
+				AGPGameInstance->SpawnGunEffect(BulletStart, HitLocation, 2);
 			}
+		} else {
+			AGPGameInstance->SpawnGunEffect(BulletStart, HitLocation, 3);
 		}
 	}
 
