@@ -86,8 +86,8 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
 				// give them weapons on spawn
 				if (!NewCharacter->WeaponComponent) {
 					NewCharacter->WeaponComponent = NewObject<UWeaponComponent>(NewCharacter, UWeaponComponent::StaticClass());
-					NewCharacter->WeaponComponent->RegisterComponent();
 					NewCharacter->WeaponComponent->SetWeaponStats(FWeaponStats());
+					NewCharacter->WeaponComponent->RegisterComponent();
 					NewCharacter->ChooseCharacterMesh();
 					NewCharacter->DrawUI();
 					NewCharacter->EquipWeapon(true);

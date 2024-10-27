@@ -70,8 +70,7 @@ void APlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
 	}
-
-	DrawUI();
+	GetWorld()->GetTimerManager().SetTimer(UIUpdateTimerHandle, this, &APlayerCharacter::DrawUI, 0.5f, false);
 }
 
 void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
