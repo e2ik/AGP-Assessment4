@@ -55,7 +55,7 @@ void USwordComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 void USwordComponent::Slash(USceneComponent* Start, USceneComponent* End)
 {
-	if (bCanSlash) {
+	if (bCanSlash && !bIsBlocking) {
 		StartPoint = Start;
 		EndPoint = End;
 		SlashTime = 0;
