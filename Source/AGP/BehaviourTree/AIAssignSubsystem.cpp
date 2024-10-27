@@ -155,3 +155,8 @@ void UAIAssignSubsystem::NotifyDeath(AEnemyCharacter* Enemy)
     Enemies.Remove(Enemy);
     Enemy->PlayDeathAnimation();
 }
+
+int32 UAIAssignSubsystem::GetNumOfEnemies()
+{
+    return Enemies.Num();
+}

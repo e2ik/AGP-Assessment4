@@ -20,6 +20,7 @@ public:
 	void NotifyPlayerSensed(bool Sensed, AEnemyCharacter* Enemy);
 	void NotifyPlayerIsClose(bool Close, AEnemyCharacter* Enemy);
 	void NotifyDeath(AEnemyCharacter* Enemy);
+	int32 GetNumOfEnemies();
 
 protected:
 

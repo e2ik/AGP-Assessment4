@@ -61,7 +61,7 @@ bool UWeaponComponent::FireImplementation(const FVector& BulletStart, const FVec
 	FVector& OutHitLocation, AActor*& OutHitActor)
 {
 	// Determine if the weapon is able to fire.
-	if (TimeSinceLastShot < WeaponStats.FireRate || IsMagazineEmpty())
+	if (TimeSinceLastShot < WeaponStats.FireRate || IsMagazineEmpty() || bIsReloading)
 	{
 		return false;
 	}

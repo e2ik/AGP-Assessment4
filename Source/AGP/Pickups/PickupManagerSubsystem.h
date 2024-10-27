@@ -22,6 +22,7 @@ public:
 	}
 
 	void RemovePickup(const FVector& Location);
+	void SpawnWeaponPickupNearPlayer(const FVector& PlayerLocation, int32 Level);
 
 protected:
 	
@@ -30,7 +31,7 @@ protected:
 	 */
 	TArray<FVector> PossibleSpawnLocations;
 	TMap<FVector, AWeaponPickup*> SpawnedPickups;
-	float PickupSpawnRate = 5.0f;
+	float PickupSpawnRate = 15.0f;
 	float TimeSinceLastSpawn = 0.0f;
 	
 	virtual void Tick(float DeltaTime) override;

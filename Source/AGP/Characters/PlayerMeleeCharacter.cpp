@@ -18,19 +18,27 @@ void APlayerMeleeCharacter::UpdateHealthBar(float HealthPercent)
 
 void APlayerMeleeCharacter::DrawUI()
 {
-	if (IsLocallyControlled() && PlayerHUDClass)
-	{
-		if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
-		{
-			PlayerHUD = CreateWidget<UPlayerCharacterHUD>(PlayerController, PlayerHUDClass);
-			if (PlayerHUD)
-			{
-				PlayerHUD->AddToPlayerScreen();
-			}
-		}
-	}
-	UpdateHealthBar(1.0f);
+    // Check if the player is on the "ProcGenLevel"
+    FString CurrentLevelName = GetWorld()->GetMapName();
+    FString DesiredLevelName = TEXT("ProcGenLevel");
+
+    if (CurrentLevelName.Contains(DesiredLevelName))
+    {
+        if (IsLocallyControlled() && PlayerHUDClass)
+        {
+            if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+            {
+                PlayerHUD = CreateWidget<UPlayerCharacterHUD>(PlayerController, PlayerHUDClass);
+                if (PlayerHUD)
+                {
+                    PlayerHUD->AddToPlayerScreen();
+                }
+            }
+        }
+        UpdateHealthBar(1.0f);
+    }
 }
+
 
 void APlayerMeleeCharacter::BeginPlay()
 {

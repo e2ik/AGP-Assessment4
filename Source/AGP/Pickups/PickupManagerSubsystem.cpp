@@ -44,7 +44,6 @@ void UPickupManagerSubsystem::SpawnWeaponPickup()
 
     FVector SpawnPosition = PossibleSpawnLocations[FMath::RandRange(0, PossibleSpawnLocations.Num() - 1)];
     FVector NewPosition = SpawnPosition;
-    NewPosition.Z += 50.0f;
 
     if (const UAGPGameInstance* GameInstance = GetWorld()->GetGameInstance<UAGPGameInstance>()) {
         if (SpawnedPickups.Contains(NewPosition)) {
@@ -56,6 +55,47 @@ void UPickupManagerSubsystem::SpawnWeaponPickup()
         if (NewPickup) { SpawnedPickups.Add(NewPosition, NewPickup); }
     }
 }
+
+void UPickupManagerSubsystem::SpawnWeaponPickupNearPlayer(const FVector& PlayerLocation, int32 Level)
+{
+    if (PossibleSpawnLocations.IsEmpty())
+    {
+        UE_LOG(LogTemp, Error, TEXT("Unable to spawn weapon pickup."));
+        return;
+    }
+
+    FVector ClosestSpawnPosition;
+    float ClosestDistance = FLT_MAX;
+
+    for (const FVector& SpawnPosition : PossibleSpawnLocations) {
+        float Distance = FVector::Dist(PlayerLocation, SpawnPosition);
+
+        if (Distance < ClosestDistance) {
+            ClosestDistance = Distance;
+            ClosestSpawnPosition = SpawnPosition;
+        }
+    }
+
+    if (ClosestDistance < FLT_MAX) {
+        FVector NewPosition = ClosestSpawnPosition;
+
+        if (const UAGPGameInstance* GameInstance = GetWorld()->GetGameInstance<UAGPGameInstance>()) {
+ 
+            if (SpawnedPickups.Contains(NewPosition)) {
+                AWeaponPickup* ExistingPickup = SpawnedPickups[NewPosition];
+                if (IsValid(ExistingPickup)) { ExistingPickup->Destroy(); }
+            }
+
+            AWeaponPickup* NewPickup = GetWorld()->SpawnActor<AWeaponPickup>(GameInstance->GetWeaponPickupClass(), NewPosition, FRotator::ZeroRotator);
+            if (NewPickup) {
+				NewPickup->SetWeaponStats(Level);
+				NewPickup->UpdateWeaponPickupMaterial();
+				SpawnedPickups.Add(NewPosition, NewPickup);
+				}
+        }
+    }
+}
+
 
 
 void UPickupManagerSubsystem::PopulateSpawnLocations()
