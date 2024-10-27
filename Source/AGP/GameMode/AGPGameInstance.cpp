@@ -96,6 +96,36 @@ void UAGPGameInstance::SpawnCharacterHitParticle(const FVector& SpawnLocation)
     }
 }
 
+void UAGPGameInstance::SpawnGunEffect(const FVector& StartLocation, const FVector& EndLocation, int32 Color)
+{
+    if (GunEffect) {
+        UNiagaraComponent* GunEffectComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), GunEffect, StartLocation);
+        if (GunEffectComponent) {
+            FVector HitColor(0.1f, 0.1f, 0.0f);
+            FVector MissColor(0.0f, 0.1f, 0.1f);
+            FVector NothingColor(0.1f, 0.1f, 0.1f);
+            
+            switch (Color) {
+                case 1:
+                    GunEffectComponent->SetNiagaraVariableVec3(TEXT("BeamColor"), HitColor);
+                    break;
+                case 2:
+                    GunEffectComponent->SetNiagaraVariableVec3(TEXT("BeamColor"), MissColor);
+                    break;
+                case 3:
+                    GunEffectComponent->SetNiagaraVariableVec3(TEXT("BeamColor"), NothingColor);
+                    break;
+                default:
+                    GunEffectComponent->SetNiagaraVariableVec3(TEXT("BeamColor"), NothingColor);
+                    break;
+            }
+
+            GunEffectComponent->SetNiagaraVariableVec3(TEXT("BeamStart"), StartLocation);
+            GunEffectComponent->SetNiagaraVariableVec3(TEXT("BeamEnd"), EndLocation);
+        }
+    }
+}
+
 void UAGPGameInstance::PlayGunshotSoundAtLocation(const FVector& Location)
 {
     if (GunshotSoundCue) {

@@ -33,6 +33,7 @@ public:
 	void SpawnGroundHitParticle(const FVector& SpawnLocation);
 	void SpawnCharacterHitParticle(const FVector& SpawnLocation);
 	void SpawnBlockEffect(const FVector& SpawnLocation);
+	void SpawnGunEffect(const FVector& StartLocation, const FVector& EndLocation, int32 Color);
 	void PlayGunshotSoundAtLocation(const FVector& Location);
 	void PlayGunshotSound2D();
 	virtual void Init() override;
@@ -71,6 +72,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Particle Systems")
 	UNiagaraSystem* BlockEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category="Particle Systems")
+	UNiagaraSystem* GunEffect;
 
 	UPROPERTY(EditDefaultsOnly)
 	USoundCue* GunshotSoundCue;
