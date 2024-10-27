@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.h"
 #include "InputActionValue.h"
+#include "TimerManager.h"
 #include "PlayerCharacter.generated.h"
 
 class UPlayerCharacterHUD;
@@ -64,7 +65,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 private:
-	
+
+	FTimerHandle UIUpdateTimerHandle;	
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void FireWeapon(const FInputActionValue& Value);
