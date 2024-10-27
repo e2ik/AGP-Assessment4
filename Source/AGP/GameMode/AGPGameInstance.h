@@ -32,6 +32,7 @@ public:
 	UClass* GetPlayerMeleeClass() const;
 	void SpawnGroundHitParticle(const FVector& SpawnLocation);
 	void SpawnCharacterHitParticle(const FVector& SpawnLocation);
+	void SpawnBlockEffect(const FVector& SpawnLocation);
 	void PlayGunshotSoundAtLocation(const FVector& Location);
 	void PlayGunshotSound2D();
 	virtual void Init() override;
@@ -67,6 +68,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Particle Systems")
 	UNiagaraSystem* CharacterHitParticle;
+
+	UPROPERTY(EditDefaultsOnly, Category="Particle Systems")
+	UNiagaraSystem* BlockEffect;
 
 	UPROPERTY(EditDefaultsOnly)
 	USoundCue* GunshotSoundCue;

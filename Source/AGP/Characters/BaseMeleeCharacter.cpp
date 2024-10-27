@@ -101,3 +101,13 @@ void ABaseMeleeCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ABaseMeleeCharacter, SwordComponent);
 }
+
+void ABaseMeleeCharacter::Block() {
+	if (!HasSword()) return;
+	SwordComponent->Block();
+}
+
+void ABaseMeleeCharacter::StopBlock() {
+	if (!HasSword()) return;
+	SwordComponent->StopBlock();
+}

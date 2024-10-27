@@ -29,6 +29,11 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UPROPERTY()
+	bool bCanDamage = true;
+
+	void SetCanDamage(bool CanDamage);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

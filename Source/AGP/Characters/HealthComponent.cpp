@@ -34,6 +34,7 @@ float UHealthComponent::GetCurrentHealthPercentage() const
 void UHealthComponent::ApplyDamage(float DamageAmount)
 {
 	if (bIsDead) return;
+	if (!bCanDamage) return;
 	CurrentHealth -= DamageAmount;
 	if (CurrentHealth <= 0.0f)
 	{
@@ -119,5 +120,10 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UHealthComponent::SetCanDamage(bool CanDamage)
+{
+	bCanDamage = CanDamage;
 }
 
