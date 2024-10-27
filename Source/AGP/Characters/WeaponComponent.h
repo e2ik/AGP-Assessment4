@@ -6,6 +6,9 @@
 #include "Components/ActorComponent.h"
 #include "WeaponComponent.generated.h"
 
+
+class UAGPGameInstance;
+
 UENUM(BlueprintType)
 enum class EWeaponType : uint8 {
 	Rifle,
