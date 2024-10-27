@@ -111,3 +111,8 @@ void ABaseMeleeCharacter::StopBlock() {
 	if (!HasSword()) return;
 	SwordComponent->StopBlock();
 }
+
+void ABaseMeleeCharacter::MulticastDisplayRedFlash_Implementation()
+{
+	DisplayRedFlash();
+}
