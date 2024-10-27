@@ -151,7 +151,6 @@ void USwordComponent::SlashVisualImplementation(FVector Start, FVector End)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Base Character Cast Unsuccessful AHHHHHH"))
 	}
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 10.0f);
 }
 
 void USwordComponent::Block()

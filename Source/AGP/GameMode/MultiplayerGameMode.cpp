@@ -14,16 +14,16 @@
 void AMultiplayerGameMode::BeginPlay() {
 	Super::BeginPlay();
 	
-	// check level
-	FString CurrentLevelName = GetWorld()->GetMapName();
-	// CurrentLevelName = FPaths::GetBaseFilename(CurrentLevelName);
-	if (CurrentLevelName.ToLower().Contains("procgenlevel")) {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This is a procedural level"));
-	}
-	if (CurrentLevelName.ToLower().Contains("titlescreen"))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This is the Title Screen"));
-	}
+	// // check level
+	// FString CurrentLevelName = GetWorld()->GetMapName();
+	// // CurrentLevelName = FPaths::GetBaseFilename(CurrentLevelName);
+	// if (CurrentLevelName.ToLower().Contains("procgenlevel")) {
+	// 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This is a procedural level"));
+	// }
+	// if (CurrentLevelName.ToLower().Contains("titlescreen"))
+	// {
+	// 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This is the Title Screen"));
+	// }
 }
 
 void AMultiplayerGameMode::StartPlay() {
@@ -88,14 +88,15 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
 					NewCharacter->WeaponComponent = NewObject<UWeaponComponent>(NewCharacter, UWeaponComponent::StaticClass());
 					NewCharacter->WeaponComponent->RegisterComponent();
 					NewCharacter->WeaponComponent->SetWeaponStats(FWeaponStats());
+					NewCharacter->ChooseCharacterMesh();
+					NewCharacter->DrawUI();
 					NewCharacter->EquipWeapon(true);
 				}
-                NewCharacter->ChooseCharacterMesh();
-                NewCharacter->DrawUI();
+
             }
         }
         // Check if it's APlayerMeleeCharacter
-        else if (APlayerMeleeCharacter* PlayerMeleeCharacter = Cast<APlayerMeleeCharacter>(CurrentPawn))
+        if (APlayerMeleeCharacter* PlayerMeleeCharacter = Cast<APlayerMeleeCharacter>(CurrentPawn))
         {
             Controller->UnPossess();
             PlayerMeleeCharacter->Destroy();
@@ -110,10 +111,10 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
 				if (!NewMeleeCharacter->SwordComponent) {
 					NewMeleeCharacter->SwordComponent = NewObject<USwordComponent>(NewMeleeCharacter, USwordComponent::StaticClass());
 					NewMeleeCharacter->SwordComponent->RegisterComponent();
+					NewMeleeCharacter->ChooseCharacterMesh();
+					NewMeleeCharacter->DrawUI();
 					NewMeleeCharacter->EquipSword(true);
 				}
-                NewMeleeCharacter->ChooseCharacterMesh();
-                NewMeleeCharacter->DrawUI();
             }
         }
     }

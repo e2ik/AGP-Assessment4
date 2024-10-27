@@ -341,9 +341,6 @@ void UAIDirector::SpawnWeaponAtPlayer()
     else if (TotalDeathResets >= 2) { WeaponLevel = 3; }
     else if (TotalDeathResets >= 1) { WeaponLevel = 2; }
 
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, 
-            FString::Printf(TEXT("Total Death Resets: %d"), TotalDeathResets));
-
     for (TActorIterator<APlayerCharacter> ActorItr(World); ActorItr; ++ActorItr) {
         APlayerCharacter* Player = *ActorItr;
         if (Player) {
