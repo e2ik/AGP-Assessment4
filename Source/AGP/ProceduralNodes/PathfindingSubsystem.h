@@ -13,6 +13,44 @@ class UProceduralNodes;
  * 
  */
 
+USTRUCT()
+struct FSpan
+{
+	GENERATED_BODY()
+
+public:
+	ANavigationNode* StartNode;
+	ANavigationNode* EndNode;
+	bool bIsTraversable;
+
+	FSpan()
+	{
+		StartNode = nullptr;
+		EndNode = nullptr;
+		bIsTraversable = false;
+	}
+	
+	FSpan(ANavigationNode* startNode, ANavigationNode* endNode, bool isTraversable)
+	{
+		StartNode = startNode;
+		EndNode = endNode;
+		bIsTraversable = isTraversable;
+	}
+	FVector GetStartLocation()
+	{
+		return StartNode->GetActorLocation();
+	}
+	FVector GetEndLocation()
+	{
+		return EndNode->GetActorLocation();
+	}
+
+	friend bool operator==(const FSpan& SpanOne, const FSpan& SpanTwo)
+	{
+		return SpanOne.StartNode == SpanTwo.StartNode && SpanOne.EndNode == SpanTwo.EndNode || SpanOne.StartNode == SpanTwo.EndNode && SpanOne.EndNode == SpanTwo.StartNode;
+	}
+};
+
 UCLASS()
 class AGP_API UPathfindingSubsystem : public UWorldSubsystem
 {
@@ -73,17 +111,11 @@ private:
 	static TArray<FVector> ReconstructPath(const TMap<ANavigationNode*, ANavigationNode*>& CameFromMap, ANavigationNode* EndNode);
 
 	// --- Obstacle Detection ---
-
-	// Performs a sweep from one node to another, checking for any hits along the path. Any hits have their heights checked,
-	// being below the height of the enemy character being "traversable".
-	bool IsSpanTraversable(const ANavigationNode* StartNode, const ANavigationNode* EndNode);
-
-	// okay we make a map that records the traversed state of spans
-	// probably like TMap<TArray<ANavigationNode*>, bool>;
-	//TMap<TArray<ANavigationNode*>*, bool> SpanMap;
-	// problem: TMap does not like it when a TArray is used as its key. perhaps create a span struct instead.
+	
+	// Span Map uses the CrossProduct + VectorSum of the two node actors as the key
 	TMap<FVector, bool> SpanMap;
 
+	// 
 	bool SpanExists(const ANavigationNode* StartNode, const ANavigationNode* EndNode);
 
 	// alrighty redoing stuff!!
@@ -98,5 +130,7 @@ private:
 	bool SweepSpan(FVector StartLocation, FVector EndLocation);
 
 	void DrawSpan(bool bUnblockedSpan, FVector StartLocation, FVector EndLocation);
+
+	void TestSweep(ANavigationNode* StartNode, ANavigationNode* EndNode);
 	
 };
