@@ -3,6 +3,7 @@
 
 #include "PathfindingSubsystem.h"
 
+#include "BlueprintActionDatabase.h"
 #include "CollisionDebugDrawingPublic.h"
 #include "EngineUtils.h"
 #include "NavigationNode.h"
@@ -294,7 +295,7 @@ TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* StartNode, ANavi
 						OpenSet.Add(ConnectedNode);
 					}
 				}
-			// span check temporarily disabled
+			//span check temporarily disabled
 			//}
 			
 			
@@ -382,7 +383,7 @@ TArray<FVector> UPathfindingSubsystem::GetPatrolPath(const FVector& StartLocatio
 
 bool UPathfindingSubsystem::SpanExists(const ANavigationNode* StartNode, const ANavigationNode* EndNode)
 {
-	return SpanMap.Contains(FVector::CrossProduct(StartNode->GetActorLocation(), EndNode->GetActorLocation()));
+	return SpanMap.Contains(FVector::CrossProduct(StartNode->GetActorLocation(), EndNode->GetActorLocation()) + StartNode->GetActorLocation() + EndNode->GetActorLocation());
 }
 
 void UPathfindingSubsystem::PopulateSpanMap()
@@ -396,11 +397,6 @@ void UPathfindingSubsystem::PopulateSpanMap()
 
 	//TMap<FVector, TArray<TArray<ANavigationNode*>>> CrossProductMap = {};
 
-	int32 MultipleCount = 0;
-	int32 ProdSumCount = 0;
-
-	TMap<FVector, bool> ProdSumMap;
-
 	for (ANavigationNode* Node : Nodes)
 	{
 		if (!Node) continue;
@@ -413,54 +409,78 @@ void UPathfindingSubsystem::PopulateSpanMap()
 			FVector CrossProduct = FVector::CrossProduct(Node->GetActorLocation(), ConnectedNode->GetActorLocation());
 			FVector ProdSum = LocationSum + CrossProduct;
 			TArray<ANavigationNode*> NodePair = {Node, ConnectedNode};
-			if (SpanMap.Contains(ProdSum))
-			{
-				//CrossProductMap[CrossProduct].Add(NodePair);
-				MultipleCount++;
-			}
-			else
+			
+			if (!SpanMap.Contains(ProdSum))
 			{
 				SpanMap.Add(ProdSum, CheckSpan(Node, ConnectedNode));
-				DrawSpan(SpanMap[ProdSum], Node->GetActorLocation(), ConnectedNode->GetActorLocation());
+				//DrawSpan(SpanMap[ProdSum], Node->GetActorLocation(), ConnectedNode->GetActorLocation());
 			}
-
-			
-			// if (ProdSumMap.Contains(LocationSum + CrossProduct))
-			// {
-			// 	ProdSumCount++;
-			// }
-			// else
-			// {
-			// 	ProdSumMap.Add(LocationSum + CrossProduct, CheckSpan(Node, ConnectedNode));
-			// 	DrawSpan(ProdSumMap[LocationSum + CrossProduct], Node->GetActorLocation(), ConnectedNode->GetActorLocation());
-			// }
 		}
 	}
 
-	// UE_LOG(LogTemp, Log, TEXT("CrossProd::	Found %i matching spans, with %i spans added \n ProdSum::	Found %i matching spans, with %i spans added"),
-	// 	MultipleCount, SpanMap.Num(), ProdSumCount, ProdSumMap.Num())
+	// attempting an alternate method
+	// so every node is contained within Nodes, and each node has an array of ConnectedNodes.
+	// thus, each node already has its spans defined. when adding a span to the list, confirm that the span does not already exist (element that contains Node and ConnectedNode, sorted, does not exist already)
+	// for (node : nodes)
+		// for (connectednode : node->connectednodes)
+		// if (!SpanContainer.contains(node, connectednode)
+			//  SpanContainer.add(sweepResult, node, connectednode)
+
+	// TArray<TArray<ANavigationNode*>> SpanArray;
+	// for (ANavigationNode* Node : Nodes)
+	// {
+	// 	if (!Node) continue;
+	// 	
+	// 	for (ANavigationNode* ConnectedNode : Node->GetConnectedNodes())
+	// 	{
+	// 		if (!ConnectedNode) continue;
+	//
+	// 		TArray<ANavigationNode*> Span = {Node, ConnectedNode};
+	// 		Span.Sort();
+	// 		if (!SpanArray.Contains(Span))
+	// 		{
+	// 			SpanArray.Add(Span);
+	// 		}
+	// 	}
+	// }
+
+	TArray<FSpan> SpanArray;
+	for (ANavigationNode* Node : Nodes)
+	{
+		if (!Node) continue;
+		
+		for (ANavigationNode* ConnectedNode : Node->GetConnectedNodes())
+		{
+			if (!ConnectedNode) continue;
+
+			FSpan Span = {Node, ConnectedNode, SweepSpan(Node->GetActorLocation(), ConnectedNode->GetActorLocation())}; // dummy bool value
+			if (!SpanArray.Contains(Span))
+			{
+				SpanArray.Add(Span);
+				DrawSpan(Span.bIsTraversable, Span.GetStartLocation(), Span.GetEndLocation());
+			}
+		}
+	}
+
+	// okay what if we do an array of Span structs?? that could be awesomesauce
+
+	UE_LOG(LogTemp, Log, TEXT("Span array is of size %i"), SpanArray.Num())
 }
 
 bool UPathfindingSubsystem::CheckSpan(ANavigationNode* StartNode, ANavigationNode* EndNode)
 {
-	// take two nodes, check if their span already exists in SpanMap. if not, call SweepSpan
-
 	if (SpanExists(StartNode, EndNode))
 	{
 		return SpanMap[FVector::CrossProduct(StartNode->GetActorLocation(),EndNode->GetActorLocation()) + (StartNode->GetActorLocation() + EndNode->GetActorLocation())];
 	}
-
 	return SweepSpan(StartNode->GetActorLocation(), EndNode->GetActorLocation());
-	
 }
 
 bool UPathfindingSubsystem::SweepSpan(FVector StartLocation, FVector EndLocation)
 {
 	// perform the actual sweep
 	
-	FVector CrossProduct = FVector::CrossProduct(StartLocation, EndLocation);
 	FVector VectorSum = StartLocation + EndLocation;
-	FVector ProdSum = VectorSum + CrossProduct;
 	
 	// creating a Cube shape to be swept between two nodes
 	FVector CubeMidPoint = (VectorSum) / 2;
@@ -484,8 +504,8 @@ bool UPathfindingSubsystem::SweepSpan(FVector StartLocation, FVector EndLocation
 		if (HitResults.IsEmpty())
 		{
 			//UE_LOG(LogTemp, Log, TEXT("no objects were hit during sweep"))
-			SpanMap.Add(ProdSum, true);
-			DrawSpan(true, StartLocation, EndLocation);
+			// SpanMap.Add(ProdSum, true);
+			//DrawSpan(true, StartLocation, EndLocation);
 			return true;
 		}
 		
@@ -502,8 +522,8 @@ bool UPathfindingSubsystem::SweepSpan(FVector StartLocation, FVector EndLocation
 					if (HitBox.GetSize().Z >= 176.0f)
 					{
 						//UE_LOG(LogTemp, Log, TEXT("impassable object detected, returning"))
-						SpanMap.Add(ProdSum, false);
-						DrawSpan(false, StartLocation, EndLocation);
+						//SpanMap.Add(ProdSum, false);
+						//DrawSpan(false, StartLocation, EndLocation);
 						return false;
 					}
 					//UE_LOG(LogTemp, Log, TEXT("passable object detected"))
@@ -512,8 +532,8 @@ bool UPathfindingSubsystem::SweepSpan(FVector StartLocation, FVector EndLocation
 		}
 	}
 	//UE_LOG(LogTemp, Log, TEXT("finished sweep, valid span"))
-	SpanMap.Add(ProdSum, true);
-	DrawSpan(true, StartLocation, EndLocation);
+	//SpanMap.Add(ProdSum, true);
+	//DrawSpan(true, StartLocation, EndLocation);
 	return true;
 }
 
@@ -527,5 +547,10 @@ void UPathfindingSubsystem::DrawSpan(bool bUnblockedSpan, FVector StartLocation,
 	{
 		DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, true, -1, 0, 2);
 	}
+	
+}
+
+void UPathfindingSubsystem::TestSweep(ANavigationNode* StartNode, ANavigationNode* EndNode)
+{
 	
 }
