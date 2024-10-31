@@ -1,4 +1,3 @@
-#include "EngineUtils.h"
 #include "NavigationNode.h"
 
 // TODO: Check Multiplayer make sure it only runs on server
