@@ -441,9 +441,9 @@ void UPathfindingSubsystem::PopulateSpanMap()
 		FSpan Span = SpanArray[RandIndex];
 		FQuat BoxRot = Span.GetOrientation();
 		FVector MidPoint = Span.GetMidPoint();
-		if (MidPoint.Z <= 100.0f)
+		if (MidPoint.Z < 138.0f)
 		{
-			MidPoint.Z = 100.0f;
+			MidPoint.Z = 138.0f;
 		}
 		if (BoxRot.Rotator().Pitch != 0.0f || BoxRot.Rotator().Roll != 0.0f)
 		{
@@ -456,7 +456,7 @@ void UPathfindingSubsystem::PopulateSpanMap()
 		
 		float SpanDist = Span.GetSpanDist();
 		FVector BoxExtent = {SpanDist / 2, 34.0f, 88.0f};
-		// okay the positioning of the box - z coordinate should have it 
+		// okay the positioning of the box - z coordinate should have the centre point be 88.0f (capsule height) away from the ground, which is at z 50.0f i.e 88.0f + 50.0f 
 		DrawDebugBox(GetWorld(), MidPoint, BoxExtent, BoxRot, FColor::Green, true, -1, 0, 4);
 		DrawDebugSphere(GetWorld(), Span.GetStartLocation(), 20.0f, 4, FColor::Orange, true, -1, 0, 4);
 		DrawDebugSphere(GetWorld(), Span.GetEndLocation(), 20.0f, 4, FColor::Purple, true, -1, 0, 4);
