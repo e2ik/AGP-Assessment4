@@ -74,6 +74,14 @@ public:
 	{
 		return GetDirectionVector().ToOrientationQuat();
 	}
+	// Returns the quaternion rotation of a span, modified to be level with a flat surface
+	FQuat GetOrientationModified()
+	{
+		FRotator Rot = GetOrientation().Rotator();
+		Rot.Pitch = 0;
+		Rot.Roll = 0;
+		return Rot.Quaternion();
+	}
 
 	friend bool operator==(const FSpan& SpanOne, const FSpan& SpanTwo)
 	{
