@@ -35,14 +35,44 @@ public:
 		StartNode = startNode;
 		EndNode = endNode;
 		bIsTraversable = isTraversable;
+		// you know, it might be better to have the span perform the sweep itself
 	}
+	// Returns the StartNode's location
 	FVector GetStartLocation()
 	{
-		return StartNode->GetActorLocation();
+		//UE_LOG(LogTemp, Log, TEXT("StartNode is %hs"), StartNode ? "not null" : "null")
+		return StartNode ? StartNode->GetActorLocation() : FVector::ZeroVector;
 	}
+	// Returns the EndNode's location
 	FVector GetEndLocation()
 	{
-		return EndNode->GetActorLocation();
+		//UE_LOG(LogTemp, Log, TEXT("EndNode is %hs"), StartNode ? "not null" : "null")
+		return EndNode ? EndNode->GetActorLocation() : FVector::ZeroVector;
+	}
+	// Returns the sum of the node locations
+	FVector GetVectorSum()
+	{
+		return GetStartLocation() + GetEndLocation();
+	}
+	// Returns the midpoint of the two nodes
+	FVector GetMidPoint()
+	{
+		return GetVectorSum() / 2;
+	}
+	// Returns the distance between the two nodes
+	float GetSpanDist()
+	{
+		return FVector::Distance(GetStartLocation(), GetEndLocation());
+	}
+	// Returns the direction vector from StartNode to EndNode
+	FVector GetDirectionVector()
+	{
+		return GetStartLocation() - GetEndLocation();
+	}
+	// Returns the quaternion rotation of the span
+	FQuat GetOrientation()
+	{
+		return GetDirectionVector().ToOrientationQuat();
 	}
 
 	friend bool operator==(const FSpan& SpanOne, const FSpan& SpanTwo)

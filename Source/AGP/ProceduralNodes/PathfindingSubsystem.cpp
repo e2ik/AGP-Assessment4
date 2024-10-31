@@ -418,32 +418,6 @@ void UPathfindingSubsystem::PopulateSpanMap()
 		}
 	}
 
-	// attempting an alternate method
-	// so every node is contained within Nodes, and each node has an array of ConnectedNodes.
-	// thus, each node already has its spans defined. when adding a span to the list, confirm that the span does not already exist (element that contains Node and ConnectedNode, sorted, does not exist already)
-	// for (node : nodes)
-		// for (connectednode : node->connectednodes)
-		// if (!SpanContainer.contains(node, connectednode)
-			//  SpanContainer.add(sweepResult, node, connectednode)
-
-	// TArray<TArray<ANavigationNode*>> SpanArray;
-	// for (ANavigationNode* Node : Nodes)
-	// {
-	// 	if (!Node) continue;
-	// 	
-	// 	for (ANavigationNode* ConnectedNode : Node->GetConnectedNodes())
-	// 	{
-	// 		if (!ConnectedNode) continue;
-	//
-	// 		TArray<ANavigationNode*> Span = {Node, ConnectedNode};
-	// 		Span.Sort();
-	// 		if (!SpanArray.Contains(Span))
-	// 		{
-	// 			SpanArray.Add(Span);
-	// 		}
-	// 	}
-	// }
-
 	TArray<FSpan> SpanArray;
 	for (ANavigationNode* Node : Nodes)
 	{
@@ -461,6 +435,21 @@ void UPathfindingSubsystem::PopulateSpanMap()
 			}
 		}
 	}
+	for (int i = 0; i < 20; i++)
+	{
+		int RandIndex = FMath::RandRange(0, SpanArray.Num() - 1);
+		FSpan Span = SpanArray[RandIndex];
+		FQuat BoxRot = Span.GetOrientation();
+		FVector MidPoint = Span.GetMidPoint();
+		float SpanDist = Span.GetSpanDist();
+		FVector BoxExtent = {SpanDist / 2, 34.0f, 88.0f};
+		DrawDebugBox(GetWorld(), MidPoint, BoxExtent, BoxRot, FColor::Green, true, -1, 0, 4);
+		DrawDebugSphere(GetWorld(), Span.GetStartLocation(), 20.0f, 4, FColor::Orange, true, -1, 0, 4);
+		DrawDebugSphere(GetWorld(), Span.GetEndLocation(), 20.0f, 4, FColor::Purple, true, -1, 0, 4);
+		DrawDebugSphere(GetWorld(), MidPoint, 20.0f, 4, FColor::White, true, -1, 0, 4);
+		// fantastic, it works like it should now, roughly. now we just need to adjust the rotation components.
+	}
+	
 
 	// okay what if we do an array of Span structs?? that could be awesomesauce
 
