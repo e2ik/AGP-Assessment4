@@ -435,14 +435,28 @@ void UPathfindingSubsystem::PopulateSpanMap()
 			}
 		}
 	}
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 40; i++)
 	{
 		int RandIndex = FMath::RandRange(0, SpanArray.Num() - 1);
 		FSpan Span = SpanArray[RandIndex];
 		FQuat BoxRot = Span.GetOrientation();
 		FVector MidPoint = Span.GetMidPoint();
+		if (MidPoint.Z <= 100.0f)
+		{
+			MidPoint.Z = 100.0f;
+		}
+		if (BoxRot.Rotator().Pitch != 0.0f || BoxRot.Rotator().Roll != 0.0f)
+		{
+			FRotator Rot = BoxRot.Rotator();
+			Rot.Pitch = 0;
+			Rot.Roll = 0;
+			BoxRot = Rot.Quaternion();
+		}
+
+		
 		float SpanDist = Span.GetSpanDist();
 		FVector BoxExtent = {SpanDist / 2, 34.0f, 88.0f};
+		// okay the positioning of the box - z coordinate should have it 
 		DrawDebugBox(GetWorld(), MidPoint, BoxExtent, BoxRot, FColor::Green, true, -1, 0, 4);
 		DrawDebugSphere(GetWorld(), Span.GetStartLocation(), 20.0f, 4, FColor::Orange, true, -1, 0, 4);
 		DrawDebugSphere(GetWorld(), Span.GetEndLocation(), 20.0f, 4, FColor::Purple, true, -1, 0, 4);
