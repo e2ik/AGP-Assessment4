@@ -162,8 +162,6 @@ private:
 	
 	// SpanArray 
 	TArray<FSpan> SpanArray;
-
-	bool IsTraversable(ANavigationNode* StartNode, ANavigationNode* EndNode);
 	
 	// Check if a span exists
 	bool SpanExists(ANavigationNode* StartNode, ANavigationNode* EndNode);
@@ -171,18 +169,19 @@ private:
 	// populates the span map; called after the nodes have been populated through SetNodesArray()
 	void PopulateSpanMap();
 
-	// functions as a pure check of the span map to see if a span exists, and is recorded as traversible. if it does not exist (moving node?) then it will perform SweepSpan();
+	// Check the span to see if it traversable
 	bool CheckSpan(ANavigationNode* StartNode, ANavigationNode* EndNode);
 
+	// Add a span to the Span Array
 	void AddSpan(ANavigationNode* StartNode, ANavigationNode* EndNode);
 
+	// Return a Span; Unused
 	FSpan* GetSpan(ANavigationNode* StartNode, ANavigationNode* EndNode);
 
-	// the actual sweeping functionality of the old IsSpanTraversible(). 
+	// Sweeping functionality, used to determine if a span is traversable 
 	bool SweepSpan(ANavigationNode* StartNode, ANavigationNode* EndNode);
 
+	// Debug function
 	void DrawSpan(bool bUnblockedSpan, FVector StartLocation, FVector EndLocation);
-
-	void TestSweep(ANavigationNode* StartNode, ANavigationNode* EndNode);
 	
 };
