@@ -403,42 +403,42 @@ void UPathfindingSubsystem::PopulateSpanMap()
 			}
 		}
 	}
-	
-	for (int i = 0; i < 40; i++)
-	{
-		int RandIndex = FMath::RandRange(0, SpanArray.Num() - 1);
-		FSpan Span = SpanArray[RandIndex];
-		FQuat BoxRot = Span.GetOrientation();
-		FVector MidPoint = Span.GetMidPoint();
-		if (MidPoint.Z < 138.0f)
-		{
-			MidPoint.Z = 138.0f;
-		}
-		if (BoxRot.Rotator().Pitch != 0.0f || BoxRot.Rotator().Roll != 0.0f)
-		{
-			FRotator Rot = BoxRot.Rotator();
-			Rot.Pitch = 0;
-			Rot.Roll = 0;
-			BoxRot = Rot.Quaternion();
-		}
-	
-		
-		float SpanDist = Span.GetSpanDist();
-		FVector BoxExtent = {SpanDist / 2, 34.0f, 88.0f};
-		// okay the positioning of the box - z coordinate should have the centre point be 88.0f (capsule height) away from the ground, which is at z 50.0f i.e 88.0f + 50.0f
-		FColor BoxColor = FColor::Green;
-		if (!Span.bIsTraversable)
-		{
-			BoxColor = FColor::Yellow;
-		}
-		DrawDebugBox(GetWorld(), MidPoint, BoxExtent, BoxRot, BoxColor, true, -1, 0, 4);
-		DrawDebugSphere(GetWorld(), Span.GetStartLocation(), 20.0f, 4, FColor::Orange, true, -1, 0, 4);
-		DrawDebugSphere(GetWorld(), Span.GetEndLocation(), 20.0f, 4, FColor::Purple, true, -1, 0, 4);
-		DrawDebugSphere(GetWorld(), MidPoint, 20.0f, 4, FColor::White, true, -1, 0, 4);
-		// fantastic, it works like it should now, roughly. now we just need to adjust the rotation components.
-	}
-
-	//UE_LOG(LogTemp, Log, TEXT("Span array is of size %i"), SpanArray.Num())
+	//
+	// for (int i = 0; i < 40; i++)
+	// {
+	// 	int RandIndex = FMath::RandRange(0, SpanArray.Num() - 1);
+	// 	FSpan Span = SpanArray[RandIndex];
+	// 	FQuat BoxRot = Span.GetOrientation();
+	// 	FVector MidPoint = Span.GetMidPoint();
+	// 	if (MidPoint.Z < 138.0f)
+	// 	{
+	// 		MidPoint.Z = 138.0f;
+	// 	}
+	// 	if (BoxRot.Rotator().Pitch != 0.0f || BoxRot.Rotator().Roll != 0.0f)
+	// 	{
+	// 		FRotator Rot = BoxRot.Rotator();
+	// 		Rot.Pitch = 0;
+	// 		Rot.Roll = 0;
+	// 		BoxRot = Rot.Quaternion();
+	// 	}
+	//
+	// 	
+	// 	float SpanDist = Span.GetSpanDist();
+	// 	FVector BoxExtent = {SpanDist / 2, 34.0f, 88.0f};
+	// 	// okay the positioning of the box - z coordinate should have the centre point be 88.0f (capsule height) away from the ground, which is at z 50.0f i.e 88.0f + 50.0f
+	// 	FColor BoxColor = FColor::Green;
+	// 	if (!Span.bIsTraversable)
+	// 	{
+	// 		BoxColor = FColor::Yellow;
+	// 	}
+	// 	DrawDebugBox(GetWorld(), MidPoint, BoxExtent, BoxRot, BoxColor, true, -1, 0, 4);
+	// 	DrawDebugSphere(GetWorld(), Span.GetStartLocation(), 20.0f, 4, FColor::Orange, true, -1, 0, 4);
+	// 	DrawDebugSphere(GetWorld(), Span.GetEndLocation(), 20.0f, 4, FColor::Purple, true, -1, 0, 4);
+	// 	DrawDebugSphere(GetWorld(), MidPoint, 20.0f, 4, FColor::White, true, -1, 0, 4);
+	// 	// fantastic, it works like it should now, roughly. now we just need to adjust the rotation components.
+	// }
+	//
+	// //UE_LOG(LogTemp, Log, TEXT("Span array is of size %i"), SpanArray.Num())
 }
 
 bool UPathfindingSubsystem::CheckSpan(ANavigationNode* StartNode, ANavigationNode* EndNode)
@@ -490,13 +490,13 @@ bool UPathfindingSubsystem::SweepSpan(ANavigationNode* StartNode, ANavigationNod
 				FBox HitBox = HitActor->GetComponentsBoundingBox();
 				if (HitBox.GetSize().Z >= 176.0f)
 				{
-					DrawSpan(false, TestSpan.GetStartLocation(), TestSpan.GetEndLocation());
+					//DrawSpan(false, TestSpan.GetStartLocation(), TestSpan.GetEndLocation());
 					return false;
 				}
 			}
 		}
 	}
-	DrawSpan(true, TestSpan.GetStartLocation(), TestSpan.GetEndLocation());
+	//DrawSpan(true, TestSpan.GetStartLocation(), TestSpan.GetEndLocation());
 	return true;
 }
 
@@ -510,10 +510,5 @@ void UPathfindingSubsystem::DrawSpan(bool bUnblockedSpan, FVector StartLocation,
 	{
 		DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, true, -1, 0, 2);
 	}
-	
-}
-
-void UPathfindingSubsystem::TestSweep(ANavigationNode* StartNode, ANavigationNode* EndNode)
-{
 	
 }
