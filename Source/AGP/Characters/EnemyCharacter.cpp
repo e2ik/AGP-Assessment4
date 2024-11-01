@@ -43,6 +43,15 @@ void AEnemyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 }
 
 
+bool AEnemyCharacter::GetIsFalling()
+{
+	return bIsFalling;
+}
+
+bool AEnemyCharacter::GetIsJumping()
+{
+	return bIsJumping;
+}
 
 // Called when the game starts or when spawned
 void AEnemyCharacter::BeginPlay()
@@ -178,22 +187,24 @@ void AEnemyCharacter::OnColliderOverlap(UPrimitiveComponent* OverlappedComponent
     UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
-    if (UStaticMeshComponent* StaticMeshComp = Cast<UStaticMeshComponent>(OtherComponent))
-    {
+    // if (UStaticMeshComponent* StaticMeshComp = Cast<UStaticMeshComponent>(OtherComponent))
+    // {
         // Get the name of the overlapping actor
-        FString ActorName = OtherActor->GetActorLabel();
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Overlap detected with Static Mesh Component: %s"), *ActorName));
+    // FString ActorName = OtherActor->GetActorLabel();
+    // GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Overlap detected with Static Mesh Component: %s"), *ActorName));
 
-        FVector Origin, BoxExtent;
-        StaticMeshComp->GetLocalBounds(Origin, BoxExtent);
+    FVector Origin, BoxExtent;
+	OtherActor->GetActorBounds(true, Origin, BoxExtent);
+    //StaticMeshComp->GetLocalBounds(Origin, BoxExtent);
 
-        // Check the height of the static mesh (Z dimension)
-        if (BoxExtent.Z * 2.0f < 176.0f) // Multiply by 2 to get full height
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Jumping!"));
-            Jump();
-        }
+    // Check the height of the static mesh (Z dimension)
+    if (BoxExtent.Z * 2.0f < 176.0f) // Multiply by 2 to get full height
+    {
+        //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Jumping!"));
+        Jump();
+    	bIsJumping = true;
     }
+    //}
 }
 
 
@@ -266,6 +277,23 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	if (bIsRepeatPath) {
 		PatrolPath();
 	} else { PathfindingSubsystem->ClearPatrolPath(); }
+
+	if (bIsJumping)
+	{
+		if (GetVelocity().Z <= 0.0f)
+		{
+			bIsJumping = false;
+			bIsFalling = true;
+		}
+	}
+
+	if (bIsFalling)
+	{
+		if (GetVelocity().Z == 0.0f)
+		{
+			bIsFalling = false;
+		}
+	}
 
 
 	// ! LAB FSM code: leaving this here just in case

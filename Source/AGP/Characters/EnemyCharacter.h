@@ -104,6 +104,12 @@ public:
 
 	// end Behaviour Tree Additions
 
+	UFUNCTION(BlueprintCallable)
+	bool GetIsFalling();
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsJumping();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -188,5 +194,8 @@ private:
 	float ShotAtTimer = 0.0f;
 
 	int32 PathIndex = 0;
+
+	bool bIsJumping;
+	bool bIsFalling;
 
 };
