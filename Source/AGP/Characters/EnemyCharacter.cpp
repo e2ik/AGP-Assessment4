@@ -10,6 +10,8 @@
 #include "AGP/ProceduralNodes/PathfindingSubsystem.h"
 #include "AGP/BehaviourTree/BTComponent.h"
 #include "AGP/BehaviourTree/AIAssignSubsystem.h"
+#include "Components/CapsuleComponent.h"
+#include "Engine/StaticMeshActor.h"
 #include "Perception/PawnSensingComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -40,6 +42,25 @@ void AEnemyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
     DOREPLIFETIME(AEnemyCharacter, EnemyType);
 }
 
+void AEnemyCharacter::OnColliderOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UE_LOG(LogTemp, Log, TEXT("Overlap is being triggered by %s"), *OtherActor->GetActorLabel())
+	if (AStaticMeshActor* StaticActor = Cast<AStaticMeshActor>(OtherActor))
+	{
+		UE_LOG(LogTemp, Log, TEXT("Overlapped is a static mesh actor"))
+		// check if is bridge or ground
+		// check static actor size less than character height
+
+		FBox Box = StaticActor->GetComponentsBoundingBox();
+		if (Box.GetSize().Z < 176.0f)
+		{
+			UE_LOG(LogTemp, Log, TEXT("Jumping!"))
+			Jump();
+		}
+	}
+}
+
 // Called when the game starts or when spawned
 void AEnemyCharacter::BeginPlay()
 {
@@ -59,6 +80,11 @@ void AEnemyCharacter::BeginPlay()
 	if (HealthComponent) {
 		PreviousHealth = HealthComponent->GetCurrentHealth();
 		HealthComponent->OnHealthChanged.AddDynamic(this, &AEnemyCharacter::OnHealthChanged);
+	}
+
+	if (BumpDetectorComponent)
+	{
+		BumpDetectorComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyCharacter::OnColliderOverlap);
 	}
 
 	if (EnemyType == EEnemyType::UNASSIGNED) {
@@ -181,7 +207,6 @@ void AEnemyCharacter::UpdateSight()
 		}
 	}
 }
-
 
 // Called every frame
 void AEnemyCharacter::Tick(float DeltaTime)
