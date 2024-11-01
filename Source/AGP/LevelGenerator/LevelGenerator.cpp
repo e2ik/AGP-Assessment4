@@ -40,9 +40,13 @@ void ALevelGenerator::SpawnMesh(FString MeshName, UStaticMesh* Mesh, FVector Loc
 		UE_LOG(LogTemp, Warning, TEXT("Mesh is null"));
 		return;
 	}
+
 	AStaticMeshActor* MeshActor = GetWorld()->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), Location, Rotation);
 	if (MeshActor && MeshActor->GetStaticMeshComponent())
 	{
+        if (MeshName.Contains(TEXT("Fence"))) {
+            MeshActor->GetStaticMeshComponent()->SetGenerateOverlapEvents(true);
+        }
 		MeshActor->GetStaticMeshComponent()->SetStaticMesh(Mesh);
 		MeshActor->SetMobility(EComponentMobility::Movable);
 		MeshActor->SetActorLocation(Location);

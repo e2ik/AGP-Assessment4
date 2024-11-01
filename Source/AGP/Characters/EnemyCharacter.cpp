@@ -175,23 +175,32 @@ void AEnemyCharacter::OnSensedPawn(APawn* SensedActor)
 }
 
 void AEnemyCharacter::OnColliderOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+    UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Log, TEXT("Overlap is being triggered by %s"), *OtherActor->GetActorLabel())
-	if (AStaticMeshActor* StaticActor = Cast<AStaticMeshActor>(OtherActor))
-	{
-		UE_LOG(LogTemp, Log, TEXT("Overlapped is a static mesh actor"))
-		// check if is bridge or ground
-		// check static actor size less than character height
 
-		FBox Box = StaticActor->GetComponentsBoundingBox();
-		if (Box.GetSize().Z < 176.0f)
-		{
-			UE_LOG(LogTemp, Log, TEXT("Jumping!"))
-			Jump();
-		}
-	}
+    if (UStaticMeshComponent* StaticMeshComp = Cast<UStaticMeshComponent>(OtherComponent))
+    {
+        // Get the name of the overlapping actor
+        FString ActorName = OtherActor->GetActorLabel();
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Overlap detected with Static Mesh Component: %s"), *ActorName));
+
+        FVector Origin, BoxExtent;
+        StaticMeshComp->GetLocalBounds(Origin, BoxExtent);
+
+        // Check the height of the static mesh (Z dimension)
+        if (BoxExtent.Z * 2.0f < 176.0f) // Multiply by 2 to get full height
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Jumping!"));
+            Jump();
+        }
+    }
 }
+
+
+
+
+
+
 
 void AEnemyCharacter::UpdateSight()
 {
