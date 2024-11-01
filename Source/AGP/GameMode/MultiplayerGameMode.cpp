@@ -89,7 +89,7 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
 					NewCharacter->WeaponComponent->SetWeaponStats(FWeaponStats());
 					NewCharacter->WeaponComponent->RegisterComponent();
 					NewCharacter->ChooseCharacterMesh();
-					// NewCharacter->DrawUI();
+					// NewCharacter->DrawUI(); Not needed anymore due to PlayerCharacter.cpp changes
 					NewCharacter->EquipWeapon(true);
 				}
 
@@ -112,7 +112,7 @@ void AMultiplayerGameMode::RespawnPlayer(AController* Controller)
 					NewMeleeCharacter->SwordComponent = NewObject<USwordComponent>(NewMeleeCharacter, USwordComponent::StaticClass());
 					NewMeleeCharacter->SwordComponent->RegisterComponent();
 					NewMeleeCharacter->ChooseCharacterMesh();
-					// NewMeleeCharacter->DrawUI();
+					NewMeleeCharacter->DrawUI();
 					NewMeleeCharacter->EquipSword(true);
 				}
             }
