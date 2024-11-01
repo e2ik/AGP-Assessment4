@@ -19,8 +19,8 @@ struct FSpan
 	GENERATED_BODY()
 
 public:
-	ANavigationNode* StartNode;
-	ANavigationNode* EndNode;
+	const ANavigationNode* StartNode;
+	const ANavigationNode* EndNode;
 	bool bIsTraversable;
 
 	FSpan()
@@ -30,7 +30,7 @@ public:
 		bIsTraversable = false;
 	}
 	
-	FSpan(ANavigationNode* startNode, ANavigationNode* endNode, bool isTraversable)
+	FSpan(const ANavigationNode* startNode, const ANavigationNode* endNode, bool isTraversable)
 	{
 		StartNode = startNode;
 		EndNode = endNode;
@@ -58,6 +58,16 @@ public:
 	FVector GetMidPoint()
 	{
 		return GetVectorSum() / 2;
+	}
+	FVector GetModifiedMidPoint()
+	{
+		FVector MidPoint = GetMidPoint();
+		if (MidPoint.Z < 138.0f)
+		{
+			MidPoint.Z = 138.0f;
+		}
+		return MidPoint;
+		
 	}
 	// Returns the distance between the two nodes
 	float GetSpanDist()
@@ -150,13 +160,13 @@ private:
 
 	// --- Obstacle Detection ---
 	
-	// Span Map uses the CrossProduct + VectorSum of the two node actors as the key
-	TMap<FVector, bool> SpanMap;
+	// SpanArray 
+	TArray<FSpan> SpanArray;
 
-	// 
-	bool SpanExists(const ANavigationNode* StartNode, const ANavigationNode* EndNode);
-
-	// alrighty redoing stuff!!
+	bool IsTraversable(ANavigationNode* StartNode, ANavigationNode* EndNode);
+	
+	// Check if a span exists
+	bool SpanExists(ANavigationNode* StartNode, ANavigationNode* EndNode);
 	
 	// populates the span map; called after the nodes have been populated through SetNodesArray()
 	void PopulateSpanMap();
@@ -164,8 +174,12 @@ private:
 	// functions as a pure check of the span map to see if a span exists, and is recorded as traversible. if it does not exist (moving node?) then it will perform SweepSpan();
 	bool CheckSpan(ANavigationNode* StartNode, ANavigationNode* EndNode);
 
+	void AddSpan(ANavigationNode* StartNode, ANavigationNode* EndNode);
+
+	FSpan* GetSpan(ANavigationNode* StartNode, ANavigationNode* EndNode);
+
 	// the actual sweeping functionality of the old IsSpanTraversible(). 
-	bool SweepSpan(FVector StartLocation, FVector EndLocation);
+	bool SweepSpan(ANavigationNode* StartNode, ANavigationNode* EndNode);
 
 	void DrawSpan(bool bUnblockedSpan, FVector StartLocation, FVector EndLocation);
 
