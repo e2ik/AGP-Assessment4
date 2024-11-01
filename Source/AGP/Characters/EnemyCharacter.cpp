@@ -42,24 +42,7 @@ void AEnemyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
     DOREPLIFETIME(AEnemyCharacter, EnemyType);
 }
 
-void AEnemyCharacter::OnColliderOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	UE_LOG(LogTemp, Log, TEXT("Overlap is being triggered by %s"), *OtherActor->GetActorLabel())
-	if (AStaticMeshActor* StaticActor = Cast<AStaticMeshActor>(OtherActor))
-	{
-		UE_LOG(LogTemp, Log, TEXT("Overlapped is a static mesh actor"))
-		// check if is bridge or ground
-		// check static actor size less than character height
 
-		FBox Box = StaticActor->GetComponentsBoundingBox();
-		if (Box.GetSize().Z < 176.0f)
-		{
-			UE_LOG(LogTemp, Log, TEXT("Jumping!"))
-			Jump();
-		}
-	}
-}
 
 // Called when the game starts or when spawned
 void AEnemyCharacter::BeginPlay()
@@ -187,6 +170,25 @@ void AEnemyCharacter::OnSensedPawn(APawn* SensedActor)
 		if (!bHasSensedPlayer) {
 			bHasSensedPlayer = true;
 			ClearPath();
+		}
+	}
+}
+
+void AEnemyCharacter::OnColliderOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UE_LOG(LogTemp, Log, TEXT("Overlap is being triggered by %s"), *OtherActor->GetActorLabel())
+	if (AStaticMeshActor* StaticActor = Cast<AStaticMeshActor>(OtherActor))
+	{
+		UE_LOG(LogTemp, Log, TEXT("Overlapped is a static mesh actor"))
+		// check if is bridge or ground
+		// check static actor size less than character height
+
+		FBox Box = StaticActor->GetComponentsBoundingBox();
+		if (Box.GetSize().Z < 176.0f)
+		{
+			UE_LOG(LogTemp, Log, TEXT("Jumping!"))
+			Jump();
 		}
 	}
 }

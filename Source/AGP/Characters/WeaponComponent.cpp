@@ -7,6 +7,7 @@
 #include "HealthComponent.h"
 #include "PlayerCharacter.h"
 #include "PlayerMeleeCharacter.h"
+#include "AGP/GameMode/AGPGameInstance.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
