@@ -11,6 +11,7 @@
 #include "AGP/GameMode/AGPGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "EngineUtils.h"
 
 
 UAIDirector::UAIDirector()

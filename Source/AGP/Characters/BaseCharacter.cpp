@@ -2,7 +2,11 @@
 
 
 #include "BaseCharacter.h"
+
+#include "EnemyCharacter.h"
 #include "HealthComponent.h"
+#include "PlayerCharacter.h"
+#include "AGP/GameMode/AGPGameInstance.h"
 #include "AGP/GameMode/MultiplayerGameMode.h"
 #include "Net/UnrealNetwork.h"
 
@@ -48,6 +52,7 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 void ABaseCharacter::OnDeath()
 {
+	
 	// WE ONLY WANT TO HANDLE LOGIC IF IT IS ON THE SERVER
 	if (GetLocalRole() != ROLE_Authority) return;
 	

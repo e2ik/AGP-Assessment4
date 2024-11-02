@@ -1,4 +1,3 @@
-#include "EngineUtils.h"
 #include "NavigationNode.h"
 
 // TODO: Check Multiplayer make sure it only runs on server
@@ -32,7 +31,7 @@ void ANavigationNode::Tick(float DeltaTime)
 			// check reciprocal connection
 			bool bIsReciprocalNode = Node->ConnectedNodes.Contains(this);
 			FColor LineColor = bIsReciprocalNode ? FColor::Green : FColor::Red; 
-			// DrawDebugLine(GetWorld(), GetActorLocation(), Node->GetActorLocation(), LineColor, false, -1, 0, 2.0f);
+			//DrawDebugLine(GetWorld(), GetActorLocation(), Node->GetActorLocation(), LineColor, false, -1, 0, 2.0f);
 		}
 	}
 
