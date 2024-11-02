@@ -78,14 +78,15 @@ void UHealthComponent::OnDeath()
 {
 	UE_LOG(LogTemp, Display, TEXT("The character has died."))
 	bIsDead = true;
+	ServerPlayDeathSound();
+	
 	// Tell the server base character that they have died.
 
 	// This OnDeath function will only be called on the server in the current setup but it is still worth
 	// checking that we are only handling this logic on the server.
+	
 	if (GetOwnerRole() != ROLE_Authority) return;
-
-	UAGPGameInstance* AGPGameInstance = Cast<UAGPGameInstance>(GetWorld()->GetGameInstance());
-
+	
 	if (ABaseMeleeCharacter* Character = Cast<ABaseMeleeCharacter>(GetOwner()))
 	{
 		Character->OnDeath();
@@ -96,17 +97,7 @@ void UHealthComponent::OnDeath()
 		Character->OnDeath();
 	}
 
-	if (AGPGameInstance)
-	{
-		if (APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner()))
-		{
-			AGPGameInstance->PlayFailSound2D();
-		}
-		else
-		{
-			AGPGameInstance->PlayDeathSoundAtLocation(Character->GetActorLocation());
-		}
-	}
+	
 }
 
 void UHealthComponent::UpdateHealthBar()
@@ -120,23 +111,26 @@ void UHealthComponent::UpdateHealthBar()
 	{
 		PlayerCharacter->UpdateHealthBar(GetCurrentHealthPercentage());
 	}
+}
 
-	// if (GetCurrentHealthPercentage() > 0.0f)
-	// {
-	// 	UGameInstance* GameInstance = GetWorld()->GetGameInstance();
-	// 	if (UAGPGameInstance* AGPGameInstance = Cast<UAGPGameInstance>(GameInstance))
-	// 	{
-	// 		APawn* Owner = Cast<APawn>(GetOwner());
-	// 		if (Owner && Owner->IsLocallyControlled() && Owner->Controller && Owner->Controller->IsLocalPlayerController())
-	// 		{
-	// 			AGPGameInstance->PlayOughSound2D();
-	// 		}
-	// 		else
-	// 		{
-	// 			AGPGameInstance->PlayHurtSoundAtLocation(Owner->GetActorLocation());
-	// 		}
-	// 	}
-	// }
+void UHealthComponent::MulticastPlayDeathSound_Implementation()
+{
+	if (UAGPGameInstance* AGPGameInstance = Cast<UAGPGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner()))
+		{
+			AGPGameInstance->PlayFailSound2D();
+		}
+		else if (APawn* Pawn = Cast<APawn>(GetOwner()))
+		{
+			AGPGameInstance->PlayDeathSoundAtLocation(Pawn->GetActorLocation());
+		}
+	}
+}
+
+void UHealthComponent::ServerPlayDeathSound_Implementation()
+{
+	MulticastPlayDeathSound();
 }
 
 void UHealthComponent::ResetHealth()
@@ -145,6 +139,8 @@ void UHealthComponent::ResetHealth()
 	CurrentHealth = MaxHealth;
 	bIsDead = false;
 }
+
+
 
 // Called every frame
 void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
