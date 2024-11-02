@@ -13,6 +13,87 @@ class UProceduralNodes;
  * 
  */
 
+USTRUCT()
+struct FSpan
+{
+	GENERATED_BODY()
+
+public:
+	const ANavigationNode* StartNode;
+	const ANavigationNode* EndNode;
+	bool bIsTraversable;
+
+	FSpan()
+	{
+		StartNode = nullptr;
+		EndNode = nullptr;
+		bIsTraversable = false;
+	}
+	FSpan(const ANavigationNode* startNode, const ANavigationNode* endNode, bool isTraversable)
+	{
+		StartNode = startNode;
+		EndNode = endNode;
+		bIsTraversable = isTraversable;
+	}
+	// Returns the StartNode's location
+	FVector GetStartLocation()
+	{
+		return StartNode ? StartNode->GetActorLocation() : FVector::ZeroVector;
+	}
+	// Returns the EndNode's location
+	FVector GetEndLocation()
+	{
+		return EndNode ? EndNode->GetActorLocation() : FVector::ZeroVector;
+	}
+	// Returns the sum of the node locations
+	FVector GetVectorSum()
+	{
+		return GetStartLocation() + GetEndLocation();
+	}
+	// Returns the midpoint of the two nodes
+	FVector GetMidPoint()
+	{
+		return GetVectorSum() / 2;
+	}
+	FVector GetModifiedMidPoint()
+	{
+		FVector MidPoint = GetMidPoint();
+		if (MidPoint.Z < 138.0f)
+		{
+			MidPoint.Z = 138.0f;
+		}
+		return MidPoint;
+	}
+	// Returns the distance between the two nodes
+	float GetSpanDist()
+	{
+		return FVector::Distance(GetStartLocation(), GetEndLocation());
+	}
+	// Returns the direction vector from StartNode to EndNode
+	FVector GetDirectionVector()
+	{
+		return GetStartLocation() - GetEndLocation();
+	}
+	// Returns the quaternion rotation of the span
+	FQuat GetOrientation()
+	{
+		return GetDirectionVector().ToOrientationQuat();
+	}
+	// Returns the quaternion rotation of a span, modified to be level with a flat surface
+	FQuat GetOrientationModified()
+	{
+		FRotator Rot = GetOrientation().Rotator();
+		Rot.Pitch = 0;
+		Rot.Roll = 0;
+		return Rot.Quaternion();
+	}
+
+	friend bool operator==(const FSpan& SpanOne, const FSpan& SpanTwo)
+	{
+		return SpanOne.StartNode == SpanTwo.StartNode && SpanOne.EndNode == SpanTwo.EndNode || SpanOne.StartNode == SpanTwo.EndNode && SpanOne.EndNode == SpanTwo.StartNode;
+	}
+};
+
 UCLASS()
 class AGP_API UPathfindingSubsystem : public UWorldSubsystem
 {
@@ -73,17 +154,29 @@ private:
 	static TArray<FVector> ReconstructPath(const TMap<ANavigationNode*, ANavigationNode*>& CameFromMap, ANavigationNode* EndNode);
 
 	// --- Obstacle Detection ---
+	
+	// SpanArray 
+	TArray<FSpan> SpanArray;
+	
+	// Check if a span exists
+	bool SpanExists(ANavigationNode* StartNode, ANavigationNode* EndNode);
+	
+	// populates the span map; called after the nodes have been populated through SetNodesArray()
+	void PopulateSpanMap();
 
-	// Performs a sweep from one node to another, checking for any hits along the path. Any hits have their heights checked,
-	// being below the height of the enemy character being "traversable".
-	bool IsSpanTraversable(const ANavigationNode* StartNode, const ANavigationNode* EndNode);
+	// Check the span to see if it traversable
+	bool CheckSpan(ANavigationNode* StartNode, ANavigationNode* EndNode);
 
-	// okay we make a map that records the traversed state of spans
-	// probably like TMap<TArray<ANavigationNode*>, bool>;
-	//TMap<TArray<ANavigationNode*>*, bool> SpanMap;
-	// problem: TMap does not like it when a TArray is used as its key. perhaps create a span struct instead.
-	TMap<FVector, bool> SpanMap;
+	// Add a span to the Span Array
+	void AddSpan(ANavigationNode* StartNode, ANavigationNode* EndNode);
 
-	bool SpanExists(const ANavigationNode* StartNode, const ANavigationNode* EndNode);
+	// Return a Span; Unused
+	FSpan* GetSpan(ANavigationNode* StartNode, ANavigationNode* EndNode);
+
+	// Sweeping functionality, used to determine if a span is traversable 
+	bool SweepSpan(ANavigationNode* StartNode, ANavigationNode* EndNode);
+
+	// Debug function
+	void DrawSpan(bool bUnblockedSpan, FVector StartLocation, FVector EndLocation);
 	
 };

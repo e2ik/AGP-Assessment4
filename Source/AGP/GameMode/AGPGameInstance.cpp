@@ -56,8 +56,7 @@ void UAGPGameInstance::ClientTravel()
     
 }
 
-
-UClass* UAGPGameInstance::GetWeaponPickupClass() const
+ UClass* UAGPGameInstance::GetWeaponPickupClass() const
 {
     return WeaponPickupClass.Get();
 }
@@ -147,7 +146,39 @@ void UAGPGameInstance::PlayGunshotSound2D()
     }
 }
 
-void UAGPGameInstance::SetSelectedPawnClass(TSubclassOf<APawn> PawnClass)
+void UAGPGameInstance::PlayDeathSoundAtLocation(const FVector& Location)
+{
+    if (DeathSoundCue)
+    {
+        UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSoundCue, Location, FRotator::ZeroRotator);
+    }
+}
+
+ void UAGPGameInstance::PlayFailSound2D()
+ {
+    if (FailSoundCue)
+    {
+        UGameplayStatics::PlaySound2D(GetWorld(), FailSoundCue);
+    }
+ }
+
+ void UAGPGameInstance::PlayHurtSoundAtLocation(const FVector& Location)
+ {
+    if (HurtSoundCue)
+    {
+        UGameplayStatics::PlaySoundAtLocation(GetWorld(), HurtSoundCue, Location, FRotator::ZeroRotator);
+    }
+ }
+
+ void UAGPGameInstance::PlayOughSound2D()
+ {
+    if (OughSoundCue)
+    {
+        UGameplayStatics::PlaySound2D(GetWorld(), OughSoundCue);
+    }
+ }
+
+ void UAGPGameInstance::SetSelectedPawnClass(TSubclassOf<APawn> PawnClass)
 {
     SelectedPawnClass = PawnClass;
 }

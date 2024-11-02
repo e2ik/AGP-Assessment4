@@ -4,6 +4,7 @@
 #include "HealthComponent.h"
 #include "PlayerCharacter.h"
 #include "PlayerMeleeCharacter.h"
+#include "AGP/GameMode/AGPGameInstance.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
@@ -53,6 +54,7 @@ void UHealthComponent::ApplyDamage(float DamageAmount)
 		CurrentHealth = 0.0f;
 	}
 	UpdateHealthBar();
+	
 }
 
 void UHealthComponent::ApplyHealing(float HealingAmount)
@@ -88,12 +90,15 @@ void UHealthComponent::OnDeath()
 {
 	UE_LOG(LogTemp, Display, TEXT("The character has died."))
 	bIsDead = true;
+	ServerPlayDeathSound();
+	
 	// Tell the server base character that they have died.
 
 	// This OnDeath function will only be called on the server in the current setup but it is still worth
 	// checking that we are only handling this logic on the server.
+	
 	if (GetOwnerRole() != ROLE_Authority) return;
-
+	
 	if (ABaseMeleeCharacter* Character = Cast<ABaseMeleeCharacter>(GetOwner()))
 	{
 		Character->OnDeath();
@@ -103,6 +108,8 @@ void UHealthComponent::OnDeath()
 	{
 		Character->OnDeath();
 	}
+
+	
 }
 
 void UHealthComponent::UpdateHealthBar()
@@ -118,12 +125,37 @@ void UHealthComponent::UpdateHealthBar()
 	}
 }
 
+void UHealthComponent::MulticastPlayDeathSound_Implementation()
+{
+	if (UAGPGameInstance* AGPGameInstance = Cast<UAGPGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (ABaseCharacter* Character = Cast<ABaseCharacter>(GetOwner()))
+		{
+			if (Character->IsLocallyControlled())
+			{
+				AGPGameInstance->PlayFailSound2D();
+			}
+			else
+			{
+				AGPGameInstance->PlayDeathSoundAtLocation(Character->GetActorLocation());
+			}
+		}
+	}
+}
+
+void UHealthComponent::ServerPlayDeathSound_Implementation()
+{
+	MulticastPlayDeathSound();
+}
+
 void UHealthComponent::ResetHealth()
 {
 	UE_LOG(LogTemp, Display, TEXT("MAX HEALTH: %f"), MaxHealth)
 	CurrentHealth = MaxHealth;
 	bIsDead = false;
 }
+
+
 
 // Called every frame
 void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

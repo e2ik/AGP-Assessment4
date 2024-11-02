@@ -104,6 +104,12 @@ public:
 
 	// end Behaviour Tree Additions
 
+	UFUNCTION(BlueprintCallable)
+	bool GetIsFalling();
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsJumping();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -156,6 +162,13 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float PathfindingError = 50.0f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UCapsuleComponent* BumpDetectorComponent;
+
+	UFUNCTION()
+	virtual void OnColliderOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 public:	
 
 	virtual void Tick(float DeltaTime) override;
@@ -181,5 +194,8 @@ private:
 	float ShotAtTimer = 0.0f;
 
 	int32 PathIndex = 0;
+
+	bool bIsJumping;
+	bool bIsFalling;
 
 };

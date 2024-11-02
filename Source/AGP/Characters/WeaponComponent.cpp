@@ -7,6 +7,7 @@
 #include "HealthComponent.h"
 #include "PlayerCharacter.h"
 #include "PlayerMeleeCharacter.h"
+#include "AGP/GameMode/AGPGameInstance.h"
 #include "Net/UnrealNetwork.h"
 #include "AGP/GameMode/AGPGameInstance.h"
 
@@ -154,6 +155,18 @@ void UWeaponComponent::FireVisualImplementation(const FVector& BulletStart, cons
 			if (ABaseCharacter* HitCharacter = Cast<ABaseCharacter>(HitActor)) {
 				AGPGameInstance->SpawnCharacterHitParticle(HitLocation);
 				AGPGameInstance->SpawnGunEffect(BulletStart, HitLocation, 1);
+				UHealthComponent* HitCharacterHealth = HitCharacter->GetComponentByClass<UHealthComponent>();
+				if (HitCharacterHealth && !HitCharacterHealth->IsDead())
+				{
+					if (HitCharacter->IsLocallyControlled())
+					{
+						AGPGameInstance->PlayOughSound2D();
+					}
+					else
+					{
+						AGPGameInstance->PlayHurtSoundAtLocation(BulletStart);
+					}
+				}
 			} else {
 				AGPGameInstance->SpawnGroundHitParticle(HitLocation);
 				AGPGameInstance->SpawnGunEffect(BulletStart, HitLocation, 2);

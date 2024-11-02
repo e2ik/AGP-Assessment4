@@ -10,6 +10,8 @@
 #include "AGP/ProceduralNodes/PathfindingSubsystem.h"
 #include "AGP/BehaviourTree/BTComponent.h"
 #include "AGP/BehaviourTree/AIAssignSubsystem.h"
+#include "Components/CapsuleComponent.h"
+#include "Engine/StaticMeshActor.h"
 #include "Perception/PawnSensingComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -40,6 +42,17 @@ void AEnemyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
     DOREPLIFETIME(AEnemyCharacter, EnemyType);
 }
 
+
+bool AEnemyCharacter::GetIsFalling()
+{
+	return bIsFalling;
+}
+
+bool AEnemyCharacter::GetIsJumping()
+{
+	return bIsJumping;
+}
+
 // Called when the game starts or when spawned
 void AEnemyCharacter::BeginPlay()
 {
@@ -59,6 +72,11 @@ void AEnemyCharacter::BeginPlay()
 	if (HealthComponent) {
 		PreviousHealth = HealthComponent->GetCurrentHealth();
 		HealthComponent->OnHealthChanged.AddDynamic(this, &AEnemyCharacter::OnHealthChanged);
+	}
+
+	if (BumpDetectorComponent)
+	{
+		BumpDetectorComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyCharacter::OnColliderOverlap);
 	}
 
 	if (EnemyType == EEnemyType::UNASSIGNED) {
@@ -165,6 +183,36 @@ void AEnemyCharacter::OnSensedPawn(APawn* SensedActor)
 	}
 }
 
+void AEnemyCharacter::OnColliderOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+    UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
+    // if (UStaticMeshComponent* StaticMeshComp = Cast<UStaticMeshComponent>(OtherComponent))
+    // {
+        // Get the name of the overlapping actor
+    // FString ActorName = OtherActor->GetActorLabel();
+    // GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Overlap detected with Static Mesh Component: %s"), *ActorName));
+
+    FVector Origin, BoxExtent;
+	OtherActor->GetActorBounds(true, Origin, BoxExtent);
+    //StaticMeshComp->GetLocalBounds(Origin, BoxExtent);
+
+    // Check the height of the static mesh (Z dimension)
+    if (BoxExtent.Z * 2.0f < 176.0f) // Multiply by 2 to get full height
+    {
+        //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Jumping!"));
+        Jump();
+    	bIsJumping = true;
+    }
+    //}
+}
+
+
+
+
+
+
+
 void AEnemyCharacter::UpdateSight()
 {
 	// if (!SensedCharacter.IsValid()) return;
@@ -181,7 +229,6 @@ void AEnemyCharacter::UpdateSight()
 		}
 	}
 }
-
 
 // Called every frame
 void AEnemyCharacter::Tick(float DeltaTime)
@@ -230,6 +277,23 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	if (bIsRepeatPath) {
 		PatrolPath();
 	} else { PathfindingSubsystem->ClearPatrolPath(); }
+
+	if (bIsJumping)
+	{
+		if (GetVelocity().Z <= 0.0f)
+		{
+			bIsJumping = false;
+			bIsFalling = true;
+		}
+	}
+
+	if (bIsFalling)
+	{
+		if (GetVelocity().Z == 0.0f)
+		{
+			bIsFalling = false;
+		}
+	}
 
 
 	// ! LAB FSM code: leaving this here just in case
