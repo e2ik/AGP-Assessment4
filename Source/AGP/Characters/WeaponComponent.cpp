@@ -150,9 +150,10 @@ void UWeaponComponent::FireVisualImplementation(const FVector& BulletStart, cons
 		{
 			if (ABaseCharacter* HitCharacter = Cast<ABaseCharacter>(HitActor)) {
 				AGPGameInstance->SpawnCharacterHitParticle(HitLocation);
-				if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(HitCharacter))
+				UHealthComponent* HitCharacterHealth = HitCharacter->GetComponentByClass<UHealthComponent>();
+				if (HitCharacterHealth && !HitCharacterHealth->IsDead())
 				{
-					if (PlayerCharacter->IsLocallyControlled())
+					if (HitCharacter->IsLocallyControlled())
 					{
 						AGPGameInstance->PlayOughSound2D();
 					}
@@ -160,10 +161,6 @@ void UWeaponComponent::FireVisualImplementation(const FVector& BulletStart, cons
 					{
 						AGPGameInstance->PlayHurtSoundAtLocation(BulletStart);
 					}
-				}
-				else
-				{
-					AGPGameInstance->PlayHurtSoundAtLocation(BulletStart);
 				}
 			} else {
 				AGPGameInstance->SpawnGroundHitParticle(HitLocation);
