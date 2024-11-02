@@ -88,20 +88,24 @@ void UHealthComponent::OnDeath()
 
 	if (ABaseMeleeCharacter* Character = Cast<ABaseMeleeCharacter>(GetOwner()))
 	{
-		if (AGPGameInstance)
-		{
-			AGPGameInstance->PlayFailSound2D();
-		}
 		Character->OnDeath();
 	}
 	
 	if (ABaseCharacter* Character = Cast<ABaseCharacter>(GetOwner()))
 	{
-		if (AGPGameInstance)
+		Character->OnDeath();
+	}
+
+	if (AGPGameInstance)
+	{
+		if (APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner()))
+		{
+			AGPGameInstance->PlayFailSound2D();
+		}
+		else
 		{
 			AGPGameInstance->PlayDeathSoundAtLocation(Character->GetActorLocation());
 		}
-		Character->OnDeath();
 	}
 }
 
