@@ -211,7 +211,7 @@ void AMultiplayerGameMode::SpawnEnemy(const FVector& Location)
 				if (!NewEnemy->WeaponComponent) {
 					NewEnemy->WeaponComponent = NewObject<UWeaponComponent>(NewEnemy, UWeaponComponent::StaticClass());
 					NewEnemy->WeaponComponent->RegisterComponent();
-					NewEnemy->EquipWeapon(true);
+					NewEnemy->MulticastEquipWeapon(true);
 				}
 			}
 
