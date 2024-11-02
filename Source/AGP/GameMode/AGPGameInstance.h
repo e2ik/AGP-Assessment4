@@ -40,6 +40,11 @@ public:
 	void ServerTravel();
 	void ClientTravel();
 
+	void PlayDeathSoundAtLocation(const FVector& Location);
+	void PlayFailSound2D();
+	void PlayHurtSoundAtLocation(const FVector& Location);
+	void PlayOughSound2D();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Player Setup")
     TSubclassOf<APawn> SelectedPawnClass;
 
@@ -70,6 +75,18 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	USoundCue* GunshotSoundCue;
+
+	UPROPERTY(EditDefaultsOnly)
+	USoundCue* HurtSoundCue;
+
+	UPROPERTY(EditDefaultsOnly)
+	USoundCue* DeathSoundCue;
+
+	UPROPERTY(EditDefaultsOnly)
+	USoundCue* FailSoundCue;
+
+	UPROPERTY(EditDefaultsOnly)
+	USoundCue* OughSoundCue;
 
 private:
 	IOnlineSubsystem* OnlineSubsystem;

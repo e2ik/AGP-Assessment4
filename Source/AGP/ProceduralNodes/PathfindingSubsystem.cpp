@@ -403,7 +403,7 @@ void UPathfindingSubsystem::PopulateSpanMap()
 			}
 		}
 	}
-	//
+	
 	// for (int i = 0; i < 40; i++)
 	// {
 	// 	int RandIndex = FMath::RandRange(0, SpanArray.Num() - 1);
@@ -435,7 +435,7 @@ void UPathfindingSubsystem::PopulateSpanMap()
 	// 	DrawDebugSphere(GetWorld(), Span.GetStartLocation(), 20.0f, 4, FColor::Orange, true, -1, 0, 4);
 	// 	DrawDebugSphere(GetWorld(), Span.GetEndLocation(), 20.0f, 4, FColor::Purple, true, -1, 0, 4);
 	// 	DrawDebugSphere(GetWorld(), MidPoint, 20.0f, 4, FColor::White, true, -1, 0, 4);
-	// 	// fantastic, it works like it should now, roughly. now we just need to adjust the rotation components.
+	// // 	// fantastic, it works like it should now, roughly. now we just need to adjust the rotation components.
 	// }
 	//
 	// //UE_LOG(LogTemp, Log, TEXT("Span array is of size %i"), SpanArray.Num())

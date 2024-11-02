@@ -4,6 +4,7 @@
 #include "HealthComponent.h"
 #include "PlayerCharacter.h"
 #include "PlayerMeleeCharacter.h"
+#include "AGP/GameMode/AGPGameInstance.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
@@ -41,6 +42,7 @@ void UHealthComponent::ApplyDamage(float DamageAmount)
 		CurrentHealth = 0.0f;
 	}
 	UpdateHealthBar();
+	
 }
 
 void UHealthComponent::ApplyHealing(float HealingAmount)
@@ -82,13 +84,23 @@ void UHealthComponent::OnDeath()
 	// checking that we are only handling this logic on the server.
 	if (GetOwnerRole() != ROLE_Authority) return;
 
+	UAGPGameInstance* AGPGameInstance = Cast<UAGPGameInstance>(GetWorld()->GetGameInstance());
+
 	if (ABaseMeleeCharacter* Character = Cast<ABaseMeleeCharacter>(GetOwner()))
 	{
+		if (AGPGameInstance)
+		{
+			AGPGameInstance->PlayFailSound2D();
+		}
 		Character->OnDeath();
 	}
 	
 	if (ABaseCharacter* Character = Cast<ABaseCharacter>(GetOwner()))
 	{
+		if (AGPGameInstance)
+		{
+			AGPGameInstance->PlayDeathSoundAtLocation(Character->GetActorLocation());
+		}
 		Character->OnDeath();
 	}
 }
@@ -104,6 +116,23 @@ void UHealthComponent::UpdateHealthBar()
 	{
 		PlayerCharacter->UpdateHealthBar(GetCurrentHealthPercentage());
 	}
+
+	// if (GetCurrentHealthPercentage() > 0.0f)
+	// {
+	// 	UGameInstance* GameInstance = GetWorld()->GetGameInstance();
+	// 	if (UAGPGameInstance* AGPGameInstance = Cast<UAGPGameInstance>(GameInstance))
+	// 	{
+	// 		APawn* Owner = Cast<APawn>(GetOwner());
+	// 		if (Owner && Owner->IsLocallyControlled() && Owner->Controller && Owner->Controller->IsLocalPlayerController())
+	// 		{
+	// 			AGPGameInstance->PlayOughSound2D();
+	// 		}
+	// 		else
+	// 		{
+	// 			AGPGameInstance->PlayHurtSoundAtLocation(Owner->GetActorLocation());
+	// 		}
+	// 	}
+	// }
 }
 
 void UHealthComponent::ResetHealth()

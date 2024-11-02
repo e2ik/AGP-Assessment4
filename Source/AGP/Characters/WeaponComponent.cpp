@@ -150,6 +150,21 @@ void UWeaponComponent::FireVisualImplementation(const FVector& BulletStart, cons
 		{
 			if (ABaseCharacter* HitCharacter = Cast<ABaseCharacter>(HitActor)) {
 				AGPGameInstance->SpawnCharacterHitParticle(HitLocation);
+				if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(HitCharacter))
+				{
+					if (PlayerCharacter->IsLocallyControlled())
+					{
+						AGPGameInstance->PlayGunshotSound2D();
+					}
+					else
+					{
+						AGPGameInstance->PlayGunshotSoundAtLocation(BulletStart);
+					}
+				}
+				else
+				{
+					AGPGameInstance->PlayGunshotSoundAtLocation(BulletStart);
+				}
 			} else {
 				AGPGameInstance->SpawnGroundHitParticle(HitLocation);
 			}
