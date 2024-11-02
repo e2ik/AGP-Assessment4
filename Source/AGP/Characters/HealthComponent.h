@@ -43,7 +43,7 @@ protected:
 	UFUNCTION()
 	void UpdateHealthBar();
 
-	UFUNCTION(NetMulticast, Unreliable)
+	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPlayDeathSound();
 	UFUNCTION(Server, Reliable)
 	void ServerPlayDeathSound();
