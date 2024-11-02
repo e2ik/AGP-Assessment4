@@ -117,13 +117,16 @@ void UHealthComponent::MulticastPlayDeathSound_Implementation()
 {
 	if (UAGPGameInstance* AGPGameInstance = Cast<UAGPGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		if (APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner()))
+		if (ABaseCharacter* Character = Cast<ABaseCharacter>(GetOwner()))
 		{
-			AGPGameInstance->PlayFailSound2D();
-		}
-		else if (APawn* Pawn = Cast<APawn>(GetOwner()))
-		{
-			AGPGameInstance->PlayDeathSoundAtLocation(Pawn->GetActorLocation());
+			if (Character->IsLocallyControlled())
+			{
+				AGPGameInstance->PlayFailSound2D();
+			}
+			else
+			{
+				AGPGameInstance->PlayDeathSoundAtLocation(Character->GetActorLocation());
+			}
 		}
 	}
 }

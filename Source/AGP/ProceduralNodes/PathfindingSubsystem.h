@@ -29,24 +29,20 @@ public:
 		EndNode = nullptr;
 		bIsTraversable = false;
 	}
-	
 	FSpan(const ANavigationNode* startNode, const ANavigationNode* endNode, bool isTraversable)
 	{
 		StartNode = startNode;
 		EndNode = endNode;
 		bIsTraversable = isTraversable;
-		// you know, it might be better to have the span perform the sweep itself
 	}
 	// Returns the StartNode's location
 	FVector GetStartLocation()
 	{
-		//UE_LOG(LogTemp, Log, TEXT("StartNode is %hs"), StartNode ? "not null" : "null")
 		return StartNode ? StartNode->GetActorLocation() : FVector::ZeroVector;
 	}
 	// Returns the EndNode's location
 	FVector GetEndLocation()
 	{
-		//UE_LOG(LogTemp, Log, TEXT("EndNode is %hs"), StartNode ? "not null" : "null")
 		return EndNode ? EndNode->GetActorLocation() : FVector::ZeroVector;
 	}
 	// Returns the sum of the node locations
@@ -67,7 +63,6 @@ public:
 			MidPoint.Z = 138.0f;
 		}
 		return MidPoint;
-		
 	}
 	// Returns the distance between the two nodes
 	float GetSpanDist()
